@@ -19,6 +19,7 @@ import { configOf, createProject, removeProjects } from '../project.fixtures';
 let root = '';
 
 const ORDER_CARD = 'src/features/orders/ui/order-card.tsx';
+const UI_STATEMENT = 'Every data view shows loading, empty, error and content.';
 const uiNames = [
   ORDER_CARD,
   'blocks/domains/ui/ui.md',
@@ -107,7 +108,7 @@ afterAll(() => {
 });
 
 describe('the reminders of the post-tool-use hook', () => {
-  it('should name the block that governs a file, its files and its MUST rules when the agent first touches it', () => {
+  it('should name the block that governs a file, its files and the slugs of its MUST rules, and no rule text, when the agent first touches it', () => {
     // Arrange
     const { project, session } = startSession(
       configOf({
@@ -130,6 +131,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
     expect({
       blocks: remindedOf(reminder),
+      holdsRuleText: context.includes(UI_STATEMENT),
       mentioned: mentionedOf({
         names: uiNames,
         text: context,
@@ -139,6 +141,7 @@ describe('the reminders of the post-tool-use hook', () => {
       blocks: [
         'ui',
       ],
+      holdsRuleText: false,
       mentioned: uiNames,
       within: true,
     });
@@ -210,12 +213,12 @@ describe('the reminders of the post-tool-use hook', () => {
     expect(reminder).toBe('');
   });
 
-  it('should name every block the governing block needs, through its requirements, bases and seams, when the agent first touches a file', () => {
+  it('should name every block the governing block needs, through its requirements, parents and seams, when the agent first touches a file', () => {
     // Arrange
     const { project, session } = startSession(
       configOf({
         domains: '[ui, untrusted-client, unreliable-network]',
-        implementations: '[react-dom]',
+        implementations: '[react/react-dom]',
         platforms: '[browser]',
       }),
     );
@@ -228,9 +231,9 @@ describe('the reminders of the post-tool-use hook', () => {
 
     // Assert
     expect(remindedOf(reminder)).toStrictEqual([
-      '_react',
       'browser',
-      'react-dom',
+      'react',
+      'react/react-dom',
       'ui',
       'unreliable-network',
       'untrusted-client',

@@ -28,11 +28,11 @@ const PARAGLIDE: ReadonlyArray<
     'Paraglide',
   ],
   [
-    '<What the library does in this repository, in one sentence that sets its name in bold, which defines it.>',
-    '**Paraglide** compiles the messages of each locale into typed functions.',
+    '<What the library does in this repository, in one sentence.>',
+    'Paraglide compiles the messages of each locale into typed functions.',
   ],
   [
-    '<What its parts and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
+    '<What its preset entries and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
     'Its compiler runs before the type check, and its output is ignored.',
   ],
   [
@@ -44,28 +44,36 @@ const PARAGLIDE: ReadonlyArray<
     'how a message is read',
   ],
   [
-    '<requirement>',
-    'i18n-plurals-by-cldr',
-  ],
-  [
-    '<how the library meets it; for partly or no, the rule of this block, its slug in backticks, that covers what it misses or replaces the requirement>',
-    'a variant per CLDR plural category',
-  ],
-  [
-    '<yes, it meets the rule as written; partly, it meets its purpose or part of its letter; no, it cannot meet it>',
-    'yes',
-  ],
-  [
     '<rule slug>',
     'paraglide-messages-by-function',
   ],
   [
-    '<The rule, in one or two sentences.>',
-    'A message is read through its compiled function, never by its key.',
+    '<Its slogan: the shortest true statement of the outcome it asks for.>',
+    'Every message is read through its compiled function.',
   ],
   [
-    '<the reason>',
-    'the compiler checks a function call, and a key is only a string.',
+    "<The sentences that draw the slogan's limits: where it applies and what it covers.>",
+    'No code reads one by its key.',
+  ],
+  [
+    "<Exempt: the cases it leaves out, as the statement's last sentence; drop it when there are none.>",
+    'Exempt: a message the compiler has not seen yet, as in its own spec.',
+  ],
+  [
+    '<The failure it prevents: what breaks, for whom, when the rule is broken> — <the principle, pattern or reference it applies or follows; drop this part and its dash when it follows none>',
+    'A message read by its key breaks for its reader once the key is renamed, since the compiler checks a function call and a key is only a string.',
+  ],
+  [
+    '<language>',
+    'ts',
+  ],
+  [
+    '<code that breaks the rule>',
+    "const title = messages['checkout.title'];",
+  ],
+  [
+    '<the same code meeting the rule>',
+    'const title = m.checkoutTitle();',
   ],
 ] as const;
 
@@ -85,7 +93,12 @@ const paraglideFromTemplate = (path: string): string => {
 
 const paraglideCard = (): Readonly<Record<string, string>> => ({
   [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate('block.md'),
-  [`${PARAGLIDE_DIR}/foundation/messages.md`]: paraglideFromTemplate('foundation/chapter.md'),
+  [`${PARAGLIDE_DIR}/@foundation/messages.md`]: paraglideFromTemplate('@foundation/chapter.md'),
 });
 
-export { paraglideCard };
+const paraglidePack = (): Readonly<Record<string, string>> => ({
+  ...paraglideCard(),
+  'DECISIONS.md': readFileSync(join(templates, 'DECISIONS.md'), 'utf8'),
+});
+
+export { paraglideCard, paraglidePack };

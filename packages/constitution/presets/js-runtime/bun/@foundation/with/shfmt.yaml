@@ -1,0 +1,37 @@
+shfmt:
+  '*':
+    shell:
+      package.json:
+        scripts:
+          # Why: the unit's script skips its members, each checked in its own run.
+          check:shell-format: !words
+            - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -d --
+            - "'${workspace.members}'"
+          fix:shell-format: !words
+            - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -w --
+            - "'${workspace.members}'"
+js-runtime/bun:
+  '*':
+    shell:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    shell:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+          fix: bun run --sequential 'fix:*'
+task-runner:
+  unit-run-through-its-action-tasks:
+    shell:
+      ${constitution.run}:
+        check:
+          - bun run check
+        fix:
+          - bun run fix

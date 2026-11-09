@@ -2,8 +2,6 @@
 id: open-source
 summary: "A public repository: its licence, its policies and its contributors."
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**"]
 ---

@@ -1,8 +1,0 @@
-core:
-  spec-boundaries-follow-the-tree:
-    python:
-      pyproject.toml:
-        tool:
-          mutmut:
-            do_not_mutate:
-              - '*/${role.composition-root}/wiring.py'

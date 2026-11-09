@@ -10,36 +10,31 @@ import { LIST_SEPARATOR } from './list-separator.messages';
 import { textOf } from './texts.utils';
 import { unitText } from './unit-text.utils';
 import {
-  abstractListedMessage,
   blockNeededMessage,
   checkKeyMessage,
   configurationsUncheckedBecauseMessage,
   configurationsUncheckedMessage,
   inUnitMessage,
-  LAST_HEIR_SEPARATOR,
+  LAST_CHOICE_SEPARATOR,
   memberUnparsedMessage,
   packagesKeyMessage,
   releaseLinkLoopsMessage,
-  requirementNotMetMessage,
-  UNNAMED_HEIRS,
   unknownKeyMessage,
   warningMessages,
 } from './warning-text.messages';
 
 const PACKAGES_KEY = 'packages';
 
-const heirsText = (heirs: readonly BlockId[]): string =>
-  heirs.length === 0
-    ? UNNAMED_HEIRS
-    : heirs
-        .map((heir, index) => {
-          if (index === 0) {
-            return heir;
-          }
+const choicesText = (choices: readonly BlockId[]): string =>
+  choices
+    .map((choice, index) => {
+      if (index === 0) {
+        return choice;
+      }
 
-          return `${index === heirs.length - 1 ? LAST_HEIR_SEPARATOR : LIST_SEPARATOR}${heir}`;
-        })
-        .join('');
+      return `${index === choices.length - 1 ? LAST_CHOICE_SEPARATOR : LIST_SEPARATOR}${choice}`;
+    })
+    .join('');
 
 const whereText = (unit: UnitPath): string =>
   UnitPath.isRepository(unit) ? '' : inUnitMessage(unit);
@@ -60,23 +55,15 @@ const warningTexts: TextsOf<WarningDetails> = {
       member,
     }),
   [WarningKind.KeyUnknown]: unknownKeyText,
-  [WarningKind.AbstractListed]: ({ heirs, name }) =>
-    abstractListedMessage({
-      heirs: heirsText(heirs),
-      name,
-    }),
-  [WarningKind.BlockNeeded]: ({ block, heirs, key, required, unit }) =>
+  [WarningKind.BlockNeeded]: ({ block, children = [], key, required, unit }) =>
     blockNeededMessage({
       block,
       key,
-      offered: heirs === undefined ? required : heirsText(heirs),
+      offered: choicesText([
+        required,
+        ...children,
+      ]),
       required,
-      where: whereText(unit),
-    }),
-  [WarningKind.RequirementNotMet]: ({ block, requirement, unit }) =>
-    requirementNotMetMessage({
-      block,
-      requirement,
       where: whereText(unit),
     }),
   [WarningKind.ConfigurationsUnchecked]: ({ reason }) =>

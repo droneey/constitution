@@ -61,9 +61,6 @@ const dryRunResultOf = (input: {
           }),
         ),
       };
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return run satisfies never;
   }
 };
 
@@ -92,9 +89,6 @@ const mutantRunResultOf = (run: ChosenSpecsRun): MutantRunResult => {
         nrOfTests: run.specPaths.length,
         status: MutantRunStatus.Survived,
       };
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return run satisfies never;
   }
 };
 

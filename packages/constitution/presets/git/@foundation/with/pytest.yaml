@@ -1,0 +1,7 @@
+version-control:
+  generated-files-not-committed:
+    python:
+      .gitignore:
+        - .pytest_cache/
+        - .coverage
+        - htmlcov/

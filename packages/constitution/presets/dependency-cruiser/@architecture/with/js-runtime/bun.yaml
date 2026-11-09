@@ -1,0 +1,21 @@
+core:
+  effects-held-only-by-the-edge:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=bun-effects-reached-only-from-the-edge]:
+          severity: error
+          from:
+            path: ^${role.source}/
+            pathNot:
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - ^${role.source}/(${role.generic-library}|${role.host-integration})/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+              - ^${role.source}/${role.surface}\.[^/]+$
+          to:
+            path: ^bun(?::|$)
+            reachable: true

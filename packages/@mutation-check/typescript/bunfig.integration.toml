@@ -11,9 +11,9 @@ coverageSkipTestFiles = true
 coverageThreshold = { functions = 1.0, lines = 1.0 }
 coveragePathIgnorePatterns = [
   # bun-test
+  "**/root/**",
   "**/__tests__/**",
   "**/main.*",
-  "**/root/wiring.*",
   "**/*.gen.*",
 
   # workspace

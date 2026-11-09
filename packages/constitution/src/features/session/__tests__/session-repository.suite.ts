@@ -4,18 +4,20 @@ import { Level } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
-import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
-import type { ReviewDebt, SessionState } from '../domain/entities';
-import { SessionAgent, SessionMark } from '../domain/entities';
-import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';
+import type { SessionRepository } from '../application/contracts/repositories/commands';
+import type { SessionQueries } from '../application/contracts/repositories/queries';
+import type { SessionState } from '../domain/session/entities';
+import { SessionAgent, SessionMark } from '../domain/session/entities';
+import { AgentId, SessionId } from '../domain/session/value-objects';
+import type { ReviewDebt } from '../domain/stop-judgement/entities';
+import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import { keptBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
-type SessionRepository = SessionCommandRepository & SessionQueryRepository;
+type SessionPort = SessionRepository & SessionQueries;
 
 interface SessionRepositorySuiteInput {
   readonly name: string;
-  readonly repositoryOf: () => SessionRepository;
+  readonly repositoryOf: () => SessionPort;
 }
 
 const session = SessionId.create('session-3');
@@ -81,16 +83,16 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
   describe(`${input.name}: the session repository contracts`, () => {
     it('should read back the state it saved', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
 
       // Act
-      const state = sessions.state(session);
+      const state = sessionPort.state(session);
 
       // Assert
       expect(state).toStrictEqual(savedState);
@@ -98,19 +100,19 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read no state, no mark and no block reminded when the session was never saved', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
       // Act
       const seen = {
-        mark: sessions.fingerprint({
+        mark: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        reminded: sessions.reminded({
+        reminded: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
-        state: sessions.state(session),
+        state: sessionPort.state(session),
       };
 
       // Assert
@@ -124,8 +126,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
     it.each([
       {
         condition: 'a mark is recorded',
-        write: (sessions: SessionRepository): void => {
-          sessions.recordFingerprint({
+        write: (sessionPort: SessionPort): void => {
+          sessionPort.recordFingerprint({
             fingerprint: TreeFingerprint.create('abc'),
             mark: SessionMark.Turn,
             session,
@@ -134,8 +136,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
       {
         condition: 'blocks are reminded',
-        write: (sessions: SessionRepository): void => {
-          sessions.addReminded({
+        write: (sessionPort: SessionPort): void => {
+          sessionPort.addReminded({
             agent: SessionAgent.main,
             ids: [
               BlockId.create('ui'),
@@ -146,18 +148,18 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
     ])('should drop the write when $condition to a session never saved', ({ write }) => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
       // Act
-      write(sessions);
+      write(sessionPort);
 
       // Assert
       expect({
-        mark: sessions.fingerprint({
+        mark: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        reminded: sessions.reminded({
+        reminded: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
@@ -169,48 +171,48 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read the last value recorded of each mark', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('abc'),
         mark: SessionMark.Turn,
         session,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('def'),
         mark: SessionMark.Turn,
         session,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('f00d'),
         mark: SessionMark.Checked,
         session,
       });
-      sessions.recordUnjudged({
+      sessionPort.recordUnjudged({
         reason: 'git timed out',
         session,
       });
 
       // Act
       const seen = {
-        reviewed: sessions.fingerprint({
+        reviewed: sessionPort.fingerprint({
           mark: SessionMark.Reviewed,
           session,
         }),
-        checked: sessions.fingerprint({
+        checked: sessionPort.fingerprint({
           mark: SessionMark.Checked,
           session,
         }),
-        turn: sessions.fingerprint({
+        turn: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        unjudged: sessions.unjudged(session),
+        unjudged: sessionPort.unjudged(session),
       };
 
       // Assert
@@ -224,14 +226,14 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read every block reminded so far, to the session and to each agent apart', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent: SessionAgent.main,
         ids: [
           BlockId.create('core'),
@@ -239,14 +241,14 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         ],
         session,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent: SessionAgent.main,
         ids: [
           BlockId.create('api'),
         ],
         session,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent,
         ids: [
           BlockId.create('web'),
@@ -256,15 +258,15 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
-        agent: sessions.reminded({
+        agent: sessionPort.reminded({
           agent,
           session,
         }),
-        otherAgent: sessions.reminded({
+        otherAgent: sessionPort.reminded({
           agent: otherAgent,
           session,
         }),
-        own: sessions.reminded({
+        own: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
@@ -309,35 +311,35 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       'should replace the state and keep the marks when a session saved before is saved again and $condition',
       ({ isReminderKept, reminded }) => {
         // Arrange
-        const sessions = input.repositoryOf();
+        const sessionPort = input.repositoryOf();
 
-        sessions.saveState({
+        sessionPort.saveState({
           isReminderKept: false,
           session,
           state: savedState,
         });
-        sessions.addReminded({
+        sessionPort.addReminded({
           agent: SessionAgent.main,
           ids: [
             BlockId.create('ui'),
           ],
           session,
         });
-        sessions.addReminded({
+        sessionPort.addReminded({
           agent,
           ids: [
             BlockId.create('web'),
           ],
           session,
         });
-        sessions.recordFingerprint({
+        sessionPort.recordFingerprint({
           fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session,
         });
 
         // Act
-        sessions.saveState({
+        sessionPort.saveState({
           isReminderKept,
           session,
           state: laterState,
@@ -345,16 +347,16 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
         // Assert
         expect({
-          agent: sessions.reminded({
+          agent: sessionPort.reminded({
             agent,
             session,
           }),
-          own: sessions.reminded({
+          own: sessionPort.reminded({
             agent: SessionAgent.main,
             session,
           }),
-          state: sessions.state(session),
-          turn: sessions.fingerprint({
+          state: sessionPort.state(session),
+          turn: sessionPort.fingerprint({
             mark: SessionMark.Turn,
             session,
           }),
@@ -368,7 +370,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it.each<{
       asked: SessionAgent;
-      clear: (sessions: SessionRepository) => void;
+      clear: (sessionPort: SessionPort) => void;
       condition: string;
       expected: readonly AbsolutePath[];
     }>([
@@ -383,8 +385,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
       {
         asked: SessionAgent.main,
-        clear: (sessions) => {
-          sessions.clearOwnChanges({
+        clear: (sessionPort) => {
+          sessionPort.clearOwnChanges({
             agent: SessionAgent.main,
             session,
           });
@@ -394,8 +396,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
       {
         asked: agent,
-        clear: (sessions) => {
-          sessions.clearOwnChanges({
+        clear: (sessionPort) => {
+          sessionPort.clearOwnChanges({
             agent: SessionAgent.main,
             session,
           });
@@ -407,9 +409,9 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
     ])("should read back an agent's own changes when $condition", ({ asked, clear, expected }) => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.addOwnChanges({
+      sessionPort.addOwnChanges({
         agent: SessionAgent.main,
         paths: [
           firstPath,
@@ -418,7 +420,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         ],
         session,
       });
-      sessions.addOwnChanges({
+      sessionPort.addOwnChanges({
         agent,
         paths: [
           secondPath,
@@ -426,10 +428,10 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         session,
       });
 
-      clear(sessions);
+      clear(sessionPort);
 
       // Act
-      const own = sessions.ownChanges({
+      const own = sessionPort.ownChanges({
         agent: asked,
         session,
       });
@@ -441,7 +443,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
     it.each<{
       condition: string;
       expected: readonly ReviewDebt[];
-      write: (sessions: SessionRepository) => void;
+      write: (sessionPort: SessionPort) => void;
     }>([
       {
         condition: 'they are owed, once each',
@@ -449,17 +451,17 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           firstReview,
           secondReview,
         ],
-        write: (sessions) => {
-          sessions.addReviewDebt(reviewOwed);
-          sessions.addReviewDebt(reviewOwed);
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt(reviewOwed);
+          sessionPort.addReviewDebt(reviewOwed);
         },
       },
       {
         condition: 'the reviews judged are settled',
         expected: [],
-        write: (sessions) => {
-          sessions.addReviewDebt(reviewOwed);
-          sessions.settleReviewDebt({
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt(reviewOwed);
+          sessionPort.settleReviewDebt({
             debts: [
               firstReview,
               secondReview,
@@ -473,20 +475,20 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         expected: [
           secondReview,
         ],
-        write: (sessions) => {
-          sessions.addReviewDebt({
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt({
             ...reviewOwed,
             paths: [
               firstPath,
             ],
           });
-          sessions.addReviewDebt({
+          sessionPort.addReviewDebt({
             ...reviewOwed,
             paths: [
               secondPath,
             ],
           });
-          sessions.settleReviewDebt({
+          sessionPort.settleReviewDebt({
             debts: [
               firstReview,
             ],
@@ -499,7 +501,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         expected: [
           firstReview,
         ],
-        write: (sessions) => {
+        write: (sessionPort) => {
           const firstOwed = {
             ...reviewOwed,
             paths: [
@@ -507,24 +509,24 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
             ],
           };
 
-          sessions.addReviewDebt(firstOwed);
-          sessions.settleReviewDebt({
+          sessionPort.addReviewDebt(firstOwed);
+          sessionPort.settleReviewDebt({
             debts: [
               firstReview,
             ],
             session,
           });
-          sessions.addReviewDebt(firstOwed);
+          sessionPort.addReviewDebt(firstOwed);
         },
       },
     ])('should read back the reviews owed for subagents when $condition', ({ expected, write }) => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      write(sessions);
+      write(sessionPort);
 
       // Act
-      const owed = sessions.reviewDebt(session);
+      const owed = sessionPort.reviewDebt(session);
 
       // Assert
       expect(owed).toStrictEqual(expected);

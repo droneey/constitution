@@ -1,15 +1,13 @@
 ---
 id: dclint
 summary: Lints Docker Compose files.
-requires: [compose, _task-runner]
-extends: null
-abstract: false
+requires: [compose, task-runner]
 languages: [yaml]
-governs: []
+governs: [".dclintrc.yaml"]
 ---
 
 # DCLint
 
-> Lints Docker Compose files.
+> DCLint, the `dclint` command, lints Compose files.
 
-**DCLint**, run as **`dclint`**, is a development dependency in a JavaScript repository and a pinned tool in any other. It reads its configuration from the command line, every rule an error, and holds every active rule of a Compose file that a linter can see.
+DCLint is a development dependency in a JavaScript repository and a pinned tool in any other. It reads its configuration from `.dclintrc.yaml`, where each of its rules takes a level from `0`, off, to `2`, an error.

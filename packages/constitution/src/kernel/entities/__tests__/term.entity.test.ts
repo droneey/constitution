@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Bold, TermsRead } from '../term.entity';
+import type { Bold, SpelledKind, TermsRead } from '../term.entity';
 import { Term, TermKind } from '../term.entity';
 
 const termOf = (kind: TermKind, term: string): Term => ({
@@ -175,7 +175,7 @@ describe('Term.allIn', () => {
         misshapen: [],
         terms: [
           {
-            id: 'gateway',
+            id: 'adapter',
             kind: TermKind.Folder,
             term: 'adapters/',
           },
@@ -194,7 +194,62 @@ describe('Term.allIn', () => {
         ],
       },
       name: 'ids right after the bold, and braces apart from it or broken by a line',
-      text: '**`adapters/`**{#gateway}, **`.port`**{#}, **binding unit** {#unit}, **`ports/`**{#por\nt} and **`index.ts`**{#Entry_File}.',
+      text: '**`adapters/`**{#adapter}, **`.port`**{#}, **binding unit** {#unit}, **`ports/`**{#por\nt} and **`index.ts`**{#Entry_File}.',
+    },
+    {
+      expected: {
+        misshapen: [],
+        terms: [
+          {
+            id: 'empty-names',
+            kind: TermKind.Concept,
+            members: [
+              'data',
+              'info',
+            ],
+            term: 'empty names',
+          },
+          {
+            id: 'empty-verbs',
+            kind: TermKind.Concept,
+            members: [
+              'handle',
+              'do.it',
+            ],
+            term: 'empty verbs',
+          },
+          {
+            id: 'dating-words',
+            kind: TermKind.Concept,
+            members: [
+              'old',
+            ],
+            term: 'dating words',
+          },
+          {
+            id: 'name-case',
+            kind: TermKind.Concept,
+            term: 'kebab-case',
+          },
+          termOf(TermKind.Concept, 'hollow words'),
+          {
+            id: 'source',
+            kind: TermKind.Folder,
+            term: 'src/',
+          },
+          {
+            id: 'plain-words',
+            kind: TermKind.Concept,
+            members: [
+              'one',
+              'two',
+            ],
+            term: 'plain words',
+          },
+        ],
+      },
+      name: "the words a concept carrying an id lists up to the next term, its sentence's end, its paragraph's or the text's",
+      text: 'The **empty names**{#empty-names} are `data` and `info`, and the **empty verbs**{#empty-verbs} `handle` and `do.it`. Never `x`.\n\nThe **dating words**{#dating-words} such as `old`\n \nare `new`. The case is **kebab-case**{#name-case}. The **hollow words** are `try`. Code sits in **`src/`**{#source}, as `src/app`. The **plain words**{#plain-words} are `one` and `two`',
     },
     {
       expected: {
@@ -356,5 +411,64 @@ describe('Term.roleNameOf', () => {
 
     // Assert
     expect(name).toBe(expected);
+  });
+});
+
+describe('Term.spellingOf', () => {
+  it.each<{
+    expected: string | undefined;
+    role: {
+      kind: SpelledKind;
+      term: string;
+    };
+  }>([
+    {
+      expected: 'adapters',
+      role: {
+        kind: TermKind.Folder,
+        term: 'adapters/',
+      },
+    },
+    {
+      expected: 'adapter',
+      role: {
+        kind: TermKind.Suffix,
+        term: '.adapter',
+      },
+    },
+    {
+      expected: 'vite.config',
+      role: {
+        kind: TermKind.File,
+        term: 'vite.config.ts',
+      },
+    },
+    {
+      expected: undefined,
+      role: {
+        kind: TermKind.File,
+        term: '<entry>',
+      },
+    },
+    {
+      expected: '<name>',
+      role: {
+        kind: TermKind.File,
+        term: '<name>.md',
+      },
+    },
+    {
+      expected: 'main<x>',
+      role: {
+        kind: TermKind.File,
+        term: 'main<x>',
+      },
+    },
+  ])('should spell $role.kind $role.term in a path as $expected', ({ expected, role }) => {
+    // Act
+    const spelling = Term.spellingOf(role);
+
+    // Assert
+    expect(spelling).toBe(expected);
   });
 });

@@ -30,7 +30,6 @@ enum WarningKind {
   NameUnknown = 'name-unknown',
   CoreListed = 'core-listed',
   BlockUnderWrongKey = 'block-under-wrong-key',
-  AbstractListed = 'abstract-listed',
   PackUnlisted = 'pack-unlisted',
   PackNotInstalled = 'pack-not-installed',
   FileUnreadable = 'file-unreadable',
@@ -40,12 +39,9 @@ enum WarningKind {
   BlockRepeated = 'block-repeated',
   OutsideBlockFolder = 'outside-block-folder',
   FolderMisnamed = 'folder-misnamed',
-  BaseNoBlock = 'base-no-block',
-  BaseConcrete = 'base-concrete',
   RequiredNoBlock = 'required-no-block',
   TightensUnknownRule = 'tightens-unknown-rule',
   BlockNeeded = 'block-needed',
-  RequirementNotMet = 'requirement-not-met',
   OverrideNamesNoRule = 'override-names-no-rule',
   OverrideExpired = 'override-expired',
   ConfigurationFinding = 'configuration-finding',
@@ -114,9 +110,6 @@ interface WarningDetails {
     readonly layer: Layer;
     readonly toKey: ConfigKey;
   };
-  readonly [WarningKind.AbstractListed]: NameGiven & {
-    readonly heirs: readonly BlockId[];
-  };
   readonly [WarningKind.PackUnlisted]: FileNamed &
     NameGiven & {
       readonly pack: PackPath;
@@ -137,14 +130,6 @@ interface WarningDetails {
     };
   readonly [WarningKind.OutsideBlockFolder]: FileNamed & SourceNamed;
   readonly [WarningKind.FolderMisnamed]: FileNamed & SourceNamed;
-  readonly [WarningKind.BaseNoBlock]: SourceNamed & {
-    readonly base: string;
-    readonly block: BlockId;
-  };
-  readonly [WarningKind.BaseConcrete]: SourceNamed & {
-    readonly base: string;
-    readonly block: BlockId;
-  };
   readonly [WarningKind.RequiredNoBlock]: SourceNamed & {
     readonly block: BlockId;
     readonly required: string;
@@ -155,14 +140,9 @@ interface WarningDetails {
   };
   readonly [WarningKind.BlockNeeded]: {
     readonly block: BlockId;
-    readonly heirs?: readonly BlockId[];
+    readonly children?: readonly BlockId[];
     readonly key: ConfigKey;
     readonly required: BlockId;
-    readonly unit: UnitPath;
-  };
-  readonly [WarningKind.RequirementNotMet]: {
-    readonly block: BlockId;
-    readonly requirement: RuleSlug;
     readonly unit: UnitPath;
   };
   readonly [WarningKind.OverrideNamesNoRule]: OverrideNamed;
@@ -197,8 +177,6 @@ type BlockSetKind =
   | WarningKind.BlockRepeated
   | WarningKind.OutsideBlockFolder
   | WarningKind.FolderMisnamed
-  | WarningKind.BaseNoBlock
-  | WarningKind.BaseConcrete
   | WarningKind.RequiredNoBlock
   | WarningKind.TightensUnknownRule;
 
@@ -216,10 +194,8 @@ const codeOfKind: {
   [WarningKind.NameUnknown]: WarningCode.Blocks,
   [WarningKind.CoreListed]: WarningCode.Blocks,
   [WarningKind.BlockUnderWrongKey]: WarningCode.Blocks,
-  [WarningKind.AbstractListed]: WarningCode.Blocks,
   [WarningKind.PackUnlisted]: WarningCode.Blocks,
   [WarningKind.BlockNeeded]: WarningCode.Requirements,
-  [WarningKind.RequirementNotMet]: WarningCode.Requirements,
   [WarningKind.OverrideIncomplete]: WarningCode.Overrides,
   [WarningKind.OverrideLevelNotLowered]: WarningCode.Overrides,
   [WarningKind.OverrideUntilMalformed]: WarningCode.Overrides,

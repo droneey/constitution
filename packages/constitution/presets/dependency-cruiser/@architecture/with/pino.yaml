@@ -1,0 +1,15 @@
+observability:
+  logging-library-imported-only-by-the-root:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=logging-library-imported-only-by-the-root-pino]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/pino/

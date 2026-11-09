@@ -1,0 +1,84 @@
+core:
+  suppression-silences-one-finding:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD087
+  headings-in-order:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD001
+  document-has-one-title-heading:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD025
+  heading-never-faked-by-emphasis:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD036
+  non-text-content-has-a-text-alternative:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD045
+  repository-link-resolves:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD051
+            - MD057
+        MD057:
+          absolute-links: relative_to_roots
+  link-names-its-destination:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD059
+  heading-unique-among-its-siblings:
+    markdown:
+      .rumdl.toml:
+        MD024:
+          siblings-only: true
+rumdl:
+  '*':
+    markdown:
+      .rumdl.toml:
+        global:
+          disable:
+            - MD013
+            - MD041
+markdown:
+  code-fence-names-its-language:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD040
+        MD046:
+          style: fenced
+  raw-markup-only-where-markdown-has-no-form:
+    markdown:
+      .rumdl.toml:
+        per-file-ignores:
+          '**/AGENTS.md':
+            - MD033
+          '**/CLAUDE.md':
+            - MD033
+          '**/SKILL.md':
+            - MD033
+        MD033:
+          allowed-elements:
+            - details
+            - summary
+            - kbd
+            - img

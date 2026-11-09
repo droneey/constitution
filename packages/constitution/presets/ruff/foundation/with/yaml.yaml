@@ -1,9 +1,0 @@
-python:
-  yaml-from-outside-loaded-by-a-safe-loader-only:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - S

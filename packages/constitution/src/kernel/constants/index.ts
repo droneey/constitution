@@ -1,6 +1,6 @@
 export { EXECUTABLE_NAME, projectCheck } from './executable.constants';
 export { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from './path.constants';
-export { PRESETS_FOLDER_NAME } from './presets-folder-name.constants';
+export { PLUGINS_FOLDER_NAME, PRESETS_FOLDER_NAME } from './presets-folders.constants';
 export type { ListKey, RequiredConfigKey } from './project.constants';
 export {
   CHECK_KEY,
@@ -15,6 +15,7 @@ export {
 export type { LoweredLevel } from './vocabulary.constants';
 export {
   AXES,
+  AXIS_FOLDER_NAME,
   Axis,
   BLOCKS_FOLDER_NAME,
   LAYER_FOLDER_NAME,
@@ -25,9 +26,9 @@ export {
   Level,
   LOWERED_LEVELS,
   MARKDOWN_EXTENSION,
-  REQUIREMENTS_HEADING,
-  REQUIREMENTS_TABLE_HEADER,
-  RULE_TABLE_CELLS,
-  RULE_TABLE_HEADER,
+  RULE_EXAMPLES_HEADING,
+  RULE_WHY_HEADING,
+  reservedWords,
   SEAM_FOLDER_NAME,
+  VOCABULARY_SECTION,
 } from './vocabulary.constants';

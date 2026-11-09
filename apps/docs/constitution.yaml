@@ -5,11 +5,9 @@ axes:
 domains:
   - version-control
   - workspace
-  - ui
-  - design-system
-  - untrusted-client
+  - presentation/design-system
 platforms:
-  - browser
+  - client/browser
 languages:
   - typescript
   - json
@@ -21,7 +19,8 @@ languages:
   - css
   - dockerfile
 implementations:
-  - bun
+  - js-runtime/bun
+  - task-runner
   - tsc
   - biome
   - dependency-cruiser
@@ -38,9 +37,9 @@ implementations:
   - tombi
   - bun-test
   - stryker
-  - zod
+  - schema/zod
   - yaml-js
-  - react-dom
+  - react/react-dom
   - tailwind
   - tanstack-router
   - tanstack-start

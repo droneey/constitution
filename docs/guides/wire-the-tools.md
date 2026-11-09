@@ -26,4 +26,4 @@ A project adds what is its own in the same files: its paths, its entry points, a
 
 ## Know which setting holds which rule
 
-Every entry of a preset file is keyed by the rule it holds, so `constitution presets plan` names, under each file, the rule behind each entry. A rule never names its tool; only the presets do.
+Every entry of a preset file is keyed by the rule it holds, so `constitution presets plan` names, under each file, the rule behind each entry. A rule of a domain, a context or core states an outcome and never names a tool; an entry keyed by its slug is what says a tool checks it, and such a rule is a `MUST`. When a check fails, `constitution run check` names each rule the tool's output shows broken, `slug · LEVEL — statement`, and `--why` adds each one's Why.

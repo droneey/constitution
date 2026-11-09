@@ -1,0 +1,9 @@
+yaml:
+  tag-naming-a-type-or-a-function-refused:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S

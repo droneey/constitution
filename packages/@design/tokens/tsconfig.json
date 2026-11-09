@@ -19,7 +19,7 @@
     // workspace
     "composite": true,
     "emitDeclarationOnly": true,
-    "outDir": "${configDir}/.tsc-cache",
+    "outDir": "${configDir}/tsc-cache.gen",
 
     // tsc
     "strict": true,
@@ -27,6 +27,7 @@
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
 
+    // js-runtime/bun
     // bun
     "types": [
       "bun"

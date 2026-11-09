@@ -1,0 +1,12 @@
+integrations:
+  transport-library-home-is-its-systems-client:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              httpx2:
+                - ${role.adapter}
+                - ${role.generic-library}
+                - ${role.shared-code}
+                - ${role.composition-root}

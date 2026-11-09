@@ -1,0 +1,55 @@
+version-control:
+  '*':
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          parallel: true
+  branch-named-type-issue-name:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=validate-branch]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/branch-named-type-issue-name.sh
+              - ${role.feature-branch} ${role.fix-branch} ${role.hotfix-branch}
+  commit-body-left-empty:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-body]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-body-left-empty.sh
+              - '{1}'
+  commit-header-within-100-characters:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-header-length]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-header-within-100-characters.sh
+              - '{1}'
+  commit-header-follows-conventional-commits:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-header-format]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-header-follows-conventional-commits.sh
+              - '{1}'
+  commit-subject-opens-with-a-capital:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-subject-capital]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-subject-opens-with-a-capital.sh
+              - '{1}'
+lefthook:
+  commit-msg-hook-rejects-a-placeholder-subject:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-placeholder]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-msg-hook-rejects-a-placeholder-subject.sh
+              - '{1}'

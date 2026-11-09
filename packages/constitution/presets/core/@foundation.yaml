@@ -1,0 +1,10 @@
+core:
+  agent-file-restates-no-rule:
+    '*':
+      AGENTS.md ? ${unit.isRepositoryRoot}: !default |
+        @PROJECT.md
+
+        The rules: `.droneey/constitution/blocks/core/core.md`
+        and the blocks `constitution.yaml` lists.
+      CLAUDE.md ? ${unit.isRepositoryRoot}: !default |
+        @AGENTS.md

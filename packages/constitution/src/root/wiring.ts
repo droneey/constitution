@@ -1,24 +1,24 @@
 import { Command } from 'commander';
 
-import { createNodeProjectFiles } from '#/adapters/file-system';
-import { createCheckCommand } from '#/composition/check';
+import type { PackCheckAsked } from '#/composition/check';
+import { createCheckCommand, PACKS_LABEL, packsStepOf } from '#/composition/check';
 import {
   createActiveRulesSource,
   createPinnedRelease,
   createProjectReader,
   createRulesSource,
-} from '#/composition/project-source/adapters/project';
+} from '#/composition/project-source/infrastructure/project';
 import type { PackBase, Validation } from '#/features/blocks';
 import { checkBlocks, createBlocksCheckCommand } from '#/features/blocks';
-import { createGitFileTrees } from '#/features/blocks/adapters/git';
-import { createJsonManifestParser } from '#/features/blocks/adapters/json';
-import { createYamlFrontMatterParser } from '#/features/blocks/adapters/yaml';
+import { createGitFileTrees } from '#/features/blocks/infrastructure/git';
+import { createJsonManifestParser } from '#/features/blocks/infrastructure/json';
+import { createYamlFrontMatterParser } from '#/features/blocks/infrastructure/yaml';
 import type { PartDiagnosis } from '#/features/installation';
 import { createDoctorCommand, diagnoseInstallation } from '#/features/installation';
-import { createClaudePluginRegistry } from '#/features/installation/adapters/claude-code';
-import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
-import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
-import { createPathExecutable } from '#/features/installation/adapters/path';
+import { createClaudePluginRegistry } from '#/features/installation/infrastructure/claude-code';
+import { createGitHubReleaseFeed } from '#/features/installation/infrastructure/github';
+import { createLefthookGitHooks } from '#/features/installation/infrastructure/lefthook';
+import { createPathExecutable } from '#/features/installation/infrastructure/path';
 import type {
   AppliedFiles,
   ApplyPlan,
@@ -37,29 +37,33 @@ import {
   createPresetsCheckCommand,
   createPresetsPlanCommand,
   createRunCommand,
+  ProjectReadStatus,
   planApply,
   planPresets,
   planRun,
   presetsSkippedStep,
   presetsStepOf,
 } from '#/features/presets';
-import { createConfigurationFormat } from '#/features/presets/adapters/configuration';
+import { createConfigurationFormat } from '#/features/presets/infrastructure/configuration';
 import {
   createDistributionMapSources,
   createFileAppliedFilesRepository,
-  createFileLockRepository,
-} from '#/features/presets/adapters/file-system';
-import { createShellCommandRunner } from '#/features/presets/adapters/process';
-import { createYamlPresetFileParser } from '#/features/presets/adapters/yaml';
-import { createJsonReleaseManifestParser } from '#/features/project/adapters/json';
-import { createManifestWorkspace } from '#/features/project/adapters/workspace';
+  createFileLockQueries,
+} from '#/features/presets/infrastructure/file-system';
+import { createShellCommandRunner } from '#/features/presets/infrastructure/process';
+import { createYamlPresetFileParser } from '#/features/presets/infrastructure/yaml';
+import { createJsonReleaseManifestParser } from '#/features/project/infrastructure/json';
+import { createManifestWorkspace } from '#/features/project/infrastructure/workspace';
 import {
   createYamlBlockCardParser,
   createYamlConfigFileParser,
-} from '#/features/project/adapters/yaml';
-import { createSha256TextHasher } from '#/features/session/adapters/crypto';
-import { createGitWorkingTree } from '#/features/session/adapters/git';
-import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
+} from '#/features/project/infrastructure/yaml';
+import type { GoverningRules } from '#/features/session';
+import { createRulesCommand, readRules } from '#/features/session';
+import { createSha256TextHasher } from '#/features/session/infrastructure/crypto';
+import { createGitWorkingTree } from '#/features/session/infrastructure/git';
+import { readingTextOf } from '#/features/session/infrastructure/session-store';
+import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
@@ -77,6 +81,7 @@ import { hookCommandsOf } from './hook-commands';
 import { createPresentation } from './presentation';
 import type { Program, ProgramInput } from './program.types';
 import type { Ports, PresetsInput, Registration } from './registration.types';
+import { createSessionPorts } from './session-ports';
 import { stateFolderWarningText } from './state-folder-warning';
 
 const GIT_TIMEOUT_MS = 30_000;
@@ -87,8 +92,14 @@ const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
+interface PortsInput {
+  /** @throws {UsageError} when the options do not parse */
+  readonly isColoured: () => boolean;
+  readonly program: ProgramInput;
+}
+
 /** @throws {ConfigurationError} when the day is written otherwise than YYYY-MM-DD */
-const portsOf = (input: ProgramInput): Ports => {
+const portsOf = ({ isColoured, program: input }: PortsInput): Ports => {
   const files = createNodeProjectFiles({
     maxFiles: FOLDER_FILES,
   });
@@ -98,7 +109,7 @@ const portsOf = (input: ProgramInput): Ports => {
     mapName: DISTRIBUTION_MAP_NAME,
   });
   const formats = createConfigurationFormat();
-  const locks = createFileLockRepository();
+  const lockQueries = createFileLockQueries();
   const project = {
     cardParser: createYamlBlockCardParser(),
     clock: clockOf(input.environment.today),
@@ -111,23 +122,20 @@ const portsOf = (input: ProgramInput): Ports => {
     }),
   };
 
-  const sessions = createXdgSessionRepository({
-    ...input.environment.sessions,
-    maxSessions: FOLDER_FILES,
-    now: (): Temporal.Instant => Temporal.Now.instant(),
-    warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
-  });
-
   return {
     activeRules: createActiveRulesSource(project),
-    appliedFiles: createFileAppliedFilesRepository(),
-    commands: createShellCommandRunner(),
+    appliedFilesRepository: createFileAppliedFilesRepository(),
+    commands: createShellCommandRunner({
+      environment: input.environment.tools,
+      isColoured,
+      stderr: input.streams.stderr,
+      stdout: input.streams.stdout,
+    }),
     distribution,
     files,
     formats,
-    gates: sessions,
     hasher: createSha256TextHasher(),
-    locks,
+    lockQueries,
     pinned: createPinnedRelease(project),
     presetFiles,
     reader: createProjectReader(project),
@@ -135,12 +143,17 @@ const portsOf = (input: ProgramInput): Ports => {
       presets: {
         distribution,
         formats,
-        lockOf: locks.read,
+        lockOf: lockQueries.read,
         parser: presetFiles,
       },
       project,
     }),
-    sessions,
+    ...createSessionPorts({
+      ...input.environment.sessions,
+      maxSessions: FOLDER_FILES,
+      now: (): Temporal.Instant => Temporal.Now.instant(),
+      warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
+    }),
     workingTree: createGitWorkingTree({
       env: input.environment.commands,
       timeoutMs: GIT_TIMEOUT_MS,
@@ -183,7 +196,7 @@ const presetsInputOf =
     distribution: ports.distribution,
     files: ports.files,
     formats: ports.formats,
-    locks: ports.locks,
+    lockQueries: ports.lockQueries,
     parser: ports.presetFiles,
     reader: ports.reader,
     startFolderPath,
@@ -240,7 +253,7 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
         applyChanges: (changes: AppliedFiles): void => {
           applyChanges({
             changes,
-            writes: ports.appliedFiles,
+            appliedFilesRepository: ports.appliedFilesRepository,
           });
         },
         /**
@@ -262,12 +275,18 @@ const registerCommands = (registration: Registration): void => {
   const checkBlocksIn = (asked: {
     base: PackBase | undefined;
     folderPath: AbsolutePath;
+    lowered?: PackCheckAsked['lowered'];
   }): Validation | undefined =>
     checkBlocks({
       ...(asked.base === undefined
         ? {}
         : {
             base: asked.base,
+          }),
+      ...(asked.lowered === undefined
+        ? {}
+        : {
+            lowered: asked.lowered,
           }),
       files: ports.files,
       folderPath: asked.folderPath,
@@ -322,8 +341,34 @@ const registerCommands = (registration: Registration): void => {
     presetsCommandsOf(registration),
     createRunCommand({
       ...context,
+      /**
+       * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+       * @throws {ReleaseError} when the release's blocks cannot be listed
+       */
+      checkPacks: (startFolderPath: AbsolutePath): StepReport | undefined => {
+        const read = ports.reader.open(startFolderPath);
+
+        return read.status === ProjectReadStatus.Opened
+          ? packsStepOf({
+              checkBlocks: checkBlocksIn,
+              project: read.answer,
+            })
+          : undefined;
+      },
+      packsLabel: PACKS_LABEL,
       planRun: planRunOf(ports),
       runCommand: ports.commands.run,
+    }),
+    createRulesCommand({
+      ...context,
+      readRules: (paths: readonly AbsolutePath[]): GoverningRules =>
+        readRules({
+          hasher: ports.hasher,
+          paths,
+          source: ports.activeRules,
+          workingTree: ports.workingTree,
+        }),
+      textOf: readingTextOf,
     }),
     hookCommandsOf(registration),
     doctorCommandOf(registration),
@@ -395,7 +440,10 @@ const createProgram = (input: ProgramInput): Program => {
               isFailed = true;
             },
           },
-          ports: portsOf(input),
+          ports: portsOf({
+            isColoured: presentation.isColoured,
+            program: input,
+          }),
           program,
           programInput: input,
         });

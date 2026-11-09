@@ -1,15 +1,10 @@
 [tools]
 actionlint = "1.7.12"
 betterleaks = "1.9.0"
-# Why: from 1.4.4, coverage counts as missed the default branch of an enum switch that ends in
-# `satisfies never`.
-bun = "1.4.3"
+bun = "1.4.4"
 hadolint = "2.15.1"
 lefthook = "2.2.2"
 "npm:dclint" = "3.1.0"
-# Why: @yarnpkg/libzip 3.2.2, a dependency of Renovate, lost the provenance 3.2.0 carried; reviewed,
-# nothing else is exempt.
-"npm:renovate" = { version = "44.155.7", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }
 osv-scanner = "2.7.0"
 python = "3.14.8"
 rumdl = "0.2.79"
@@ -19,10 +14,16 @@ tombi = "1.9.5"
 uv = "0.13.5"
 yamllint = "1.38.0"
 
-[env]
+# Why: @yarnpkg/libzip 3.2.2, a dependency of Renovate, lost the provenance 3.2.0 carried; reviewed,
+# nothing else is exempt.
+[tools."npm:renovate"]
+version = "44.155.7"
+trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"]
+
 # Why: the hooks run the constitution mise resolves in the folder of the call, so this tree's own
 # executable, linked as a release's distribution holds it, gates each checkout and worktree.
-_.path = ["{{config_root}}/.droneey/constitution/bin"]
+[env._]
+path = ["{{config_root}}/.droneey/constitution/bin"]
 
 [hooks]
 # Why: the executable of the tree runs from its sources once the packages and the files they
@@ -34,7 +35,7 @@ postinstall = [
   "ln -sfn ../packages/constitution .droneey/constitution",
   "cd packages/constitution && bun link",
   "lefthook install",
-  "uv sync --locked",
+  "uv sync --locked"
 ]
 
 [settings]

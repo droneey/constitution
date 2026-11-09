@@ -12,9 +12,7 @@
     "!src/client.{ts,tsx}",
     "!src/entrypoints/*/main.{ts,tsx}",
     "!src/integrations/*/main.{ts,tsx}",
-    "!src/root/wiring.{ts,tsx}",
-    "!src/root/routes/__root.{ts,tsx}",
-    "!src/root/router.{ts,tsx}"
+    "!src/root/**"
   ],
   "thresholds": {
     "break": 100,

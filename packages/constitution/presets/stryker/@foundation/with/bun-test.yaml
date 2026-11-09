@@ -1,0 +1,8 @@
+stryker:
+  stryker-runs-the-bun-specs-runner:
+    typescript:
+      stryker.${role.config-file}.json:
+        testRunner: bun-specs
+        plugins:
+          - ./${constitution.path}/tools/mutation-check/dist/runner.js
+        coverageAnalysis: 'off'

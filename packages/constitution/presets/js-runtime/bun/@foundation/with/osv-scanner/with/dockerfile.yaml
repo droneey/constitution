@@ -1,0 +1,32 @@
+osv-scanner:
+  built-image-scanned-at-its-base-stage:
+    dockerfile:
+      package.json:
+        scripts:
+          check:audit-image: !words
+            - ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+            - slot: inputs
+            - --
+            - slot: flags
+js-runtime/bun:
+  '*':
+    dockerfile:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    dockerfile:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+task-runner:
+  unit-run-through-its-action-tasks:
+    dockerfile:
+      ${constitution.run}:
+        check:
+          - bun run check

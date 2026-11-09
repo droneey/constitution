@@ -1,0 +1,6 @@
+mise:
+  '*':
+    typescript:
+      stryker.${role.config-file}.json:
+        ignorePatterns:
+          - /.droneey

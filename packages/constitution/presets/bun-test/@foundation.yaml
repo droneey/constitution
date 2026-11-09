@@ -1,0 +1,127 @@
+bun-test:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          test:unit: CI=1 bun test
+          test:integration: CI=1 bun --config=./bunfig.integration.toml test
+      bunfig.integration.toml:
+        test:
+          preload:
+            - slot: fixtures
+      bunfig.toml:
+        test:
+          preload:
+            - slot: fixtures
+  bunfig-randomizes-the-order:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          randomize: true
+      bunfig.toml:
+        test:
+          randomize: true
+  integration-specs-ignored-by-bunfig:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          pathIgnorePatterns:
+            - ${role.package-suites}/**
+      bunfig.toml:
+        test:
+          pathIgnorePatterns:
+            - ${role.package-suites}/**
+            - '**/*.${role.integration-spec-file}.*'
+  coverage-gate-on-loaded-files:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          coverage: true
+          coverageReporter:
+            - text
+          coverageSkipTestFiles: true
+          coverageThreshold:
+            functions: 1
+            lines: 1
+          coveragePathIgnorePatterns:
+            - '**/${role.colocated-specs}/**'
+            - '**/${role.entry}.*'
+            - '**/*.${role.generated-file}.*'
+      bunfig.toml:
+        test:
+          coverage: false
+  network-refused-by-the-test-preload:
+    typescript:
+      bunfig.toml:
+        test:
+          preload:
+            - ./${role.source}/${role.colocated-specs}/sandbox.${role.fixtures-file}.ts
+      ${role.source}/${role.colocated-specs}/sandbox.${role.fixtures-file}.ts: !default |
+        import http from 'node:http';
+        import https from 'node:https';
+        import net from 'node:net';
+        import tls from 'node:tls';
+
+        // A declaration, not an arrow, so that `new WebSocket()` and `new Bun.SQL()` throw this
+        // error too.
+        function refuseNetwork(): never {
+          throw new Error('A spec reached the network: give it the fake of its transport');
+        }
+
+        for (const [owner, name] of [
+          [
+            globalThis,
+            'fetch',
+          ],
+          [
+            globalThis,
+            'WebSocket',
+          ],
+          [
+            Bun,
+            'SQL',
+          ],
+        ] as const) {
+          Object.defineProperty(owner, name, {
+            value: refuseNetwork,
+          });
+        }
+
+        Bun.connect = refuseNetwork;
+        net.Socket.prototype.connect = refuseNetwork;
+        net.connect = refuseNetwork;
+        net.createConnection = refuseNetwork;
+        tls.connect = refuseNetwork;
+
+        for (const client of [
+          http,
+          https,
+        ]) {
+          client.request = refuseNetwork;
+          client.get = refuseNetwork;
+        }
+js-runtime/bun:
+  '*':
+    typescript:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    typescript:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@tests:
+            - test
+          test: bun run --parallel 'test:*'
+task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check
+        test:
+          - bun run test

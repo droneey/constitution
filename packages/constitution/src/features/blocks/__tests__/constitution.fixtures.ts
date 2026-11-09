@@ -1,18 +1,16 @@
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
-import { AXES, Axis } from '#/kernel/constants';
+import { AXES, AXIS_FOLDER_NAME, Axis } from '#/kernel/constants';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { createJsonManifestParser } from '../adapters/json';
-import { createYamlFrontMatterParser } from '../adapters/yaml';
-import type { FileTree, FrontMatterParser, ManifestParser } from '../domain/contracts';
-import type { CheckBlocksInput } from '../domain/use-cases/queries/check';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../application/contracts';
+import type { CheckBlocksInput } from '../application/use-cases/queries/check';
+import { createJsonManifestParser } from '../infrastructure/json';
+import { createYamlFrontMatterParser } from '../infrastructure/yaml';
 import { createFakeFileTree } from './file-tree.fake';
 
 type Files = Record<string, string>;
 
 interface CardFixture {
-  abstract?: boolean;
-  extends?: string | undefined;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
@@ -31,6 +29,7 @@ interface BlockFilesFixture extends CardFixture {
 }
 
 interface RuleFixture {
+  examples?: string;
   isLevelStated?: boolean;
   level?: string;
   slug: string;
@@ -47,8 +46,6 @@ const passportFile = (block: BlockFixture): string =>
     `id: ${block.id}`,
     `summary: ${block.summary ?? `The ${block.id} block.`}`,
     `requires: ${list(block.requires)}`,
-    `extends: ${block.extends ?? 'null'}`,
-    `abstract: ${String(block.abstract ?? false)}`,
     `languages: ${list(block.languages)}`,
     `governs: ${list(block.governs)}`,
     '---',
@@ -57,15 +54,17 @@ const passportFile = (block: BlockFixture): string =>
   ].join('\n');
 
 const inAxis = (path: string): string =>
-  AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
+  AXES.some((axis) => path.startsWith(`${AXIS_FOLDER_NAME[axis]}/`))
+    ? path
+    : `${AXIS_FOLDER_NAME[Axis.Foundation]}/${path}`;
 
 const blockFiles = (input: BlockFilesFixture): Files => {
   const { dir, files = {}, ...card } = input;
 
   return {
-    [`${dir}/${input.id}.md`]: passportFile({
+    [`${dir}/${input.id.slice(input.id.lastIndexOf('/') + 1)}.md`]: passportFile({
       ...card,
-      body: input.body ?? `# ${input.id}\n`,
+      body: input.body ?? `# ${input.id}\n\n> The ${input.id} block.\n`,
     }),
     ...Object.fromEntries(
       Object.entries(files).map(([path, text]) => [
@@ -86,14 +85,27 @@ const rule = (input: RuleFixture): string =>
     headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
     '',
-    '| Why |',
-    '|---|',
-    `| ${input.why ?? 'it keeps the code honest.'} |`,
+    '#### Why',
+    '',
+    input.why ?? 'it keeps the code honest.',
+    '',
+    '#### Examples',
+    '',
+    input.examples ?? `\`\`\`text title="Prefer"\nThe ${input.slug} rule held.\n\`\`\``,
     '',
   ].join('\n');
 
 const chapterFile = (title: string, ...rules: readonly string[]): string =>
   `# ${title}\n\n> Governs ${title.toLowerCase()}.\n\n## General\n\n${rules.join('\n')}`;
+
+interface VocabularyChapterFixture {
+  readonly rules: readonly string[];
+  readonly title: string;
+  readonly vocabulary: string;
+}
+
+const vocabularyChapterFile = (input: VocabularyChapterFixture): string =>
+  `# ${input.title}\n\n> Governs ${input.title.toLowerCase()}.\n\n## Vocabulary\n\n${input.vocabulary}\n\n## General\n\n${input.rules.join('\n')}`;
 
 interface Source {
   frontMatterParser: FrontMatterParser;
@@ -168,4 +180,14 @@ const without = (input: FixtureFileInput): Files =>
   Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
 
 export type { BlockFixture, Files, RuleFixture, Source };
-export { blockFiles, chapterFile, checkSourceOf, passportFile, rule, sourceOf, textOf, without };
+export {
+  blockFiles,
+  chapterFile,
+  checkSourceOf,
+  passportFile,
+  rule,
+  sourceOf,
+  textOf,
+  vocabularyChapterFile,
+  without,
+};

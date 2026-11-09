@@ -191,9 +191,6 @@ const nodeOf = (
         },
         nodes,
       });
-    // Stryker disable next-line ConditionalExpression: no piece reaches the default, which only the compiler reads
-    default:
-      return piece satisfies never;
   }
 };
 

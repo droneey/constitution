@@ -53,7 +53,7 @@ const ignoredPaths = [
   '.output/server/index.mjs',
   '.nitro/types/nitro.d.ts',
   'tsconfig.tsbuildinfo',
-  '.tsc-cache/src/order.d.ts',
+  'tsc-cache.gen/src/order.d.ts',
   '.venv/bin/python',
   'packages/orders/dist/index.js',
   'apps/web/build/index.js',

@@ -1,15 +1,11 @@
 ---
 id: distribution
-summary: "Units installed from a registry: their contents, versions, releases."
+summary: "Released programs, and packages installed from a registry."
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**"]
 ---
 
 # Distribution
 
-> A unit others install from a package registry: a package whose code they import or whose configuration they extend, or an application such as a command-line tool its users install.
-
-The unit's version is a contract with everyone who installs it, every release reaches them all, and what it contains is listed for them.
+> A program or a package the project releases for others to install, from a package registry, a store or a download, and, for a package installed from a registry, its contents, manifest, runtimes, versions, releases and publishing.

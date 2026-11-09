@@ -17,27 +17,20 @@ eslint is not a block — check the name
 core is always active — remove it from domains
 biome is an implementation — move it from domains to implementations
 typescript is a language — move it from implementations to languages
-_store cannot be listed — list one of its heirs
-_store cannot be listed — list redux
-_store cannot be listed — list redux or zustand
-_store cannot be listed — list jotai, redux or zustand
 acme comes from packs/acme, which apps/web/constitution.yaml does not list — add it to packs
 packs/acme is not installed — run mise install, or check the path
 packs/acme/blocks/domains/acme/acme.md cannot be read — its rules are left out
-.droneey/constitution/blocks/domains/ui/foundation/screens.md repeats the rule four-data-states — the first is used
+.droneey/constitution/blocks/domains/ui/@foundation/screens.md repeats the rule four-data-states — the first is used
 packs/acme/blocks/domains/acme/acme.md has no front matter — the block is read without it
 packs/acme/blocks/domains/acme/notes.md is not a block file — move or remove it
 packs/acme/blocks/domains/ui/ui.md repeats the block ui — the one read first is used
 packs/acme/blocks/core/core.md is not inside a block folder of a domain, a context or an implementation
 packs/acme/blocks/domains/Acme/acme.md is in a block folder whose name is not a kebab-case block id — rename the folder
-acme extends eslint, which is not a block — fix its front matter
-acme extends ui, a concrete block; a block extends only an abstract base — require it instead
 acme requires webgl, which is not a block — fix its front matter
 acme-rule → no-rule: no-rule is an unknown rule — check the slug
 tanstack-query needs remote-data — add remote-data to domains
-ui in apps/web needs _store — add redux or zustand to implementations
-tailwind does not meet tokens-only — see its Requirements table
-tailwind in apps/web does not meet tokens-only — see its Requirements table
+ui in apps/web needs store — add store or store/redux to implementations
+ui in apps/web needs store — add store, store/redux or store/zustand to implementations
 no-rule names no rule — check the slug
 four-data-states expired on 2026-01-31 — renew or remove it
 biome.json: lacks formatter.lineWidth, as the presets give them [missing]

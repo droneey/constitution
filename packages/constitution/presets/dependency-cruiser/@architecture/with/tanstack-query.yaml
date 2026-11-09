@@ -1,0 +1,34 @@
+tanstack-query:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error
+integrations/remote-data:
+  query-library-home-is-the-binding-units:
+    typescript:
+      .dependency-cruiser.jsonc:
+        'allowed[comment=query-library-home-is-the-binding-units: tanstack-query]':
+          from:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/${role.binding}/
+              - ^${role.source}/${role.presentation-layer}/${role.binding}/
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-query/
+        forbidden[name=query-library-only-in-its-home]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/${role.binding}/
+              - ^${role.source}/${role.presentation-layer}/${role.binding}/
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-query/

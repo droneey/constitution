@@ -14,13 +14,13 @@ import type {
   AgentInSession,
   KeptBlock,
   ParsedState,
-  ReviewDebt,
   SessionMark,
   SessionState,
-} from '../domain/entities';
-import { SessionAgent } from '../domain/entities';
-import type { AgentId } from '../domain/value-objects';
-import { SessionId } from '../domain/value-objects';
+} from '../domain/session/entities';
+import { SessionAgent } from '../domain/session/entities';
+import type { AgentId } from '../domain/session/value-objects';
+import { SessionId } from '../domain/session/value-objects';
+import type { ReviewDebt } from '../domain/stop-judgement/entities';
 
 const keptSession = SessionId.create('session-1');
 

@@ -32,7 +32,8 @@ const manifest = z.object({
 
 const shell = {
   implementations: [
-    'bun',
+    'js-runtime/bun',
+    'task-runner',
     'shellcheck',
   ],
   languages: [
@@ -47,7 +48,8 @@ const appliedWorkspace = (): string =>
       [`${API}/constitution.yaml`]: constitutionOf({
         implementations: [
           'betterleaks',
-          'bun',
+          'js-runtime/bun',
+          'task-runner',
           'osv-scanner',
         ],
         name: 'api',
@@ -181,7 +183,8 @@ const specsUnit = (files: Readonly<Record<string, string>> = {}): string =>
       ...files,
     },
     implementations: [
-      'bun',
+      'js-runtime/bun',
+      'task-runner',
       'bun-test',
     ],
     languages: [

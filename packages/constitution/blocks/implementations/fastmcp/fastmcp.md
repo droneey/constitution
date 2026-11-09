@@ -1,22 +1,13 @@
 ---
 id: fastmcp
-summary: FastMCP serves the program's tools to models over MCP.
-requires: [python, pydantic, mcp-api]
-extends: null
-abstract: false
+summary: FastMCP serves the program's tools to language models over MCP.
+requires: [python, schema/pydantic, contracts/api/mcp]
 languages: []
-governs: ["**/app/**", "**/root/**"]
+governs: ["**/presentation/**", "**/root/**", "**/tests/**"]
 ---
 
 # FastMCP
 
-> **FastMCP**, the package **`fastmcp`**, serves the program's tools, resources and prompts to models over MCP.
+> FastMCP, the package `fastmcp`, serves the program's tools, resources and prompts to language models over MCP.
 
-A tool's docstring and annotations are all the model knows of it, and pydantic parses its arguments before it runs.
-
-## Requirements
-
-| Requirement | How | Met |
-|---|---|---|
-| `framework-passes-every-failure-to-one-handler` | a middleware's `on_call_tool` sees every failure of a call — the tool's own, the `ValidationError` of its arguments and the `NotFoundError` of an unknown tool | yes |
-| `framework-parses-a-request-before-its-handler` | a tool's arguments are validated against its annotations, `Field` bounds included, before it runs, and a refusal is a `ValidationError` that names each argument | yes |
+A tool's docstring and annotations are all the language model knows of it, and pydantic parses its arguments before it runs.

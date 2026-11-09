@@ -7,7 +7,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 
 import type { UnitFixture } from './applied-unit.fixtures';
 import { appliedUnit } from './applied-unit.fixtures';
@@ -51,6 +51,9 @@ const workspace = join(release, '..', '..');
 const bin = (tool: string): string => join(release, 'node_modules', '.bin', tool);
 
 const SCOPE = '@';
+const AXIS_MARK = '@';
+const ID_SEPARATOR = '/';
+const PASSPORT_EXTENSION = '.md';
 
 const moduleFolders = [
   join(workspace, 'node_modules'),
@@ -93,26 +96,22 @@ const deployedUnits: readonly DeployedUnit[] = [
     ],
     unit: {
       domains: [
-        'analytics',
-        'design-system',
-        'i18n',
+        'integrations/remote-data',
+        'localization',
         'open-source',
-        'privacy',
-        'remote-data',
-        'remote-service',
-        'ui',
-        'untrusted-client',
+        'people/analytics',
+        'presentation/design-system',
         'version-control',
       ],
       implementations: [
         'actionlint',
         'betterleaks',
         'biome',
-        'bun',
         'bun-test',
         'dependency-cruiser',
         'editorconfig',
         'git',
+        'js-runtime/bun',
         'jscpd',
         'knip',
         'ky',
@@ -122,9 +121,10 @@ const deployedUnits: readonly DeployedUnit[] = [
         'mise',
         'osv-scanner',
         'playwright',
-        'react-dom',
+        'react/react-dom',
         'renovate',
         'rumdl',
+        'schema/zod',
         'shadcn',
         'shellcheck',
         'shfmt',
@@ -136,6 +136,7 @@ const deployedUnits: readonly DeployedUnit[] = [
         'tanstack-query',
         'tanstack-router',
         'tanstack-start',
+        'task-runner',
         'testing-library',
         'tombi',
         'ts-reset',
@@ -143,7 +144,6 @@ const deployedUnits: readonly DeployedUnit[] = [
         'vite',
         'yaml-js',
         'yamllint',
-        'zod',
       ],
       languages: [
         'css',
@@ -157,7 +157,7 @@ const deployedUnits: readonly DeployedUnit[] = [
       ],
       name: 'web',
       platforms: [
-        'browser',
+        'client/browser',
       ],
     },
   },
@@ -171,29 +171,32 @@ const deployedUnits: readonly DeployedUnit[] = [
     ],
     unit: {
       domains: [
-        'access-control',
-        'config-file',
-        'convergence',
+        'ai',
+        'contracts/api/mcp',
+        'contracts/api/rest',
+        'contracts/files',
+        'contracts/messages',
+        'contracts/webhooks',
+        'data',
+        'deployment',
         'distribution',
-        'http-server',
-        'language-model',
-        'mcp-api',
-        'messaging',
+        'jobs',
         'observability',
-        'owned-data',
-        'rest-api',
-        'webhooks',
+        'people/accounts',
+        'reconciliation',
+        'transports/http',
         'workspace',
       ],
       implementations: [
         'biome',
-        'bun',
         'bun-test',
         'dependency-cruiser',
+        'js-runtime/bun',
         'knip',
         'nestjs',
         'pino',
         'stryker',
+        'task-runner',
         'tsc',
       ],
       languages: [
@@ -217,9 +220,10 @@ const deployedUnits: readonly DeployedUnit[] = [
     unit: {
       implementations: [
         'biome',
-        'bun',
         'commander',
-        'ink',
+        'js-runtime/bun',
+        'react/ink',
+        'task-runner',
         'tsc',
       ],
       languages: [
@@ -229,7 +233,7 @@ const deployedUnits: readonly DeployedUnit[] = [
       ],
       name: 'cli',
       platforms: [
-        'cli',
+        'client/cli',
       ],
     },
   },
@@ -242,8 +246,9 @@ const deployedUnits: readonly DeployedUnit[] = [
     unit: {
       implementations: [
         'biome',
-        'bun',
         'bunli',
+        'js-runtime/bun',
+        'task-runner',
         'tsc',
       ],
       languages: [
@@ -253,7 +258,7 @@ const deployedUnits: readonly DeployedUnit[] = [
       ],
       name: 'bunli',
       platforms: [
-        'cli',
+        'client/cli',
       ],
     },
   },
@@ -266,9 +271,9 @@ const deployedUnits: readonly DeployedUnit[] = [
     unit: {
       implementations: [
         'biome',
-        'bun',
-        'expo',
-        'react-native',
+        'js-runtime/bun',
+        'react/react-native/expo',
+        'task-runner',
         'tsc',
       ],
       languages: [
@@ -278,7 +283,8 @@ const deployedUnits: readonly DeployedUnit[] = [
       ],
       name: 'mobile',
       platforms: [
-        'mobile',
+        'client/mobile/android',
+        'client/mobile/ios',
       ],
     },
   },
@@ -290,10 +296,10 @@ const deployedUnits: readonly DeployedUnit[] = [
     ],
     unit: {
       domains: [
-        'mcp-api',
+        'contracts/api/mcp',
+        'contracts/api/rest',
+        'integrations',
         'observability',
-        'remote-service',
-        'rest-api',
       ],
       implementations: [
         'complexipy',
@@ -304,15 +310,16 @@ const deployedUnits: readonly DeployedUnit[] = [
         'hypothesis',
         'import-linter',
         'mutmut',
-        'poe',
-        'pydantic',
         'pytest',
         'python-check',
         'ruff',
+        'schema/pydantic',
         'structlog',
+        'task-runner/poe',
         'tombi',
         'ty',
         'uv',
+        'uvicorn',
         'vulture',
       ],
       languages: [
@@ -354,19 +361,36 @@ const releaseBlocks = (): readonly string[] =>
     'contexts/languages',
     'implementations',
   ]
-    .flatMap((folder) => readdirSync(join(release, 'blocks', folder)))
-    .filter((block) => !block.startsWith('_'))
+    .flatMap((folder) =>
+      readdirSync(join(release, 'blocks', folder), {
+        recursive: true,
+      })
+        .map(String)
+        .filter(
+          (path) =>
+            !path.split(ID_SEPARATOR).some((segment) => segment.startsWith(AXIS_MARK)) &&
+            `${basename(dirname(path))}${PASSPORT_EXTENSION}` === basename(path),
+        )
+        .map(dirname),
+    )
     .toSorted((left, right) => left.localeCompare(right));
+
+const withAncestors = (block: string): readonly string[] =>
+  block
+    .split(ID_SEPARATOR)
+    .map((_segment, index, segments) => segments.slice(0, index + 1).join(ID_SEPARATOR));
 
 const listedBlocks = (): readonly string[] =>
   [
     ...new Set(
-      deployedUnits.flatMap(({ unit }) => [
-        ...(unit.domains ?? []),
-        ...(unit.platforms ?? []),
-        ...(unit.languages ?? []),
-        ...(unit.implementations ?? []),
-      ]),
+      deployedUnits.flatMap(({ unit }) =>
+        [
+          ...(unit.domains ?? []),
+          ...(unit.platforms ?? []),
+          ...(unit.languages ?? []),
+          ...(unit.implementations ?? []),
+        ].flatMap(withAncestors),
+      ),
     ),
   ].toSorted((left, right) => left.localeCompare(right));
 

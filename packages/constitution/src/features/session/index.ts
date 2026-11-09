@@ -1,51 +1,51 @@
-export { createPostToolUseCommand } from './app/use-cases/commands/post-tool-use';
-export { createPreToolUseCommand } from './app/use-cases/commands/pre-tool-use';
-export { createRecordCheckCommand } from './app/use-cases/commands/record-check';
-export { createSessionEndCommand } from './app/use-cases/commands/session-end';
-export { createSessionStartCommand } from './app/use-cases/commands/session-start';
-export { createStopCommand } from './app/use-cases/commands/stop';
-export { createUserPromptSubmitCommand } from './app/use-cases/commands/user-prompt-submit';
 export type {
   ActiveRead,
   ActiveRulesSource,
-  ConfigurationsReport,
+  ChapterRules,
   DeclaredRules,
   RulesSource,
   TextHasher,
   WorkingTree,
-} from './domain/contracts';
-export { ActiveReadStatus, ConfigurationsCheckStatus } from './domain/contracts';
+} from './application/contracts';
+export { ActiveReadStatus } from './application/contracts';
 export type {
-  GateCommandRepository,
-  SessionCommandRepository,
-} from './domain/contracts/repositories/commands';
-export type { SessionQueryRepository } from './domain/contracts/repositories/queries';
-export type {
-  GateVerdict,
-  Reminder,
-  SessionDigest,
-  SessionStart,
-  StopEvent,
-  StopJudgement,
-} from './domain/entities';
-export { endSession } from './domain/use-cases/commands/end-session';
-export { gateAction } from './domain/use-cases/commands/gate-action';
-export { gateTurn } from './domain/use-cases/commands/gate-turn';
-export { handOverChanges } from './domain/use-cases/commands/hand-over-changes';
-export { holdHandBack } from './domain/use-cases/commands/hold-hand-back';
-export { keepSession } from './domain/use-cases/commands/keep-session';
-export { markShell } from './domain/use-cases/commands/mark-shell';
-export { markTurn } from './domain/use-cases/commands/mark-turn';
-export { recordCheck } from './domain/use-cases/commands/record-check';
-export { recordJudgement } from './domain/use-cases/commands/record-judgement';
-export { recordOwnChanges } from './domain/use-cases/commands/record-own-changes';
-export { recordRead } from './domain/use-cases/commands/record-read';
-export { recordReminders } from './domain/use-cases/commands/record-reminders';
-export { resetReading } from './domain/use-cases/commands/reset-reading';
-export { settleShell } from './domain/use-cases/commands/settle-shell';
-export { sweepStaleSessions } from './domain/use-cases/commands/sweep-stale-sessions';
-export { tellPasses } from './domain/use-cases/commands/tell-passes';
-export { digestSession } from './domain/use-cases/queries/digest-session';
-export { judgeStop } from './domain/use-cases/queries/judge-stop';
-export { remindOfFile } from './domain/use-cases/queries/remind-of-file';
-export type { SessionId } from './domain/value-objects';
+  GateRepository,
+  SessionRepository,
+} from './application/contracts/repositories/commands';
+export type { SessionQueries } from './application/contracts/repositories/queries';
+export { endSession } from './application/use-cases/commands/end-session';
+export { gateAction } from './application/use-cases/commands/gate-action';
+export { handOverChanges } from './application/use-cases/commands/hand-over-changes';
+export { holdHandBack } from './application/use-cases/commands/hold-hand-back';
+export { keepSession } from './application/use-cases/commands/keep-session';
+export { markShell } from './application/use-cases/commands/mark-shell';
+export { markTurn } from './application/use-cases/commands/mark-turn';
+export { recordCheck } from './application/use-cases/commands/record-check';
+export { recordJudgement } from './application/use-cases/commands/record-judgement';
+export { recordOwnChanges } from './application/use-cases/commands/record-own-changes';
+export { recordRead } from './application/use-cases/commands/record-read';
+export { recordReminders } from './application/use-cases/commands/record-reminders';
+export { resetReading } from './application/use-cases/commands/reset-reading';
+export { settleShell } from './application/use-cases/commands/settle-shell';
+export { sweepStaleSessions } from './application/use-cases/commands/sweep-stale-sessions';
+export { tellPasses } from './application/use-cases/commands/tell-passes';
+export { digestSession } from './application/use-cases/queries/digest-session';
+export { judgeStop } from './application/use-cases/queries/judge-stop';
+export type { GoverningRules } from './application/use-cases/queries/read-rules';
+export { readRules } from './application/use-cases/queries/read-rules';
+export { remindOfFile } from './application/use-cases/queries/remind-of-file';
+export type { GateVerdict, OwedReading } from './domain/gate/entities';
+export type { Reminder } from './domain/reminder/entities';
+export type { SessionId } from './domain/session/value-objects';
+export type { ConfigurationsReport, SessionDigest } from './domain/session-digest/entities';
+export { ConfigurationsCheckStatus } from './domain/session-digest/entities';
+export type { SessionStart } from './domain/session-start/entities';
+export type { StopEvent, StopJudgement } from './domain/stop-judgement/entities';
+export { createPostToolUseCommand } from './presentation/bindings/commands/post-tool-use';
+export { createPreToolUseCommand } from './presentation/bindings/commands/pre-tool-use';
+export { createRecordCheckCommand } from './presentation/bindings/commands/record-check';
+export { createSessionEndCommand } from './presentation/bindings/commands/session-end';
+export { createSessionStartCommand } from './presentation/bindings/commands/session-start';
+export { createStopCommand } from './presentation/bindings/commands/stop';
+export { createUserPromptSubmitCommand } from './presentation/bindings/commands/user-prompt-submit';
+export { createRulesCommand } from './presentation/bindings/queries/rules';

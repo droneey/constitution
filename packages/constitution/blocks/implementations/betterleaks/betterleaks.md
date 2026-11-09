@@ -1,17 +1,13 @@
 ---
 id: betterleaks
 summary: Scans changes and history for committed secrets.
-requires: [git, toml, _task-runner]
-extends: null
-abstract: false
+requires: [git, task-runner]
 languages: []
 governs: [".betterleaks.toml", ".betterleaksignore"]
 ---
 
 # Betterleaks
 
-> **Betterleaks** finds secrets in changes and history.
+> Betterleaks, the `betterleaks` command, finds secrets in the repository history and in the changes not yet committed.
 
-The **`betterleaks`** command reads its settings from **`.betterleaks.toml`**{#betterleaks-settings}.
-
-Its default rules — cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — hold every active rule on committed secrets.
+It reads its settings from `.betterleaks.toml` and the fingerprints of the findings allowed from `.betterleaksignore`. Its default rules find such secrets as cloud keys, forge tokens, private keys, JWTs and credentials in connection strings. The settings and commands here are those of its 1.x releases.

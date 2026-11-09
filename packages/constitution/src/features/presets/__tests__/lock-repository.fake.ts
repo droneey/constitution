@@ -1,15 +1,15 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { LockRead } from '../domain/entities';
-import { LockReadStatus } from '../domain/entities';
+import type { LockRead } from '../domain/lock/entities';
+import { LockReadStatus } from '../domain/lock/entities';
 
-interface FakeLockRepository {
+interface FakeLockQueries {
   readonly read: (unitFolderPath: AbsolutePath) => LockRead;
 }
 
-const createFakeLockRepository = (
+const createFakeLockQueries = (
   locks: Readonly<Record<string, LockRead>> = {},
-): FakeLockRepository => ({
+): FakeLockQueries => ({
   read: (unitFolderPath: AbsolutePath): LockRead =>
     locks[unitFolderPath] ?? {
       lock: {},
@@ -17,4 +17,4 @@ const createFakeLockRepository = (
     },
 });
 
-export { createFakeLockRepository };
+export { createFakeLockQueries };

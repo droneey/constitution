@@ -1,5 +1,0 @@
-git:
-  gitignore-covers-key-files:
-    typescript:
-      .gitignore:
-        - .npmrc

@@ -126,11 +126,11 @@ server_config() {
 
 main() {
   if [ "$#" -ne 4 ]; then
-    log 'Usage: scripts/fetch-releases.sh <current build> <current version> <site> <server config>'
+    log 'Usage: scripts/fetch-releases.sh <current build> <package manifest> <site> <server config>'
     exit 1
   fi
   current_build="$1"
-  current="$2"
+  current="$(jq -r .version -- "$2")"
   site="$3"
   config="$4"
 

@@ -1,0 +1,31 @@
+# Transpiler
+
+> Governs the compiler options Bun's transpiler reads.
+
+## General
+
+### transpiler-options-where-bun-reads · MUST
+
+Every compiler option the program needs Bun's transpiler to apply is written where Bun reads it. Such options, like `experimentalDecorators` and `emitDecoratorMetadata` where the program's decorators need them, sit in the `tsconfig.json` of the folder Bun runs from, a unit's own when its specs run from its folder, directly or through the one file it extends, never through an array of them.
+
+#### Why
+
+Bun takes its transpiler's options from the `tsconfig.json` of the folder it runs in, not from the one nearest each file, and follows a single `extends` but ignores an array of them, so code run elsewhere, or through the presets alone, runs without the options and fails at its first decorated member.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "extends": ["@shop/tsconfig/base.json", "@shop/tsconfig/decorators.json"]
+}
+```
+
+```json title="Prefer"
+{
+  "extends": "@shop/tsconfig/base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```

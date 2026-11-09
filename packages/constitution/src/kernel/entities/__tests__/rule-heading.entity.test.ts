@@ -20,11 +20,11 @@ describe('RuleHeading.of', () => {
     {
       condition: 'it tightens a rule at a level of its own',
       expected: {
-        level: Level.Must,
+        level: Level.Should,
         slug: 'port-is-an-interface',
-        tightens: 'contract-declared-by-the-layer-that-needs-it',
+        tightens: 'behaviour-composed-not-inherited',
       },
-      text: 'port-is-an-interface → contract-declared-by-the-layer-that-needs-it · MUST',
+      text: 'port-is-an-interface → behaviour-composed-not-inherited · SHOULD',
     },
     {
       condition: 'it tightens a rule and leaves its level to the chain',

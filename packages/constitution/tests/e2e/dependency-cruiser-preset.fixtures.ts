@@ -191,7 +191,7 @@ const appliedFilesOf = (project: Project): Partial<UnitFixture> =>
     : {
         files: {
           ...workspaceFilesOf(project),
-          [`${OWN_PACK}/presets/dependency-cruiser/foundation.yaml`]: project.own,
+          [`${OWN_PACK}/presets/dependency-cruiser/@foundation.yaml`]: project.own,
         },
         packs: [
           OWN_PACK,

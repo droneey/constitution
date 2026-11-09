@@ -33,7 +33,7 @@ describe('BlockFilePlace.parse', () => {
         kind: BlockFileKind.NamedAfterBlock,
       },
       name: 'a file of an axis named after its block',
-      path: `${UI}/architecture/ui.md`,
+      path: `${UI}/@architecture/ui.md`,
     },
     {
       file: {
@@ -42,7 +42,7 @@ describe('BlockFilePlace.parse', () => {
         name: 'design-system',
       },
       name: 'a chapter of foundation',
-      path: `${UI}/foundation/design-system.md`,
+      path: `${UI}/@foundation/design-system.md`,
     },
     {
       file: {
@@ -51,19 +51,14 @@ describe('BlockFilePlace.parse', () => {
         other: BlockId.create('remote-data'),
       },
       name: 'a seam of architecture',
-      path: `${UI}/architecture/with/remote-data.md`,
+      path: `${UI}/@architecture/with/remote-data.md`,
     },
     {
       file: {
         kind: BlockFileKind.SeamOfNoBlockId,
       },
       name: 'a seam named after no block id',
-      path: `${UI}/architecture/with/Remote_Data.md`,
-    },
-    {
-      file: STRAY,
-      name: 'a file below a file',
-      path: `${UI}/ui.md/notes.md`,
+      path: `${UI}/@architecture/with/Remote_Data.md`,
     },
     {
       file: STRAY,
@@ -73,42 +68,34 @@ describe('BlockFilePlace.parse', () => {
     {
       file: STRAY,
       name: 'a file below a chapter of an axis',
-      path: `${UI}/foundation/notes.md/ui.md`,
+      path: `${UI}/@foundation/notes.md/ui.md`,
     },
     {
       file: STRAY,
       name: 'a chapter that is no Markdown',
-      path: `${UI}/foundation/notes.mdx`,
+      path: `${UI}/@foundation/notes.mdx`,
     },
     {
       file: STRAY,
       name: 'a hidden chapter',
-      path: `${UI}/foundation/.notes.md`,
+      path: `${UI}/@foundation/.notes.md`,
     },
     {
-      file: STRAY,
-      name: 'a file of a folder that is no axis',
-      path: `${UI}/design/ui.md`,
-    },
-    {
-      file: STRAY,
-      name: 'a seam outside an axis',
-      path: `${UI}/with/i18n.md`,
-    },
-    {
-      file: STRAY,
+      file: {
+        kind: BlockFileKind.SeamOfNoBlockId,
+      },
       name: 'a file below a seam',
-      path: `${UI}/architecture/with/old.md/a.md`,
+      path: `${UI}/@architecture/with/old.md/a.md`,
     },
     {
       file: STRAY,
       name: 'a seam that is no Markdown',
-      path: `${UI}/architecture/with/i18n.txt`,
+      path: `${UI}/@architecture/with/i18n.txt`,
     },
     {
       file: STRAY,
       name: 'a file of a folder of an axis that is not with',
-      path: `${UI}/architecture/parts/i18n.md`,
+      path: `${UI}/@architecture/parts/i18n.md`,
     },
   ])('should place $name in its block when the path is $path', ({ file, path }) => {
     // Act
@@ -125,7 +112,7 @@ describe('BlockFilePlace.parse', () => {
 
   it('should place a chapter of core in core when the path lies in its folder', () => {
     // Arrange
-    const path = 'blocks/core/workflow/delivery.md';
+    const path = 'blocks/core/@workflow/delivery.md';
 
     // Act
     const place: object | undefined = BlockFilePlace.parse(path);
@@ -176,7 +163,7 @@ describe('BlockFilePlace.parse', () => {
     {
       expected: undefined,
       name: 'a file outside the blocks',
-      path: 'presets/biome/foundation.yaml',
+      path: 'presets/biome/@foundation.yaml',
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
     // Act
@@ -198,6 +185,209 @@ const placeOf = (path: string): BlockFilePlace => {
 };
 
 const pathOf = (place: BlockFilePlace): string => place.path;
+
+const REACT = 'blocks/implementations/react';
+
+describe('BlockFilePlace.parse of a nested block', () => {
+  it.each<{
+    block: string;
+    file: FileInBlock;
+    name: string;
+    path: string;
+  }>([
+    {
+      block: 'react',
+      file: {
+        kind: BlockFileKind.Passport,
+      },
+      name: "a parent's passport",
+      path: `${REACT}/react.md`,
+    },
+    {
+      block: 'react/react-native/expo',
+      file: {
+        kind: BlockFileKind.Passport,
+      },
+      name: "a grandchild's passport, named by its last segment",
+      path: `${REACT}/react-native/expo/expo.md`,
+    },
+    {
+      block: 'react/react-dom',
+      file: {
+        axis: Axis.Architecture,
+        kind: BlockFileKind.Chapter,
+        name: 'document',
+      },
+      name: "a child's chapter in an axis folder marked by @",
+      path: `${REACT}/react-dom/@architecture/document.md`,
+    },
+    {
+      block: 'react/ink',
+      file: {
+        axis: Axis.Foundation,
+        kind: BlockFileKind.Seam,
+        other: BlockId.create('presentation/design-system'),
+      },
+      name: 'a seam with a nested block, named by its id path',
+      path: `${REACT}/ink/@foundation/with/presentation/design-system.md`,
+    },
+    {
+      block: 'react',
+      file: {
+        kind: BlockFileKind.NamedAfterBlock,
+      },
+      name: 'a chapter named after its block',
+      path: `${REACT}/@foundation/react.md`,
+    },
+    {
+      block: 'react',
+      file: {
+        kind: BlockFileKind.SeamOfNoBlockId,
+      },
+      name: 'a seam whose path names no block id',
+      path: `${REACT}/@foundation/with/Presentation/design-system.md`,
+    },
+    {
+      block: 'react',
+      file: STRAY,
+      name: 'a file of a folder marked by @ that is no axis',
+      path: `${REACT}/@notes/hooks.md`,
+    },
+    {
+      block: 'react',
+      file: STRAY,
+      name: 'a file of a hidden folder',
+      path: `${REACT}/.drafts/hooks.md`,
+    },
+    {
+      block: 'react',
+      file: STRAY,
+      name: 'a seam under with that is no Markdown',
+      path: `${REACT}/@foundation/with/presentation.txt`,
+    },
+  ])('should place $name in its block', ({ block, file, path }) => {
+    // Arrange
+    const id = BlockId.create(block);
+
+    // Act
+    const place: object | undefined = BlockFilePlace.parse(path);
+
+    // Assert
+    expect(place).toStrictEqual({
+      file,
+      folder: {
+        dir: `blocks/implementations/${id}`,
+        id,
+        layer: Layer.Implementation,
+      },
+      path,
+      placement: Placement.InBlock,
+    });
+  });
+
+  it('should place a chapter of core in core when its axis folder is marked by @', () => {
+    // Arrange
+    const path = 'blocks/core/@workflow/changes.md';
+
+    // Act
+    const place: object | undefined = BlockFilePlace.parse(path);
+
+    // Assert
+    expect(place).toStrictEqual({
+      file: {
+        axis: Axis.Workflow,
+        kind: BlockFileKind.Chapter,
+        name: 'changes',
+      },
+      folder: {
+        dir: 'blocks/core',
+        id: coreBlockId,
+        layer: Layer.Core,
+      },
+      path,
+      placement: Placement.InBlock,
+    });
+  });
+
+  it.each([
+    {
+      expected: {
+        dir: 'blocks/implementations/react/React_Dom',
+        layer: Layer.Implementation,
+        name: 'React_Dom',
+        path: 'blocks/implementations/react/React_Dom/React_Dom.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a child folder named by no segment of a block id',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/_react',
+        layer: Layer.Implementation,
+        name: '_react',
+        path: 'blocks/implementations/_react/_react.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a folder opened by the abstract mark',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/react/React_Dom',
+        layer: Layer.Implementation,
+        name: 'React_Dom',
+        path: 'blocks/implementations/react/React_Dom/portals/portals.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a misnamed folder above a child block',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/react/foundation',
+        layer: Layer.Implementation,
+        name: 'foundation',
+        path: 'blocks/implementations/react/foundation/code.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: "a child folder named by an axis's name without its mark",
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/react/with',
+        layer: Layer.Implementation,
+        name: 'with',
+        path: 'blocks/implementations/react/with/with.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a child folder named by the seam folder word',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/@foundation',
+        layer: Layer.Implementation,
+        name: '@foundation',
+        path: 'blocks/implementations/@foundation/code.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'an axis folder straight in a layer',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/.drafts',
+        layer: Layer.Implementation,
+        name: '.drafts',
+        path: 'blocks/implementations/.drafts/notes.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a hidden folder straight in a layer',
+    },
+  ])('should place $name apart from any block', ({ expected }) => {
+    // Act
+    const place: object | undefined = BlockFilePlace.parse(expected.path);
+
+    // Assert
+    expect(place).toStrictEqual(expected);
+  });
+});
 
 describe('BlockFilePlace.pathOf', () => {
   it.each<{
@@ -225,7 +415,7 @@ describe('BlockFilePlace.pathOf', () => {
       },
       layer: Layer.Domain,
       name: "a block's chapter",
-      path: `${UI}/architecture/screens.md`,
+      path: `${UI}/@architecture/screens.md`,
     },
     {
       block: 'react',
@@ -236,7 +426,7 @@ describe('BlockFilePlace.pathOf', () => {
       },
       layer: Layer.Implementation,
       name: "a block's seam",
-      path: 'blocks/implementations/react/foundation/with/ui.md',
+      path: 'blocks/implementations/react/@foundation/with/ui.md',
     },
     {
       block: 'core',
@@ -260,6 +450,64 @@ describe('BlockFilePlace.pathOf', () => {
   });
 });
 
+describe('BlockFilePlace.pathOf of a nested block', () => {
+  it.each<{
+    block: string;
+    file: BlockPart;
+    name: string;
+    path: string;
+  }>([
+    {
+      block: 'react/react-native/expo',
+      file: {
+        kind: BlockFileKind.Passport,
+      },
+      name: "a grandchild's passport",
+      path: `${REACT}/react-native/expo/expo.md`,
+    },
+    {
+      block: 'react/react-dom',
+      file: {
+        axis: Axis.Architecture,
+        kind: BlockFileKind.Chapter,
+        name: 'document',
+      },
+      name: "a child's chapter",
+      path: `${REACT}/react-dom/@architecture/document.md`,
+    },
+    {
+      block: 'react/ink',
+      file: {
+        axis: Axis.Workflow,
+        kind: BlockFileKind.Seam,
+        other: BlockId.create('presentation/design-system'),
+      },
+      name: "a child's seam with a nested block",
+      path: `${REACT}/ink/@workflow/with/presentation/design-system.md`,
+    },
+  ])('should give the path parse places $name at, and parse it back', ({ block, file, path }) => {
+    // Act
+    const given = BlockFilePlace.pathOf({
+      block: BlockId.create(block),
+      file,
+      layer: Layer.Implementation,
+    });
+
+    // Assert
+    expect(given).toBe(path);
+    expect<object | undefined>(BlockFilePlace.parse(given)).toStrictEqual({
+      file,
+      folder: {
+        dir: `blocks/implementations/${block}`,
+        id: BlockId.create(block),
+        layer: Layer.Implementation,
+      },
+      path,
+      placement: Placement.InBlock,
+    });
+  });
+});
+
 describe('BlockFilePlace.compare', () => {
   it('should order the files of the blocks by layer, folder name, folder, role, axis and path', () => {
     // Arrange
@@ -267,11 +515,11 @@ describe('BlockFilePlace.compare', () => {
       'blocks/implementations/zod/zod.md',
       'blocks/domains/ui-kit/ui-kit.md',
       'blocks/domains/ui/notes.md',
-      'blocks/domains/ui/architecture/with/i18n.md',
-      'blocks/domains/ui/foundation/with/i18n.md',
-      'blocks/domains/ui/workflow/reviews.md',
-      'blocks/domains/ui/foundation/forms.md',
-      'blocks/domains/ui/foundation/a-b.md',
+      'blocks/domains/ui/@architecture/with/i18n.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
+      'blocks/domains/ui/@workflow/reviews.md',
+      'blocks/domains/ui/@foundation/forms.md',
+      'blocks/domains/ui/@foundation/a-b.md',
       'blocks/domains/Bad/Bad.md',
       'blocks/domains/README.md',
       'blocks/domains/ui/ui.md',
@@ -279,7 +527,10 @@ describe('BlockFilePlace.compare', () => {
     ];
 
     // Act
-    const ordered = paths.map(placeOf).toSorted(BlockFilePlace.compare).map(pathOf);
+    const ordered = paths
+      .map((path) => placeOf(path))
+      .toSorted(BlockFilePlace.compare)
+      .map(pathOf);
 
     // Assert
     expect(ordered).toStrictEqual([
@@ -287,11 +538,11 @@ describe('BlockFilePlace.compare', () => {
       'blocks/domains/README.md',
       'blocks/domains/Bad/Bad.md',
       'blocks/domains/ui/ui.md',
-      'blocks/domains/ui/foundation/a-b.md',
-      'blocks/domains/ui/foundation/forms.md',
-      'blocks/domains/ui/workflow/reviews.md',
-      'blocks/domains/ui/foundation/with/i18n.md',
-      'blocks/domains/ui/architecture/with/i18n.md',
+      'blocks/domains/ui/@foundation/a-b.md',
+      'blocks/domains/ui/@foundation/forms.md',
+      'blocks/domains/ui/@workflow/reviews.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
+      'blocks/domains/ui/@architecture/with/i18n.md',
       'blocks/domains/ui/notes.md',
       'blocks/domains/ui-kit/ui-kit.md',
       'blocks/implementations/zod/zod.md',
@@ -300,7 +551,7 @@ describe('BlockFilePlace.compare', () => {
 });
 
 describe('BlockFilePlace', () => {
-  const place = placeOf('blocks/domains/ui/foundation/forms.md');
+  const place = placeOf('blocks/domains/ui/@foundation/forms.md');
 
   it.each([
     {
@@ -315,6 +566,11 @@ describe('BlockFilePlace', () => {
       },
       condition: 'it says other than its path',
       isPlace: false,
+    },
+    {
+      candidate: placeOf('blocks/implementations/react/ink/@foundation/rendering.md'),
+      condition: 'it is the place the path of a nested block parses to',
+      isPlace: true,
     },
     {
       candidate: {
@@ -342,16 +598,16 @@ describe('BlockFilePlace', () => {
     {
       condition: 'they are one path',
       isEqual: true,
-      path: 'blocks/domains/ui/foundation/forms.md',
+      path: 'blocks/domains/ui/@foundation/forms.md',
     },
     {
       condition: 'they are two paths',
       isEqual: false,
-      path: 'blocks/domains/ui/foundation/screens.md',
+      path: 'blocks/domains/ui/@foundation/screens.md',
     },
   ])('should say $isEqual when $condition', ({ isEqual, path }) => {
     // Arrange
-    const left = placeOf('blocks/domains/ui/foundation/forms.md');
+    const left = placeOf('blocks/domains/ui/@foundation/forms.md');
     const right = placeOf(path);
 
     // Act

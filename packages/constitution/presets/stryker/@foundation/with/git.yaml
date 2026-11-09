@@ -1,0 +1,6 @@
+git:
+  '*':
+    typescript:
+      stryker.${role.config-file}.json:
+        ignorePatterns:
+          - '*/worktrees'

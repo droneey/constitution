@@ -1,0 +1,6 @@
+version-control:
+  generated-files-not-committed:
+    typescript:
+      .gitignore:
+        - .stryker-tmp/
+        - reports/mutation/

@@ -1,0 +1,28 @@
+tsc:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          check:types: tsc -b
+js-runtime/bun:
+  '*':
+    typescript:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    typescript:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check

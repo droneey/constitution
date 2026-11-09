@@ -1,0 +1,9 @@
+version-control:
+  machine-local-files-ignored:
+    '*':
+      .gitignore:
+        - '**/node_modules/'
+  generated-files-not-committed:
+    '*':
+      .gitignore:
+        - '*.tgz'

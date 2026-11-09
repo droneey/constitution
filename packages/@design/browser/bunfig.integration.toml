@@ -9,9 +9,9 @@ coverageReporter = ["text"]
 coverageSkipTestFiles = true
 coveragePathIgnorePatterns = [
   # bun-test
+  "**/root/**",
   "**/__tests__/**",
   "**/main.*",
-  "**/root/wiring.*",
   "**/*.gen.*",
 
   # workspace

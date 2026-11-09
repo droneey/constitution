@@ -1,8 +1,9 @@
 import { PROJECT } from '#/__tests__/project-place.fixtures';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { AppliedFiles, Lock } from '../domain/entities';
-import { ApplyError, ApplyFailure } from '../domain/errors';
+import type { AppliedFiles } from '../domain/apply-plan/entities';
+import { ApplyError, ApplyFailure } from '../domain/apply-plan/errors';
+import type { Lock } from '../domain/lock/entities';
 import { createFakeAppliedFilesRepository } from './applied-files-repository.fake';
 import { runAppliedFilesRepositorySuite } from './applied-files-repository.suite';
 
@@ -42,7 +43,7 @@ const locksAfter = (written: readonly AppliedFiles[]): ReadonlyMap<string, Lock>
 runAppliedFilesRepositorySuite({
   name: 'createFakeAppliedFilesRepository',
   repositoryOf: (world) => {
-    const { repository, written } = createFakeAppliedFilesRepository(
+    const { appliedFilesRepository, written } = createFakeAppliedFilesRepository(
       world.unwritable === undefined
         ? undefined
         : new ApplyError({
@@ -55,7 +56,7 @@ runAppliedFilesRepositorySuite({
 
     return {
       projectFolderPath,
-      repository,
+      appliedFilesRepository,
       state: {
         lockOf: (unitPath) => locksAfter(written()).get(unitPath),
         textOf: (filePath) =>

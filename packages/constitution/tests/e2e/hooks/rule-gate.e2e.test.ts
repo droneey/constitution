@@ -1,8 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import { EXAMPLE_LINE } from '../constitution.fixtures';
 import {
   HookEvent,
   isRecord,
@@ -11,7 +12,7 @@ import {
   runHook,
   runScript,
 } from '../hook.fixtures';
-import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
+import { createPluginRoot, distributionOf, removePluginRoots } from '../plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
@@ -19,13 +20,20 @@ let root = '';
 const SOURCE_FILE = 'src/orders/order-card.ts';
 
 const PART = /^- (\/\S+\.md)$/gmu;
+const GROUP = /^## (Vocabulary|MUST rules|SHOULD rules) of /u;
+const groupOrder = [
+  'Vocabulary',
+  'MUST rules',
+  'SHOULD rules',
+];
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
 
 interface Started {
   readonly project: string;
   readonly session: string;
 }
 
-const startSession = (): Started => {
+const startSession = (pluginRoot = root): Started => {
   const project = createProject({
     config: configOf({
       domains: '[ui]',
@@ -40,7 +48,7 @@ const startSession = (): Started => {
   runHook({
     event: HookEvent.Startup,
     project,
-    root,
+    root: pluginRoot,
     session,
   });
 
@@ -50,10 +58,14 @@ const startSession = (): Started => {
   };
 };
 
-const hookOf = (script: string, event: Readonly<Record<string, unknown>>): unknown => {
+const hookOf = (
+  pluginRoot: string,
+  script: string,
+  event: Readonly<Record<string, unknown>>,
+): unknown => {
   const { stdout } = runScript({
     event,
-    root,
+    root: pluginRoot,
     script,
   });
 
@@ -95,8 +107,9 @@ const toolEventOf = (
     ],
   ]);
 
-const editOf = (started: Started): unknown =>
+const editOf = (started: Started, pluginRoot = root): unknown =>
   hookOf(
+    pluginRoot,
     'pre-tool-use',
     toolEventOf({
       ...started,
@@ -112,6 +125,7 @@ const readOf = (
   },
 ): unknown =>
   hookOf(
+    root,
     'post-tool-use',
     toolEventOf({
       ...input,
@@ -203,5 +217,103 @@ describe('the rule gate', () => {
 
     // Assert
     expect(retried).toBeUndefined();
+  });
+
+  it('should refuse a write into folders not made yet until the agent has read the rules that govern it', () => {
+    // Arrange
+    const started = startSession();
+    const path = join(started.project, 'src', 'invoices', 'drafts', 'invoice-card.ts');
+
+    // Act
+    const answer = hookOf(
+      root,
+      'pre-tool-use',
+      toolEventOf({
+        ...started,
+        event: 'PreToolUse',
+        path,
+        tool: 'Write',
+      }),
+    );
+
+    // Assert
+    expect({
+      isMade: existsSync(join(started.project, 'src', 'invoices')),
+      parts: placedPartsOf({
+        ...started,
+        parts: partsOf(answer),
+      }),
+    }).toStrictEqual({
+      isMade: false,
+      parts: [
+        {
+          holdsRules: true,
+          isUnderSessions: true,
+        },
+      ],
+    });
+  });
+
+  it('should open each part with the vocabularies, then give the statements MUST before SHOULD, with no Why', () => {
+    // Arrange
+    const started = startSession();
+
+    // Act
+    const texts = partsOf(editOf(started)).map((part) => readFileSync(part, 'utf8'));
+    const groups = texts.flatMap((text) =>
+      text.split('\n').flatMap((line) => GROUP.exec(line)?.[1] ?? []),
+    );
+
+    // Assert
+    expect({
+      groups: [
+        ...new Set(groups),
+      ],
+      holdsWhy: texts.some((text) => text.includes('Why:') || text.includes('#### Why')),
+      isOrdered: groups.every(
+        (group, index) =>
+          index === 0 || groupOrder.indexOf(group) >= groupOrder.indexOf(groups[index - 1] ?? ''),
+      ),
+    }).toStrictEqual({
+      groups: groupOrder,
+      holdsWhy: false,
+      isOrdered: true,
+    });
+  });
+
+  it('should hand a rule without its Why and Examples, and ask for nothing again when only they changed', () => {
+    // Arrange
+    const pluginRoot = createPluginRoot();
+    const principles = `${distributionOf(pluginRoot)}/${PRINCIPLES}`;
+    const started = startSession(pluginRoot);
+    const parts = partsOf(editOf(started, pluginRoot));
+    const handed = parts.map((part) => readFileSync(part, 'utf8')).join('\n');
+
+    readAll({
+      ...started,
+      parts,
+    });
+    writeFileSync(
+      principles,
+      readFileSync(principles, 'utf8')
+        .replaceAll('it keeps the fixture honest.', 'a fixture that drifts tests nothing.')
+        .replaceAll(EXAMPLE_LINE, 'const exampleChanged = true;'),
+    );
+
+    // Act
+    const retried = editOf(started, pluginRoot);
+
+    // Assert
+    expect({
+      holdsExample: handed.includes(EXAMPLE_LINE),
+      holdsRule: handed.includes('<!-- rule names-reveal-intent '),
+      holdsWhy: handed.includes('it keeps the fixture honest.'),
+      retried,
+    }).toStrictEqual({
+      holdsExample: false,
+      holdsRule: true,
+      holdsWhy: false,
+      retried: undefined,
+    });
   });
 });

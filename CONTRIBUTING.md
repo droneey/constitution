@@ -15,13 +15,13 @@ Here `.droneey/constitution` links to `packages/constitution`, whose `bin/consti
 
 ## Check
 
-`bun run constitution run check` is the one check, the tool from its sources running every unit's checks, and it passes before a change is handed back; a pull request runs the same, and runs the executable's specs, `bun run --cwd packages/constitution executable:test`, on each platform the release ships. `bun run constitution run test` runs the specs alone, and `bun run --cwd packages/constitution build` builds the executable for this machine into `packages/constitution/dist/cli/constitution`.
+`bun run constitution run check` is the one check, the tool from its sources running every unit's checks, and it passes before a change is handed back; when a step fails it names each rule the output shows broken, and `--why` adds each one's Why; a pull request runs the same, and runs the executable's specs, `bun run --cwd packages/constitution executable:test`, on each platform the release ships. `bun run constitution run test` runs the specs alone, and `bun run --cwd packages/constitution build` builds the executable for this machine into `packages/constitution/dist/cli/constitution`.
 
 ## Change a rule
 
-1. Place each rule a change adds or moves by the three questions of [placement](packages/constitution/blocks/core/foundation/placement.md), and write it in [the block format](docs/reference/block-format.md).
+1. Place each rule a change adds or moves as [placement](packages/constitution/blocks/core/@foundation/placement.md) asks — its rank, its axis, its chapter and its section — and write it in [the block format](docs/reference/block-format.md), with its Why and its examples.
 2. The `rule-placement` agent reviews every change to `blocks/` or `presets/`; its table goes into the pull request, and each of its findings is fixed or answered there.
-3. A choice between real alternatives about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md), naming what was rejected and why.
+3. A choice between real alternatives about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md), naming what was rejected and why; a rule added, moved or reworded as the Constitution's own rules ask needs none.
 
 [How it works](docs/how-it-works.md) maps the blocks, the presets, the templates and the executable that checks them.
 

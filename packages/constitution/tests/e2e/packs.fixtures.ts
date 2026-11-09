@@ -18,7 +18,7 @@ const repository = join(import.meta.dir, '..', '..');
 const created: string[] = [];
 
 const packFilesOf = (parent: string): Files => ({
-  'blocks/implementations/acme/architecture/root.md': [
+  'blocks/implementations/acme/@architecture/root.md': [
     '# Root',
     '',
     '> Governs where Acme is called from.',
@@ -29,9 +29,15 @@ const packFilesOf = (parent: string): Files => ({
     '',
     "Acme's client is built only by the root.",
     '',
-    '| Why |',
-    '|---|',
-    '| the vendor then stays at the edge. |',
+    '#### Why',
+    '',
+    'the vendor then stays at the edge.',
+    '',
+    '#### Examples',
+    '',
+    '```ts title="Prefer"',
+    "import { acme } from 'acme';",
+    '```',
     '',
   ].join('\n'),
   'DECISIONS.md':
@@ -41,8 +47,6 @@ const packFilesOf = (parent: string): Files => ({
     'id: acme',
     'summary: "Acme sends the shop\'s events to its analytics."',
     'requires: []',
-    'extends: null',
-    'abstract: false',
     'languages: []',
     'governs: ["**/acme.*"]',
     '---',
@@ -52,7 +56,7 @@ const packFilesOf = (parent: string): Files => ({
     "> Acme, the shop's analytics.",
     '',
   ].join('\n'),
-  'blocks/implementations/acme/foundation/dependencies.md': [
+  'blocks/implementations/acme/@foundation/dependencies.md': [
     '# Dependencies',
     '',
     '> Governs the files that call Acme.',
@@ -63,14 +67,20 @@ const packFilesOf = (parent: string): Files => ({
     '',
     'Acme is reached only through its package entry.',
     '',
-    '| Why |',
-    '|---|',
-    '| a path inside Acme is not its contract. |',
+    '#### Why',
+    '',
+    'a path inside Acme is not its contract.',
+    '',
+    '#### Examples',
+    '',
+    '```ts title="Prefer"',
+    "import { acme } from 'acme';",
+    '```',
     '',
   ].join('\n'),
 });
 
-const createPack = (parent = 'dependency-reached-through-its-public-entry'): string => {
+const createPack = (parent = 'dependency-reached-through-its-published-entries'): string => {
   const folder = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-pack-')));
 
   created.push(folder);

@@ -6,6 +6,7 @@
       ]
     },
 
+    // js-runtime/bun
     // bun
     "types": [
       "bun",
@@ -25,8 +26,9 @@
     // workspace
     "composite": true,
     "emitDeclarationOnly": true,
-    "outDir": "${configDir}/.tsc-cache",
+    "outDir": "${configDir}/tsc-cache.gen",
 
+    // client/browser
     // browser
     "lib": [
       "ESNext",
@@ -40,7 +42,7 @@
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
 
-    // _react
+    // react
     "jsx": "react-jsx",
 
     // tsc

@@ -47,6 +47,7 @@ versionGroups:
       - url
     isBanned: true
 
+  # js-runtime/bun
   # bun
   - label: The repository's own units use the workspace protocol
     dependencies:

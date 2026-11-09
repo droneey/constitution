@@ -1,16 +1,23 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 
-import { createJsonReleaseManifestParser } from '../adapters/json';
-import { createYamlBlockCardParser, createYamlConfigFileParser } from '../adapters/yaml';
-import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../domain/contracts';
-import type { ProjectError } from '../domain/errors';
-import { isProjectError } from '../domain/errors';
+import type {
+  BlockCardParser,
+  ConfigParser,
+  ReleaseManifestParser,
+} from '../application/contracts';
+import type { BlockCards } from '../domain/block-set/entities';
+import { BlockSetSource } from '../domain/block-set/entities';
+import type { ProjectError } from '../domain/shared/errors';
+import { isProjectError } from '../domain/shared/errors';
+import { createJsonReleaseManifestParser } from '../infrastructure/json';
+import { createYamlBlockCardParser, createYamlConfigFileParser } from '../infrastructure/yaml';
+import { RULE_STATEMENT, RULE_WHY } from './block-set.fixtures';
 
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
 const VERSION = '1.0.0';
-const FORMAT = 4;
+const FORMAT = 5;
 
 enum Folder {
   Domain = 'domains',
@@ -20,9 +27,7 @@ enum Folder {
 }
 
 interface BlockFixture {
-  readonly abstract?: boolean;
   readonly body?: string;
-  readonly extends?: string;
   readonly files?: Readonly<Record<string, string>>;
   readonly folder?: Folder;
   readonly governs?: readonly string[];
@@ -40,8 +45,6 @@ const passportOf = (block: BlockFixture): string =>
     `id: ${block.id}`,
     `summary: ${JSON.stringify(`The ${block.id} block.`)}`,
     `requires: ${listOf(block.requires)}`,
-    `extends: ${block.extends ?? 'null'}`,
-    `abstract: ${String(block.abstract ?? false)}`,
     `languages: ${listOf(block.languages)}`,
     `governs: ${listOf(block.governs)}`,
     '---',
@@ -69,7 +72,7 @@ const blockFilesOf = (input: BlockFilesFixture): Readonly<Record<string, string>
 
       return [
         [
-          `${folder}/${block.id}.md`,
+          `${folder}/${block.id.slice(block.id.lastIndexOf('/') + 1)}.md`,
           passportOf(block),
         ],
         ...Object.entries(block.files ?? {}).map(([path, text]) => [
@@ -93,11 +96,17 @@ const ruleOf = (input: RuleFixture): string => {
   return [
     `### ${input.slug}${arrow}${level}`,
     '',
-    'A rule.',
+    RULE_STATEMENT,
     '',
-    '| Why |',
-    '|---|',
-    '| a reason. |',
+    '#### Why',
+    '',
+    RULE_WHY,
+    '',
+    '#### Examples',
+    '',
+    '```text title="Prefer"',
+    RULE_STATEMENT,
+    '```',
     '',
   ].join('\n');
 };
@@ -147,6 +156,14 @@ const parsers = (): {
   manifestParser: createJsonReleaseManifestParser(),
 });
 
+const cardsOf = (sources: readonly BlockSetSource[]): BlockCards =>
+  new Map(
+    BlockSetSource.frontMattersOf(sources).map((frontMatter) => [
+      frontMatter,
+      parsers().cardParser.card(frontMatter),
+    ]),
+  );
+
 interface Failure {
   readonly cause: unknown;
   readonly code: ProjectError['code'];
@@ -174,6 +191,7 @@ const failureOf = (act: () => unknown): Failure | undefined => {
 export type { BlockFixture };
 export {
   blockFilesOf,
+  cardsOf,
   configPath,
   Folder,
   failureOf,

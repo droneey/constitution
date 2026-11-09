@@ -1,0 +1,8 @@
+core:
+  secret-kept-out-of-output:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=secrets]:
+            run@redaction:
+              - --redact

@@ -1,0 +1,2622 @@
+import { describe, expect, it } from 'bun:test';
+
+import { Axis, ConfigKey, Layer, Level } from '#/kernel/constants';
+import type { ProjectWarning } from '#/kernel/entities';
+import { TermKind, WarningKind } from '#/kernel/entities';
+import {
+  AbsolutePath,
+  BlockId,
+  BlockSource,
+  PackPath,
+  RuleSlug,
+  SourceKind,
+  UnitPath,
+} from '#/kernel/value-objects';
+
+import type { BlockFixture } from '../../../../../__tests__/project.fixtures';
+import { cardsOf, Folder, ruleOf } from '../../../../../__tests__/project.fixtures';
+import {
+  activeOf,
+  configOf,
+  coreFilesOf,
+  listedOf,
+  listingOf,
+  loweringOf,
+  modelOf,
+  mustOf,
+  parsedOf,
+  sourceOf,
+  today,
+  unitListingOf,
+  unitOf,
+  yamlOf,
+} from '../../../../../__tests__/resolution.fixtures';
+import type { BlockSetSource } from '../../../../block-set/entities';
+import { SourceStatus } from '../../../../block-set/entities';
+import type { ProjectConfig } from '../../../../project-config/entities';
+import type { Resolution } from '../../../../resolution/entities';
+import { resolveDeclaration } from '../resolve-declaration.service';
+
+const resolvedOf = (input: {
+  config: ProjectConfig;
+  sources: readonly BlockSetSource[];
+  today: Temporal.PlainDate;
+}): Resolution =>
+  resolveDeclaration({
+    ...input,
+    cards: cardsOf(input.sources),
+  });
+
+const ui: BlockFixture = {
+  body: [
+    ruleOf({
+      level: 'MUST',
+      slug: 'inputs-are-labelled',
+    }),
+    ruleOf({
+      level: 'SHOULD',
+      slug: 'focus-is-shown',
+    }),
+    ruleOf({
+      level: 'MUST',
+      slug: 'themes-are-tokens',
+    }),
+  ].join('\n'),
+  files: {
+    '@workflow/release.md': ruleOf({
+      level: 'MUST',
+      slug: 'screens-are-reviewed',
+    }),
+    '@foundation/with/redux.md': ruleOf({
+      level: 'MUST',
+      slug: 'state-is-not-in-screens',
+    }),
+  },
+  governs: [
+    '**/*.tsx',
+  ],
+  id: 'ui',
+};
+const BASE: BlockFixture = {
+  id: 'base',
+} as const;
+const STORE: BlockFixture = {
+  id: 'base/store',
+} as const;
+const REDUX: BlockFixture = {
+  folder: Folder.Implementation,
+  id: 'redux',
+} as const;
+const ZUSTAND: BlockFixture = {
+  folder: Folder.Implementation,
+  id: 'zustand',
+} as const;
+const MOBX: BlockFixture = {
+  folder: Folder.Implementation,
+  id: 'mobx',
+} as const;
+const WEB: BlockFixture = {
+  folder: Folder.Platform,
+  id: 'web',
+} as const;
+const TYPESCRIPT: BlockFixture = {
+  folder: Folder.Language,
+  id: 'typescript',
+} as const;
+const react: BlockFixture = {
+  folder: Folder.Implementation,
+  id: 'react',
+};
+const vite: BlockFixture = {
+  folder: Folder.Implementation,
+  id: 'vite',
+  requires: [
+    'ui',
+  ],
+};
+const blockSet = sourceOf({
+  blocks: [
+    ui,
+    BASE,
+    STORE,
+    REDUX,
+    ZUSTAND,
+    MOBX,
+    WEB,
+    TYPESCRIPT,
+    react,
+    vite,
+  ],
+});
+
+const NESTED_CORE = {
+  files: {
+    '@foundation/code.md': '# Code\n',
+  },
+} as const;
+const JS_RUNTIME: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    '**/package.json',
+    '**/*.ts',
+  ],
+  id: 'js-runtime',
+} as const;
+const BUN: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    '**/bunfig.toml',
+    '**/package.json',
+  ],
+  id: 'js-runtime/bun',
+  requires: [
+    'task-runner',
+  ],
+} as const;
+const TASK_RUNNER: BlockFixture = {
+  files: {
+    '@foundation/tasks.md': '# Tasks\n',
+  },
+  folder: Folder.Implementation,
+  id: 'task-runner',
+} as const;
+const POE: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    'pyproject.toml',
+  ],
+  id: 'task-runner/poe',
+} as const;
+
+describe('resolveDeclaration', () => {
+  it.each<{
+    condition: string;
+    members: Readonly<Record<string, string>>;
+    text: string;
+    warnings: readonly ProjectWarning[];
+  }>([
+    {
+      condition: 'no key it knows is written',
+      members: {},
+      text: 'colour: blue\n',
+      warnings: [
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Axes,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Domains,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Platforms,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Languages,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Implementations,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Packs,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Overrides,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: 'colour',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
+      ],
+    },
+    {
+      condition: 'every key is left empty',
+      members: {},
+      text: 'axes:\ndomains:\nplatforms:\nlanguages:\nimplementations:\npacks:\noverrides:\n',
+      warnings: [
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Axes,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Domains,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Platforms,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Languages,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Implementations,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Packs,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: ConfigKey.Overrides,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+      ],
+    },
+    {
+      condition: 'a member leaves a list empty',
+      members: {
+        'apps/web': yamlOf({
+          domains: 'domains:',
+        }),
+      },
+      text: yamlOf(),
+      warnings: [
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Domains,
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+      ],
+    },
+    {
+      condition: 'a member writes only some keys and names a check',
+      members: {
+        'apps/web': 'domains: []\ncheck: bun run check\ncolour: blue\n',
+      },
+      text: yamlOf(),
+      warnings: [
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Axes,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Platforms,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Languages,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Implementations,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Packs,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: ConfigKey.Overrides,
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'check',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'colour',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
+      ],
+    },
+    {
+      condition: "the repository still lists its packages' blocks",
+      members: {},
+      text: yamlOf({
+        packages: 'packages:\n  apps/web:\n    domains: [ui]',
+      }),
+      warnings: [
+        {
+          details: {
+            file: 'constitution.yaml',
+            key: 'packages',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
+      ],
+    },
+    {
+      condition: 'axes names foundation or a word that is no axis',
+      members: {
+        'apps/web': yamlOf({
+          axes: 'axes: [foundation]',
+        }),
+      },
+      text: yamlOf({
+        axes: 'axes: [foundation, colour, workflow]',
+      }),
+      warnings: [
+        {
+          details: {
+            file: 'constitution.yaml',
+          },
+          kind: WarningKind.FoundationListed,
+        },
+        {
+          details: {
+            axis: 'colour',
+          },
+          kind: WarningKind.AxisUnknown,
+        },
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+          },
+          kind: WarningKind.FoundationListed,
+        },
+      ],
+    },
+  ])(
+    'should warn of the keys of each constitution.yaml when $condition',
+    ({ members, text, warnings }) => {
+      // Arrange
+      const config = parsedOf(text, members);
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          blockSet,
+        ],
+        today,
+      });
+
+      // Assert
+      expect(resolution.warnings).toStrictEqual(warnings);
+    },
+  );
+
+  it.each([
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'a block is named by a path',
+      keys: {
+        domains: 'domains: [rules/ui]',
+      },
+      warnings: [
+        {
+          details: {
+            name: 'rules/ui',
+          },
+          kind: WarningKind.NameIsPath,
+        },
+      ],
+    },
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'a name is no block',
+      keys: {
+        domains: 'domains: [forms]',
+      },
+      warnings: [
+        {
+          details: {
+            name: 'forms',
+          },
+          kind: WarningKind.NameUnknown,
+        },
+      ],
+    },
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'core is listed',
+      keys: {
+        platforms: 'platforms: [core]',
+      },
+      warnings: [
+        {
+          details: {
+            key: ConfigKey.Platforms,
+          },
+          kind: WarningKind.CoreListed,
+        },
+      ],
+    },
+    {
+      blocks: [
+        'core',
+        'base/store',
+        'base',
+      ],
+      condition: 'a parent is listed alone',
+      keys: {
+        domains: 'domains: [base/store, base]',
+      },
+      warnings: [],
+    },
+    {
+      blocks: [
+        'core',
+        'web',
+        'redux',
+        'ui',
+        'typescript',
+      ],
+      condition: 'blocks are listed under the key of another layer',
+      keys: {
+        domains: 'domains: [web]',
+        implementations: 'implementations: [typescript]',
+        languages: 'languages: [ui]',
+        platforms: 'platforms: [redux]',
+      },
+      warnings: [
+        {
+          details: {
+            key: ConfigKey.Domains,
+            layer: Layer.Platform,
+            name: 'web',
+            toKey: ConfigKey.Platforms,
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
+          details: {
+            key: ConfigKey.Platforms,
+            layer: Layer.Implementation,
+            name: 'redux',
+            toKey: ConfigKey.Implementations,
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
+          details: {
+            key: ConfigKey.Languages,
+            layer: Layer.Domain,
+            name: 'ui',
+            toKey: ConfigKey.Domains,
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
+          details: {
+            key: ConfigKey.Implementations,
+            layer: Layer.Language,
+            name: 'typescript',
+            toKey: ConfigKey.Languages,
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+      ],
+    },
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'packs name folders, not blocks',
+      keys: {
+        packs: 'packs: [rules]',
+      },
+      warnings: [],
+    },
+  ])('should warn of a name it cannot activate when $condition', ({ blocks, keys, warnings }) => {
+    // Arrange
+    const config = configOf(keys);
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        blockSet,
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      blocks: [
+        ...(resolution.units[0]?.blocks ?? []),
+      ].map((id): string => id),
+      warnings: resolution.warnings,
+    }).toStrictEqual({
+      blocks: [
+        ...blocks,
+      ],
+      warnings,
+    });
+  });
+
+  it.each([
+    {
+      condition: 'the block it needs has no child',
+      keys: {
+        implementations: 'implementations: [vite]',
+      },
+      members: {},
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              id: 'ui',
+            },
+            vite,
+          ],
+        }),
+      ],
+      warnings: [
+        {
+          details: {
+            block: BlockId.create('vite'),
+            key: ConfigKey.Domains,
+            required: BlockId.create('ui'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+      ],
+    },
+    {
+      condition: 'the repository and a member each list blocks whose needs they do not list',
+      keys: {
+        implementations: 'implementations: [vite]',
+      },
+      members: {
+        'apps/api': {
+          platforms: 'platforms: [web]',
+        },
+        'apps/web': {
+          implementations: 'implementations: [vite, nest]',
+        },
+      },
+      sources: [
+        sourceOf({
+          blocks: [
+            ui,
+            STORE,
+            BASE,
+            WEB,
+            vite,
+            {
+              folder: Folder.Implementation,
+              id: 'nest',
+              requires: [
+                'base/store',
+                'web',
+                'core',
+                'typescript',
+              ],
+            },
+          ],
+        }),
+      ],
+      warnings: [
+        {
+          details: {
+            block: BlockId.create('vite'),
+            key: ConfigKey.Domains,
+            required: BlockId.create('ui'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
+          details: {
+            block: BlockId.create('nest'),
+            key: ConfigKey.Domains,
+            required: BlockId.create('base/store'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
+          details: {
+            block: BlockId.create('nest'),
+            key: ConfigKey.Platforms,
+            required: BlockId.create('web'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
+          details: {
+            block: BlockId.create('vite'),
+            key: ConfigKey.Domains,
+            required: BlockId.create('ui'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
+          details: {
+            block: BlockId.create('nest'),
+            required: 'typescript',
+            source: SourceKind.Release,
+          },
+          kind: WarningKind.RequiredNoBlock,
+        },
+      ],
+    },
+  ])('should warn of a need not listed when $condition', ({ keys, members, sources, warnings }) => {
+    // Arrange
+    const config = configOf(keys, members);
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources,
+      today,
+    });
+
+    // Assert
+    expect(resolution.warnings).toStrictEqual(warnings);
+  });
+
+  it.each([
+    {
+      condition: 'overrides leave out fields',
+      overrides:
+        'overrides:\n  - rule: inputs-are-labelled\n  - level: SHOULD\n  - reason: A reason.\n    until: 2026-07-01',
+      warnings: [
+        {
+          details: {
+            line: 8,
+            missing: [
+              'level',
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+        {
+          details: {
+            line: 9,
+            missing: [
+              'rule',
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+        {
+          details: {
+            line: 10,
+            missing: [
+              'rule',
+              'level',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+      ],
+    },
+    {
+      condition: 'an override leaves out only its rule',
+      overrides: 'overrides:\n  - level: SHOULD\n    reason: A reason.',
+      warnings: [
+        {
+          details: {
+            line: 8,
+            missing: [
+              'rule',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+      ],
+    },
+    {
+      condition: 'an override leaves out only its level',
+      overrides: 'overrides:\n  - rule: inputs-are-labelled\n    reason: A reason.',
+      warnings: [
+        {
+          details: {
+            line: 8,
+            missing: [
+              'level',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+      ],
+    },
+    {
+      condition: 'an override leaves out only its reason',
+      overrides: 'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD',
+      warnings: [
+        {
+          details: {
+            line: 8,
+            missing: [
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+      ],
+    },
+    {
+      condition: 'an override sets MUST',
+      overrides:
+        'overrides:\n  - rule: inputs-are-labelled\n    level: MUST\n    reason: A reason.',
+      warnings: [
+        {
+          details: {
+            level: 'MUST',
+            rule: 'inputs-are-labelled',
+          },
+          kind: WarningKind.OverrideLevelNotLowered,
+        },
+      ],
+    },
+    {
+      condition: 'until is no calendar date written YYYY-MM-DD',
+      overrides:
+        'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: soon\n  - rule: focus-is-shown\n    level: SHOULD\n    reason: A reason.\n    until: x2026-07-01\n  - rule: themes-are-tokens\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01x\n  - rule: hooks-at-top-level\n    level: SHOULD\n    reason: A reason.\n    until: 2026-02-30\n  - rule: screens-are-reviewed\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01T10:00\n  - rule: state-is-not-in-screens\n    level: SHOULD\n    reason: A reason.\n    until: +002026-07-01',
+      warnings: [
+        {
+          details: {
+            rule: 'inputs-are-labelled',
+            until: 'soon',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
+          details: {
+            rule: 'focus-is-shown',
+            until: 'x2026-07-01',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
+          details: {
+            rule: 'themes-are-tokens',
+            until: '2026-07-01x',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
+          details: {
+            rule: 'hooks-at-top-level',
+            until: '2026-02-30',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
+          details: {
+            rule: 'screens-are-reviewed',
+            until: '2026-07-01T10:00',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
+          details: {
+            rule: 'state-is-not-in-screens',
+            until: '+002026-07-01',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+      ],
+    },
+    {
+      condition: 'an override names no rule or has expired',
+      overrides:
+        'overrides:\n  - rule: no-such-rule\n    level: MAY\n    reason: A reason.\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: 2026-06-14\n  - rule: focus-is-shown\n    level: MAY\n    reason: A reason.\n    until: 2026-06-15',
+      warnings: [
+        {
+          details: {
+            rule: 'no-such-rule',
+          },
+          kind: WarningKind.OverrideNamesNoRule,
+        },
+        {
+          details: {
+            rule: 'inputs-are-labelled',
+            until: '2026-06-14',
+          },
+          kind: WarningKind.OverrideExpired,
+        },
+      ],
+    },
+  ])('should warn of an override that cannot hold when $condition', ({ overrides, warnings }) => {
+    // Arrange
+    const config = configOf({
+      overrides,
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        blockSet,
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.warnings).toStrictEqual(warnings);
+  });
+
+  it.each([
+    {
+      condition: 'neither the repository nor its member writes axes',
+      members: {
+        'apps/web': 'domains: []\n',
+      },
+      text: 'domains: []\n',
+      units: [
+        unitOf(),
+        unitOf({
+          path: 'apps/web',
+        }),
+      ],
+    },
+    {
+      condition:
+        'the repository picks workflow and its member, which takes nothing from it, leaves axes out',
+      members: {
+        'apps/web': 'domains: []\n',
+      },
+      text: 'axes: [workflow, foundation]\n',
+      units: [
+        unitOf({
+          axes: [
+            Axis.Foundation,
+            Axis.Workflow,
+          ],
+        }),
+        unitOf({
+          path: 'apps/web',
+        }),
+      ],
+    },
+    {
+      condition: 'the repository picks architecture and its member leaves axes empty',
+      members: {
+        'apps/web': 'axes:\n',
+      },
+      text: 'axes: [architecture]\n',
+      units: [
+        unitOf({
+          axes: [
+            Axis.Foundation,
+            Axis.Architecture,
+          ],
+        }),
+        unitOf({
+          path: 'apps/web',
+        }),
+      ],
+    },
+    {
+      condition: 'the repository picks neither axis and its member picks both',
+      members: {
+        'apps/web': 'axes: [workflow, architecture, colour]\n',
+      },
+      text: 'axes: []\n',
+      units: [
+        unitOf({
+          axes: [
+            Axis.Foundation,
+          ],
+        }),
+        unitOf({
+          path: 'apps/web',
+        }),
+      ],
+    },
+  ])(
+    'should give each scope foundation and the axes it picks when $condition',
+    ({ members, text, units }) => {
+      // Arrange
+      const config = parsedOf(text, members);
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          sourceOf(),
+        ],
+        today,
+      });
+
+      // Assert
+      expect(resolution.units).toStrictEqual(units);
+    },
+  );
+
+  it('should hold in each unit the blocks its own file lists, with the blocks they sit under, when members list blocks', () => {
+    // Arrange
+    const config = configOf(
+      {
+        domains: 'domains: [ui]',
+      },
+      {
+        'apps/web': {
+          implementations: 'implementations: [state/redux]',
+        },
+        'apps/api': {
+          implementations: 'implementations: [cache/redis]',
+          platforms: 'platforms: [web]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              governs: [
+                '**/*.tsx',
+              ],
+              id: 'ui',
+            },
+            {
+              folder: Folder.Implementation,
+              id: 'state',
+            },
+            {
+              folder: Folder.Implementation,
+              governs: [
+                '**/*.store.ts',
+              ],
+              id: 'state/redux',
+            },
+            {
+              folder: Folder.Implementation,
+              id: 'state/zustand',
+            },
+            WEB,
+            {
+              folder: Folder.Implementation,
+              id: 'cache',
+            },
+            {
+              folder: Folder.Implementation,
+              governs: [
+                '**/*.cache.ts',
+              ],
+              id: 'cache/redis',
+            },
+          ],
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map(),
+      active: [
+        activeOf({
+          files: [
+            'blocks/domains/ui/ui.md',
+          ],
+          governs: [
+            '**/*.tsx',
+          ],
+          id: 'ui',
+        }),
+        activeOf({
+          files: [
+            'blocks/implementations/state/state.md',
+          ],
+          governs: [
+            '**/*.store.ts',
+          ],
+          id: 'state',
+          unit: 'apps/web',
+        }),
+        activeOf({
+          files: [
+            'blocks/implementations/state/redux/redux.md',
+          ],
+          governs: [
+            '**/*.store.ts',
+          ],
+          id: 'state/redux',
+          unit: 'apps/web',
+        }),
+        activeOf({
+          files: [
+            'blocks/contexts/platforms/web/web.md',
+          ],
+          governs: [],
+          id: 'web',
+          unit: 'apps/api',
+        }),
+        activeOf({
+          files: [
+            'blocks/implementations/cache/cache.md',
+          ],
+          governs: [
+            '**/*.cache.ts',
+          ],
+          id: 'cache',
+          unit: 'apps/api',
+        }),
+        activeOf({
+          files: [
+            'blocks/implementations/cache/redis/redis.md',
+          ],
+          governs: [
+            '**/*.cache.ts',
+          ],
+          id: 'cache/redis',
+          unit: 'apps/api',
+        }),
+      ],
+      listing: listingOf({
+        repository: [
+          listedOf({
+            id: 'ui',
+            layer: Layer.Domain,
+          }),
+        ],
+        units: [
+          unitListingOf({
+            own: [
+              {
+                id: 'state',
+              },
+              {
+                id: 'state/redux',
+              },
+            ],
+            leftOutBlocks: [
+              'ui',
+            ],
+            unit: 'apps/web',
+          }),
+          unitListingOf({
+            own: [
+              {
+                id: 'web',
+              },
+              {
+                id: 'cache',
+              },
+              {
+                id: 'cache/redis',
+              },
+            ],
+            leftOutBlocks: [
+              'ui',
+            ],
+            unit: 'apps/api',
+          }),
+        ],
+      }),
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            governs: [
+              '**/*.tsx',
+            ],
+            id: 'ui',
+          },
+          {
+            id: 'web',
+            layer: Layer.Platform,
+          },
+          {
+            id: 'cache',
+            layer: Layer.Implementation,
+          },
+          {
+            governs: [
+              '**/*.cache.ts',
+            ],
+            id: 'cache/redis',
+            layer: Layer.Implementation,
+          },
+          {
+            id: 'state',
+            layer: Layer.Implementation,
+          },
+          {
+            governs: [
+              '**/*.store.ts',
+            ],
+            id: 'state/redux',
+            layer: Layer.Implementation,
+          },
+          {
+            id: 'state/zustand',
+            layer: Layer.Implementation,
+          },
+        ],
+      }),
+      mustsBesideCore: [],
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'ui',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'state/redux',
+            'state',
+          ],
+          path: 'apps/web',
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'web',
+            'cache/redis',
+            'cache',
+          ],
+          path: 'apps/api',
+        }),
+      ],
+      warnings: [],
+    });
+  });
+
+  it('should lower each rule an override names and every rule that takes its level from it when overrides hold', () => {
+    // Arrange
+    const config = configOf(
+      {
+        domains: 'domains: [forms]',
+        overrides:
+          'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n  - rule: loops-back\n    level: MAY\n    reason: A reason.',
+      },
+      {
+        'apps/web': {
+          domains: 'domains: [forms]',
+          overrides:
+            'overrides:\n  - rule: inputs-are-labelled\n    level: MAY\n    reason: A reason.\n    until: 2026-06-15',
+        },
+        'apps/api': {
+          domains: 'domains: [forms]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              body: [
+                ruleOf({
+                  level: 'MUST',
+                  slug: 'inputs-are-labelled',
+                }),
+                ruleOf({
+                  tightens: 'inputs-are-labelled',
+                  slug: 'labels-are-visible',
+                }),
+                ruleOf({
+                  tightens: 'labels-are-visible',
+                  slug: 'labels-are-above',
+                }),
+                ruleOf({
+                  level: 'MUST',
+                  tightens: 'inputs-are-labelled',
+                  slug: 'labels-are-translated',
+                }),
+                ruleOf({
+                  tightens: 'loops-ahead',
+                  slug: 'loops-back',
+                }),
+                ruleOf({
+                  tightens: 'loops-back',
+                  slug: 'loops-ahead',
+                }),
+              ].join('\n'),
+              id: 'forms',
+            },
+          ],
+          core: {
+            body: ruleOf({
+              level: 'MUST',
+              slug: 'names-say-what',
+            }),
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map([
+        [
+          RuleSlug.create('inputs-are-labelled'),
+          [
+            loweringOf({
+              level: Level.Should,
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('labels-are-visible'),
+          [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('labels-are-above'),
+          [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('loops-back'),
+          [
+            loweringOf({
+              level: Level.May,
+            }),
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('loops-ahead'),
+          [
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+        ],
+      ]),
+      active: [
+        activeOf({
+          files: [
+            'blocks/domains/forms/forms.md',
+          ],
+          governs: [],
+          id: 'forms',
+        }),
+        activeOf({
+          files: [
+            'blocks/domains/forms/forms.md',
+          ],
+          governs: [],
+          id: 'forms',
+          unit: 'apps/web',
+        }),
+        activeOf({
+          files: [
+            'blocks/domains/forms/forms.md',
+          ],
+          governs: [],
+          id: 'forms',
+          unit: 'apps/api',
+        }),
+      ],
+      listing: listingOf({
+        repository: [
+          listedOf({
+            id: 'forms',
+            layer: Layer.Domain,
+          }),
+        ],
+        units: [
+          unitListingOf({
+            unit: 'apps/web',
+          }),
+          unitListingOf({
+            unit: 'apps/api',
+          }),
+        ],
+      }),
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'forms',
+          },
+        ],
+        rules: [
+          {
+            block: 'core',
+            slug: 'names-say-what',
+          },
+          {
+            block: 'forms',
+            slug: 'inputs-are-labelled',
+          },
+          {
+            block: 'forms',
+            isLevelStated: false,
+            slug: 'labels-are-visible',
+            tightens: 'inputs-are-labelled',
+          },
+          {
+            block: 'forms',
+            isLevelStated: false,
+            slug: 'labels-are-above',
+            tightens: 'labels-are-visible',
+          },
+          {
+            block: 'forms',
+            slug: 'labels-are-translated',
+            tightens: 'inputs-are-labelled',
+          },
+          {
+            block: 'forms',
+            isLevelStated: false,
+            slug: 'loops-back',
+            tightens: 'loops-ahead',
+          },
+          {
+            block: 'forms',
+            isLevelStated: false,
+            slug: 'loops-ahead',
+            tightens: 'loops-back',
+          },
+        ],
+      }),
+      mustsBesideCore: [
+        mustOf({
+          block: 'forms',
+          lowerings: [
+            loweringOf({
+              level: Level.Should,
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+            }),
+          ],
+          slug: 'inputs-are-labelled',
+        }),
+        mustOf({
+          block: 'forms',
+          lowerings: [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+          slug: 'labels-are-visible',
+        }),
+        mustOf({
+          block: 'forms',
+          lowerings: [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+          slug: 'labels-are-above',
+        }),
+        mustOf({
+          block: 'forms',
+          slug: 'labels-are-translated',
+        }),
+        mustOf({
+          block: 'forms',
+          lowerings: [
+            loweringOf({
+              level: Level.May,
+            }),
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+          slug: 'loops-back',
+        }),
+        mustOf({
+          block: 'forms',
+          lowerings: [
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+          slug: 'loops-ahead',
+        }),
+      ],
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'forms',
+          ],
+          loweredRules: [
+            'inputs-are-labelled',
+            'labels-are-visible',
+            'labels-are-above',
+            'loops-back',
+            'loops-ahead',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'forms',
+          ],
+          loweredRules: [
+            'inputs-are-labelled',
+            'labels-are-visible',
+            'labels-are-above',
+          ],
+          path: 'apps/web',
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'forms',
+          ],
+          path: 'apps/api',
+        }),
+      ],
+      warnings: [],
+    });
+  });
+
+  it('should list the MUST rules active in any scope when blocks, axes and seams differ by scope', () => {
+    // Arrange
+    const config = configOf(
+      {
+        axes: 'axes: [architecture]',
+        domains: 'domains: [ui]',
+      },
+      {
+        'apps/web': {
+          axes: 'axes: [workflow]',
+          domains: 'domains: [ui]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            ui,
+            REDUX,
+            {
+              body: ruleOf({
+                level: 'MUST',
+                slug: 'builds-are-cached',
+              }),
+              folder: Folder.Implementation,
+              id: 'vite',
+            },
+          ],
+          core: {
+            body: ruleOf({
+              level: 'MUST',
+              slug: 'names-say-what',
+            }),
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.mustsBesideCore).toStrictEqual([
+      mustOf({
+        block: 'ui',
+        slug: 'inputs-are-labelled',
+      }),
+      mustOf({
+        block: 'ui',
+        slug: 'themes-are-tokens',
+      }),
+      mustOf({
+        block: 'ui',
+        slug: 'screens-are-reviewed',
+      }),
+    ]);
+  });
+
+  it('should list the repository blocks by layer and what each member adds and leaves out when the project spans members and a pack', () => {
+    // Arrange
+    const config = configOf(
+      {
+        axes: 'axes: [architecture]',
+        domains: 'domains: [ui]',
+        implementations: 'implementations: [react, lint]',
+        languages: 'languages: [typescript]',
+        packs: 'packs: [./rules]',
+        platforms: 'platforms: [browser]',
+      },
+      {
+        'apps/web': {
+          domains: 'domains: [ui]',
+          implementations: 'implementations: [react, redux, lint]',
+          languages: 'languages: [typescript]',
+          packs: 'packs: [../../rules]',
+          platforms: 'platforms: [browser, web]',
+        },
+        'apps/api': {
+          axes: 'axes: []',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              ...ui,
+              files: {
+                '@architecture/layers.md': '# Layers\n',
+                '@architecture/with/redux.md': '# Redux\n',
+                '@foundation/writing.md-files.md': '# Writing .md files\n',
+                '@foundation/with/react.md': '# React\n',
+                '@workflow/release.md': '# Release\n',
+                '@workflow/with/react.md': '# React\n',
+              },
+            },
+            TYPESCRIPT,
+            {
+              folder: Folder.Platform,
+              id: 'browser',
+            },
+            {
+              files: {
+                '@workflow/deploy.md': '# Deploy\n',
+              },
+              folder: Folder.Platform,
+              id: 'web',
+            },
+            react,
+            REDUX,
+          ],
+          core: {
+            files: {
+              '@workflow/delivery.md': '# Delivery\n',
+            },
+          },
+        }),
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'lint',
+            },
+          ],
+          source: './rules',
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.listing).toStrictEqual(
+      listingOf({
+        repository: [
+          listedOf({
+            id: 'ui',
+            layer: Layer.Domain,
+          }),
+          listedOf({
+            id: 'browser',
+            layer: Layer.Platform,
+          }),
+          listedOf({
+            id: 'typescript',
+            layer: Layer.Language,
+          }),
+          listedOf({
+            id: 'react',
+            layer: Layer.Implementation,
+          }),
+          listedOf({
+            id: 'lint',
+            layer: Layer.Implementation,
+            pack: './rules',
+          }),
+        ],
+        units: [
+          unitListingOf({
+            own: [
+              {
+                id: 'web',
+              },
+              {
+                id: 'redux',
+              },
+            ],
+            unit: 'apps/web',
+          }),
+          unitListingOf({
+            leftOutAxes: [
+              Axis.Architecture,
+            ],
+            leftOutBlocks: [
+              'ui',
+              'browser',
+              'typescript',
+              'react',
+              'lint',
+            ],
+            unit: 'apps/api',
+          }),
+        ],
+      }),
+    );
+  });
+
+  it('should give each active block its files and the globs of every block that needs it when blocks need others', () => {
+    // Arrange
+    const config = configOf(
+      {
+        axes: 'axes: [architecture]',
+        domains: 'domains: [ui]',
+        implementations: 'implementations: [react, lint]',
+        languages: 'languages: [typescript]',
+        packs: 'packs: [./rules]',
+      },
+      {
+        'apps/web': {
+          domains: 'domains: [ui]',
+          implementations: 'implementations: [react, lint]',
+          languages: 'languages: [typescript]',
+          packs: 'packs: [../../rules]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              files: {
+                '@architecture/layers.md': '# Layers\n',
+                '@foundation/with/react.md': '# React\n',
+                '@workflow/release.md': '# Release\n',
+                '@workflow/with/lint.md': '# Lint\n',
+                '@workflow/with/redux.md': '# Redux\n',
+              },
+              governs: [
+                '**/*.tsx',
+                '**/*.css',
+                '**/*.tsx',
+              ],
+              id: 'ui',
+              requires: [
+                'core',
+              ],
+            },
+            {
+              folder: Folder.Language,
+              governs: [
+                '**/*.ts',
+              ],
+              id: 'typescript',
+              requires: [
+                'react',
+              ],
+            },
+            {
+              folder: Folder.Implementation,
+              governs: [
+                '**/*.jsx',
+                '**/*.tsx',
+              ],
+              id: 'react',
+              requires: [
+                'typescript',
+                'core',
+              ],
+            },
+            REDUX,
+          ],
+          core: {
+            files: {
+              '@foundation/with/lint.md': '# Lint\n',
+            },
+            governs: [
+              '**/*.md',
+            ],
+          },
+        }),
+        sourceOf({
+          blocks: [
+            {
+              files: {
+                '@architecture/rules.md': '# Rules\n',
+              },
+              folder: Folder.Implementation,
+              governs: [
+                '**/*',
+              ],
+              id: 'lint',
+            },
+          ],
+          source: './rules',
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.active).toStrictEqual([
+      activeOf({
+        files: [
+          'blocks/domains/ui/ui.md',
+          'blocks/domains/ui/@architecture/layers.md',
+          'blocks/domains/ui/@foundation/with/react.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+        ],
+        id: 'ui',
+      }),
+      activeOf({
+        files: [
+          'blocks/contexts/languages/typescript/typescript.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+          '**/*.ts',
+          '**/*.jsx',
+        ],
+        id: 'typescript',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/react/react.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+          '**/*.ts',
+          '**/*.jsx',
+        ],
+        id: 'react',
+      }),
+      activeOf({
+        files: [
+          './rules/blocks/implementations/lint/lint.md',
+          './rules/blocks/implementations/lint/@architecture/rules.md',
+        ],
+        source: SourceKind.Pack,
+        governs: [
+          '**/*',
+        ],
+        id: 'lint',
+      }),
+      activeOf({
+        files: [
+          'blocks/domains/ui/ui.md',
+          'blocks/domains/ui/@architecture/layers.md',
+          'blocks/domains/ui/@workflow/release.md',
+          'blocks/domains/ui/@foundation/with/react.md',
+          'blocks/domains/ui/@workflow/with/lint.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+        ],
+        id: 'ui',
+        unit: 'apps/web',
+      }),
+      activeOf({
+        files: [
+          'blocks/contexts/languages/typescript/typescript.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+          '**/*.ts',
+          '**/*.jsx',
+        ],
+        id: 'typescript',
+        unit: 'apps/web',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/react/react.md',
+        ],
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+          '**/*.ts',
+          '**/*.jsx',
+        ],
+        id: 'react',
+        unit: 'apps/web',
+      }),
+      activeOf({
+        files: [
+          './rules/blocks/implementations/lint/lint.md',
+          './rules/blocks/implementations/lint/@architecture/rules.md',
+        ],
+        source: SourceKind.Pack,
+        governs: [
+          '**/*.tsx',
+          '**/*.css',
+          '**/*',
+        ],
+        id: 'lint',
+        unit: 'apps/web',
+      }),
+    ]);
+  });
+
+  it('should leave out a block of a pack its unit does not list when only the repository lists the pack', () => {
+    // Arrange
+    const config = configOf(
+      {
+        implementations: 'implementations: [lint]',
+        packs: 'packs: [./rules]',
+      },
+      {
+        'apps/web': {
+          implementations: 'implementations: [lint]',
+          packs: 'packs: [../../other]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf(),
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'lint',
+            },
+          ],
+          source: './rules',
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      blocks: resolution.units.map((unit): readonly string[] => [
+        ...unit.blocks,
+      ]),
+      warnings: resolution.warnings,
+    }).toStrictEqual({
+      blocks: [
+        [
+          'core',
+          'lint',
+        ],
+        [
+          'core',
+        ],
+      ],
+      warnings: [
+        {
+          details: {
+            file: 'apps/web/constitution.yaml',
+            name: 'lint',
+            pack: PackPath.create('./rules'),
+          },
+          kind: WarningKind.PackUnlisted,
+        },
+      ],
+    });
+  });
+
+  it('should hold no core in any scope when the release has none', () => {
+    // Arrange
+    const config = configOf(
+      {},
+      {
+        'apps/web': {},
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        {
+          files: [],
+          shownFolderPath: AbsolutePath.create('/work/project/.droneey/constitution'),
+          source: BlockSource.create(),
+          status: SourceStatus.Listed,
+        },
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map(),
+      active: [],
+      listing: listingOf({
+        units: [
+          unitListingOf({
+            unit: 'apps/web',
+          }),
+        ],
+      }),
+      model: modelOf(),
+      mustsBesideCore: [],
+      units: [
+        unitOf({
+          blocks: [],
+        }),
+        unitOf({
+          blocks: [],
+          path: 'apps/web',
+        }),
+      ],
+      warnings: [],
+    });
+  });
+
+  it("should give each unit core's chapters on its axes without the passport, and leave out a unit with none, when core holds chapters", () => {
+    // Arrange
+    const config = configOf(
+      {
+        axes: 'axes: [architecture]',
+      },
+      {
+        'apps/web': {},
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          core: {
+            files: {
+              '@workflow/release.md': '# Release\n',
+            },
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.core).toStrictEqual([
+      coreFilesOf({
+        files: [
+          'blocks/core/@workflow/release.md',
+        ],
+        unit: 'apps/web',
+      }),
+    ]);
+  });
+
+  it('should give the files of core and of an active block in their axis folders marked by @ when the release is nested', () => {
+    // Arrange
+    const config = configOf({
+      axes: 'axes: [architecture]',
+      domains: 'domains: [ui, kit]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              files: {
+                '@architecture/with/kit.md': '# Kit\n',
+                '@foundation/screens.md': '# Screens\n',
+              },
+              id: 'ui',
+            },
+            {
+              id: 'kit',
+            },
+          ],
+          core: {
+            files: {
+              '@architecture/layers.md': '# Layers\n',
+            },
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      active: resolution.active.map(({ files, id }) => ({
+        files: files.map(({ path }) => path),
+        id,
+      })),
+      core: resolution.core.map(({ files }) => files.map(({ path }) => path)),
+    }).toStrictEqual({
+      active: [
+        {
+          files: [
+            'blocks/domains/kit/kit.md',
+          ],
+          id: BlockId.create('kit'),
+        },
+        {
+          files: [
+            'blocks/domains/ui/ui.md',
+            'blocks/domains/ui/@foundation/screens.md',
+            'blocks/domains/ui/@architecture/with/kit.md',
+          ],
+          id: BlockId.create('ui'),
+        },
+      ],
+      core: [
+        [
+          'blocks/core/@architecture/layers.md',
+        ],
+      ],
+    });
+  });
+
+  it.each([
+    {
+      blocks: [
+        'core',
+        'client/browser',
+        'client',
+        'react/react-native/expo',
+        'react/react-native',
+        'react',
+      ],
+      condition: 'a child and a grandchild are listed',
+      keys: {
+        implementations: 'implementations: [react/react-native/expo]',
+        platforms: 'platforms: [client/browser]',
+      },
+      warnings: [],
+    },
+    {
+      blocks: [
+        'core',
+        'client',
+        'react',
+      ],
+      condition: 'parents are listed alone',
+      keys: {
+        implementations: 'implementations: [react]',
+        platforms: 'platforms: [client]',
+      },
+      warnings: [],
+    },
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'a child is misspelt and a path names no block',
+      keys: {
+        domains: 'domains: [rules/ui]',
+        platforms: 'platforms: [client/brwser]',
+      },
+      warnings: [
+        {
+          details: {
+            name: 'rules/ui',
+          },
+          kind: WarningKind.NameIsPath,
+        },
+        {
+          details: {
+            name: 'client/brwser',
+          },
+          kind: WarningKind.NameUnknown,
+        },
+      ],
+    },
+  ])(
+    'should turn on the ancestors of each nested block listed when $condition',
+    ({ blocks, keys, warnings }) => {
+      // Arrange
+      const config = configOf(keys);
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          sourceOf({
+            blocks: [
+              {
+                folder: Folder.Platform,
+                id: 'client',
+              },
+              {
+                folder: Folder.Platform,
+                id: 'client/browser',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react/react-native',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react/react-native/expo',
+              },
+            ],
+            core: {
+              files: {
+                '@foundation/code.md': '# Code\n',
+              },
+            },
+          }),
+        ],
+        today,
+      });
+
+      // Assert
+      expect({
+        blocks: [
+          ...(resolution.units[0]?.blocks ?? []),
+        ].map((id): string => id),
+        warnings: resolution.warnings,
+      }).toStrictEqual({
+        blocks: [
+          ...blocks,
+        ],
+        warnings,
+      });
+    },
+  );
+
+  it.each([
+    {
+      condition: 'the block it needs is left out, and its child is offered with it',
+      implementations: 'implementations: [js-runtime/bun]',
+      warnings: [
+        {
+          details: {
+            block: BlockId.create('js-runtime/bun'),
+            children: [
+              BlockId.create('task-runner/poe'),
+            ],
+            key: ConfigKey.Implementations,
+            required: BlockId.create('task-runner'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+      ],
+    },
+    {
+      condition: 'the block it needs is listed alone',
+      implementations: 'implementations: [js-runtime/bun, task-runner]',
+      warnings: [],
+    },
+    {
+      condition: 'a child of the block it needs is listed',
+      implementations: 'implementations: [js-runtime/bun, task-runner/poe]',
+      warnings: [],
+    },
+  ])(
+    "should meet a nested block's need by its parent or a child when $condition",
+    ({ implementations, warnings }) => {
+      // Arrange
+      const config = configOf({
+        implementations,
+      });
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          sourceOf({
+            blocks: [
+              JS_RUNTIME,
+              BUN,
+              TASK_RUNNER,
+              POE,
+            ],
+            core: NESTED_CORE,
+          }),
+        ],
+        today,
+      });
+
+      // Assert
+      expect(resolution.warnings).toStrictEqual(warnings);
+    },
+  );
+
+  it('should give a parent the globs of the children and the blocks that reach it, when a parent governs no file of its own', () => {
+    // Arrange
+    const config = configOf({
+      implementations: 'implementations: [js-runtime/bun, task-runner/poe]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            JS_RUNTIME,
+            BUN,
+            TASK_RUNNER,
+            POE,
+          ],
+          core: NESTED_CORE,
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.active).toStrictEqual([
+      activeOf({
+        files: [
+          'blocks/implementations/js-runtime/js-runtime.md',
+        ],
+        governs: [
+          '**/package.json',
+          '**/*.ts',
+          '**/bunfig.toml',
+        ],
+        id: 'js-runtime',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/js-runtime/bun/bun.md',
+        ],
+        governs: [
+          '**/bunfig.toml',
+          '**/package.json',
+        ],
+        id: 'js-runtime/bun',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/task-runner/task-runner.md',
+          'blocks/implementations/task-runner/@foundation/tasks.md',
+        ],
+        governs: [
+          '**/bunfig.toml',
+          '**/package.json',
+          'pyproject.toml',
+        ],
+        id: 'task-runner',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/task-runner/poe/poe.md',
+        ],
+        governs: [
+          'pyproject.toml',
+        ],
+        id: 'task-runner/poe',
+      }),
+    ]);
+  });
+
+  it("should turn on the release parent of a pack's child when the unit lists the child and its pack", () => {
+    // Arrange
+    const config = configOf({
+      implementations: 'implementations: [schema/valibot]',
+      packs: 'packs: [./rules]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'schema',
+            },
+          ],
+          core: NESTED_CORE,
+        }),
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'schema/valibot',
+            },
+          ],
+          source: './rules',
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      blocks: [
+        ...(resolution.units[0]?.blocks ?? []),
+      ].map((id): string => id),
+      warnings: resolution.warnings,
+    }).toStrictEqual({
+      blocks: [
+        'core',
+        'schema/valibot',
+        'schema',
+      ],
+      warnings: [],
+    });
+  });
+
+  it('should give each unit its name, its packs and its languages, and the model of every block at every level, when units name themselves and list packs', () => {
+    // Arrange
+    const config = configOf(
+      {
+        implementations: 'implementations: [runtime/kit]',
+        languages: 'languages: [typescript]',
+        name: "name: '@acme/workspace'",
+        packs: 'packs: [rules]',
+      },
+      {
+        'apps/web': {
+          domains: 'domains: [ui]',
+          packs: 'packs: [../../rules, own]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              body: 'Screens sit in **`screens/`**.',
+              files: {
+                '@architecture/with/runtime/kit.md': ruleOf({
+                  level: 'MAY',
+                  slug: 'screens-use-the-kit',
+                }),
+              },
+              id: 'ui',
+            },
+            TYPESCRIPT,
+            {
+              folder: Folder.Implementation,
+              id: 'runtime',
+            },
+            {
+              body: ruleOf({
+                level: 'SHOULD',
+                slug: 'kit-pinned',
+              }),
+              folder: Folder.Implementation,
+              id: 'runtime/kit',
+              languages: [
+                'typescript',
+              ],
+              requires: [
+                'typescript',
+              ],
+            },
+          ],
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      model: resolution.model,
+      units: resolution.units,
+    }).toStrictEqual({
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'ui',
+            seams: [
+              '@architecture/runtime/kit',
+            ],
+          },
+          {
+            id: 'typescript',
+            layer: Layer.Language,
+          },
+          {
+            id: 'runtime',
+            layer: Layer.Implementation,
+          },
+          {
+            id: 'runtime/kit',
+            languages: [
+              'typescript',
+            ],
+            layer: Layer.Implementation,
+            requires: [
+              'typescript',
+            ],
+          },
+        ],
+        roles: [
+          {
+            axis: Axis.Foundation,
+            block: BlockId.create('ui'),
+            kind: TermKind.Folder,
+            term: 'screens/',
+          },
+        ],
+        rules: [
+          {
+            axis: Axis.Architecture,
+            block: 'ui',
+            level: Level.May,
+            seam: 'runtime/kit',
+            slug: 'screens-use-the-kit',
+          },
+          {
+            block: 'runtime/kit',
+            level: Level.Should,
+            slug: 'kit-pinned',
+          },
+        ],
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'typescript',
+            'runtime/kit',
+            'runtime',
+          ],
+          languages: [
+            'typescript',
+          ],
+          name: '@acme/workspace',
+          packs: [
+            'rules',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'ui',
+          ],
+          packs: [
+            'rules',
+            'apps/web/own',
+          ],
+          path: 'apps/web',
+        }),
+      ],
+    });
+  });
+});

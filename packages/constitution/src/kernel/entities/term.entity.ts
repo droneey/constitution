@@ -22,10 +22,13 @@ enum TermKind {
 
 type RoleKind = TermKind.Folder | TermKind.Suffix;
 
+type SpelledKind = RoleKind | TermKind.File;
+
 interface Term {
   /** the stable name its definition gives right after the bold, `{#<id>}` */
   readonly id?: string;
   readonly kind: TermKind;
+  readonly members?: readonly string[];
   readonly term: string;
 }
 
@@ -51,6 +54,11 @@ const LEAD_IN_END = /[.:]$/;
 const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
 const TERM_ID = /^\{#([^}\n]*)\}/;
 const SUFFIX_START = '.';
+// Why: a definition runs to the end of its sentence, its paragraph or the next term it defines.
+const DEFINITION_END = /\*\*|\.\s|\n\s*\n/;
+const PARAGRAPH_END = '\n\n';
+const PLACEHOLDER = /^<[^<>]+>$/;
+const EXTENSION = /\.[^.]+$/;
 
 const codeKindOf = (name: string): TermKind => {
   if (name.endsWith(PATH_SEPARATOR)) {
@@ -109,15 +117,27 @@ const matcherOfKind: Readonly<Record<TermKind, (word: string) => (text: string) 
 /** the id written at the start of `text`, the text that follows a bold term */
 const idAfter = (text: string): string | undefined => TERM_ID.exec(text)?.[1];
 
+const membersAfter = (text: string): readonly string[] =>
+  inlineCodeSpans(text.slice(0, maskInlineCode(`${text}${PARAGRAPH_END}`).search(DEFINITION_END)));
+
 const withIdAfter = (input: { term: Term; text: string }): Term => {
   const id = idAfter(input.text);
 
-  return id === undefined
-    ? input.term
-    : {
-        ...input.term,
-        id,
-      };
+  if (id === undefined) {
+    return input.term;
+  }
+
+  const members = input.term.kind === TermKind.Concept ? membersAfter(input.text) : [];
+
+  return {
+    ...input.term,
+    id,
+    ...(members.length === 0
+      ? {}
+      : {
+          members,
+        }),
+  };
 };
 
 const isRoleKind = (kind: TermKind): kind is RoleKind =>
@@ -179,6 +199,22 @@ const roleNameOf = (role: { readonly kind: RoleKind; readonly term: string }): s
     ? role.term.slice(0, -PATH_SEPARATOR.length)
     : role.term.slice(SUFFIX_START.length);
 
+const isPlaceholder = (term: string): boolean => PLACEHOLDER.test(term);
+
+const spellingOf = (role: {
+  readonly kind: SpelledKind;
+  readonly term: string;
+}): string | undefined => {
+  if (role.kind !== TermKind.File) {
+    return roleNameOf({
+      kind: role.kind,
+      term: role.term,
+    });
+  }
+
+  return isPlaceholder(role.term) ? undefined : role.term.replace(EXTENSION, '');
+};
+
 /** the spelling of a folder without its "/", or of a suffix without its "." */
 const otherSpellingOf = (term: Term): string | undefined => {
   const { kind } = term;
@@ -199,7 +235,8 @@ const Term = {
   of,
   otherSpellingOf,
   roleNameOf,
+  spellingOf,
 } as const;
 
-export type { Bold, RoleKind, TermsRead };
+export type { Bold, RoleKind, SpelledKind, TermsRead };
 export { Term, TermKind };

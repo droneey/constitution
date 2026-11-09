@@ -1,7 +1,14 @@
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 .claude/settings.local.json
 .claude/worktrees/
-/local/
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -18,14 +25,7 @@
 *~
 .env*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+/local/
 
 # complexipy
 .complexipy_cache/

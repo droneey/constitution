@@ -1,15 +1,11 @@
 ---
 id: yaml-js
 summary: The yaml package reads and writes YAML.
-requires: [typescript]
-extends: null
-abstract: false
+requires: []
 languages: []
-governs: ["**/adapters/**"]
+governs: ["**/infrastructure/**", "**/libs/**"]
 ---
 
 # yaml-js
 
-> Reads and writes YAML.
-
-The block owns no word: the package is named after the format.
+> Reads and writes YAML, through the package `yaml`, named after the format.

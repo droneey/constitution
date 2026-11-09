@@ -1,0 +1,13 @@
+language css
+
+// Why: a media or container query measures the viewport rather than sizing a box by it.
+CssRegularDimension() as $size where {
+  $size <: r"(?i)100(?:\.0*)?vw",
+  $size <: not within or {
+    CssQueryFeaturePlain(),
+    CssQueryFeatureRange(),
+    CssQueryFeatureReverseRange(),
+    CssQueryFeatureRangeInterval()
+  },
+  register_diagnostic(span=$size, message="[full-width-leaves-out-the-scrollbar] Use 100% for a full width: 100vw counts the scrollbar", severity="error")
+}

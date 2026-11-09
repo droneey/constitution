@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -23,25 +23,29 @@ const manifest = z.object({
   scripts: z.record(z.string(), z.string()),
 });
 
+// Why: a script that runs a shell script the release ships gives its scan's flags there.
+const commandTextIn = (input: { command: string; unit: string }): string => {
+  const program = join(input.unit, input.command.split(' ')[0] ?? '');
+
+  return existsSync(program) ? readFileSync(program, 'utf8') : input.command;
+};
+
 const licencesOf = (input: { languages: readonly string[]; script: string }): readonly string[] => {
+  const unit = appliedUnit({
+    implementations: [
+      'js-runtime/bun',
+      'osv-scanner',
+    ],
+    languages: input.languages,
+  });
   const listed = LICENCES.exec(
-    manifest.parse(
-      JSON.parse(
-        readFileSync(
-          join(
-            appliedUnit({
-              implementations: [
-                'bun',
-                'osv-scanner',
-              ],
-              languages: input.languages,
-            }),
-            'package.json',
-          ),
-          'utf8',
-        ),
-      ),
-    ).scripts[input.script] ?? '',
+    commandTextIn({
+      command:
+        manifest.parse(JSON.parse(readFileSync(join(unit, 'package.json'), 'utf8'))).scripts[
+          input.script
+        ] ?? '',
+      unit,
+    }),
   )?.[1];
 
   return listed === undefined ? [] : listed.split(',');

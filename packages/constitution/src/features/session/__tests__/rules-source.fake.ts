@@ -4,8 +4,8 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 
-import type { DeclaredRules, RulesSource } from '../domain/contracts';
-import { ConfigurationsCheckStatus } from '../domain/contracts';
+import type { DeclaredRules, RulesSource } from '../application/contracts';
+import { ConfigurationsCheckStatus } from '../domain/session-digest/entities';
 
 const CORE_TEXT = '# core\n';
 const version = Version.create('1.0.0');

@@ -7,21 +7,13 @@ import { BlockModel } from '../block-model.entity';
 import { TermKind } from '../term.entity';
 
 interface BlockFixture {
-  readonly extends?: string;
   readonly id: string;
-  readonly isAbstract?: boolean;
   readonly requires?: readonly string[];
 }
 
 const blockOf = (input: BlockFixture): ModelBlock => ({
-  ...(input.extends === undefined
-    ? {}
-    : {
-        extends: BlockId.create(input.extends),
-      }),
   governs: [],
   id: BlockId.create(input.id),
-  isAbstract: input.isAbstract ?? false,
   languages: [],
   layer: Layer.Implementation,
   requires: (input.requires ?? []).map(BlockId.create),
@@ -33,7 +25,6 @@ const modelOf = (blocks: readonly BlockFixture[]): BlockModel =>
       {
         governs: [],
         id: coreBlockId,
-        isAbstract: false,
         languages: [],
         layer: Layer.Core,
         requires: [],
@@ -74,46 +65,6 @@ describe('BlockModel.blockOf', () => {
   });
 });
 
-describe('BlockModel.isExtensible', () => {
-  it.each([
-    {
-      condition: 'the block of the id is abstract',
-      expected: true,
-      id: '_store',
-    },
-    {
-      condition: 'the block of the id is concrete',
-      expected: false,
-      id: 'redis',
-    },
-    {
-      condition: 'no block of the model has the id',
-      expected: false,
-      id: 'mongo',
-    },
-  ])(
-    'should tell whether a block may extend the one of the id when $condition',
-    ({ expected, id }) => {
-      // Arrange
-      const model = modelOf([
-        {
-          id: '_store',
-          isAbstract: true,
-        },
-        {
-          id: 'redis',
-        },
-      ]);
-
-      // Act
-      const isExtensible = BlockModel.isExtensible(model, id);
-
-      // Assert
-      expect(isExtensible).toBe(expected);
-    },
-  );
-});
-
 describe('BlockModel.reachOf', () => {
   it.each<{
     blocks: readonly BlockFixture[];
@@ -124,10 +75,6 @@ describe('BlockModel.reachOf', () => {
     {
       blocks: [
         {
-          id: '_runtime',
-        },
-        {
-          extends: '_runtime',
           id: 'bun',
           requires: [
             'typescript',
@@ -146,11 +93,10 @@ describe('BlockModel.reachOf', () => {
           id: 'biome',
         },
       ],
-      condition: 'it extends a base and requires a block that requires another',
+      condition: 'it requires a block that requires another',
       expected: [
         'bun',
         'core',
-        '_runtime',
         'typescript',
         'json',
       ],
@@ -181,6 +127,61 @@ describe('BlockModel.reachOf', () => {
       reader: 'a',
     },
     {
+      blocks: [
+        {
+          id: 'task-runner',
+        },
+        {
+          id: 'js-runtime',
+        },
+        {
+          id: 'js-runtime/bun',
+          requires: [
+            'task-runner',
+          ],
+        },
+        {
+          id: 'react',
+        },
+      ],
+      condition: 'it sits in the folder of a parent and requires a block',
+      expected: [
+        'js-runtime/bun',
+        'core',
+        'task-runner',
+        'js-runtime',
+      ],
+      reader: 'js-runtime/bun',
+    },
+    {
+      blocks: [
+        {
+          id: 'react',
+          requires: [
+            'typescript',
+          ],
+        },
+        {
+          id: 'react/react-native',
+        },
+        {
+          id: 'react/react-native/expo',
+        },
+        {
+          id: 'typescript',
+        },
+      ],
+      condition: 'it sits two folders below a parent that requires a block',
+      expected: [
+        'react/react-native/expo',
+        'core',
+        'react/react-native',
+        'react',
+        'typescript',
+      ],
+      reader: 'react/react-native/expo',
+    },
+    {
       blocks: [],
       condition: 'the reader is no block',
       expected: [],
@@ -203,7 +204,6 @@ describe('BlockModel.reachOf', () => {
 const languageOf = (id: string): ModelBlock => ({
   governs: [],
   id: BlockId.create(id),
-  isAbstract: false,
   languages: [],
   layer: Layer.Language,
   requires: [],
@@ -448,7 +448,7 @@ describe('BlockModel.rolesIn', () => {
       {
         axis: Axis.Architecture,
         block: BlockId.create('ui'),
-        body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-domain}.',
+        body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-kernel}.',
       },
     ];
 
@@ -477,5 +477,182 @@ describe('BlockModel.rolesIn', () => {
         term: '.screen',
       },
     ]);
+  });
+});
+
+describe('BlockModel.rolesIn of files', () => {
+  it("should give a file a block spells under an id, and a name such as `<entry>` that stands for it under the same id, as the file's role", () => {
+    // Arrange
+    const texts = [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        body: 'A program starts at **`<entry>`**{#entry}, absence is **`<absent>`**{#absent}, **`renovate.json`** names updates and **`bun:test`** runs the specs.',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        body: 'A program starts at **`main.ts`**{#entry}, and absence is **`undefined`**{#absent}.',
+      },
+    ];
+
+    // Act
+    const roles = BlockModel.rolesIn(texts);
+
+    // Assert
+    expect(roles).toStrictEqual([
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'entry',
+        kind: TermKind.File,
+        term: '<entry>',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        id: 'entry',
+        kind: TermKind.File,
+        term: 'main.ts',
+      },
+    ]);
+  });
+});
+
+describe('BlockModel.listsIn', () => {
+  it('should give the words each concept that carries an id lists, by the block and the seam that define it', () => {
+    // Arrange
+    const texts = [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        body: 'The **empty names**{#empty-names} are `data` and `info`; the **hollow words** are `try`, and **kebab-case**{#name-case} is the case.',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        body: 'The **empty words**{#empty-names} are `data` and `item`.',
+        seam: BlockId.create('workspace'),
+      },
+    ];
+
+    // Act
+    const lists = BlockModel.listsIn(texts);
+
+    // Assert
+    expect(lists).toStrictEqual([
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'empty-names',
+        members: [
+          'data',
+          'info',
+        ],
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        id: 'empty-names',
+        members: [
+          'data',
+          'item',
+        ],
+        seam: BlockId.create('workspace'),
+      },
+    ]);
+  });
+});
+
+describe('BlockModel.listOf', () => {
+  const listModel = BlockModel.create({
+    ...roleModel,
+    lists: [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'empty-names',
+        members: [
+          'data',
+        ],
+      },
+      {
+        axis: Axis.Foundation,
+        block: python,
+        id: 'empty-names',
+        members: [
+          'data',
+          'obj',
+        ],
+      },
+    ],
+  });
+
+  it.each([
+    {
+      condition: 'a language the readers reach spells it its own way',
+      expected: [
+        'data',
+        'obj',
+      ],
+      readers: [
+        'import-linter',
+      ],
+    },
+    {
+      condition: 'the readers reach only core',
+      expected: [
+        'data',
+      ],
+      readers: [
+        'typescript',
+      ],
+    },
+    {
+      condition: 'the model knows none of the readers',
+      expected: [
+        'data',
+      ],
+      readers: [
+        'go',
+      ],
+    },
+  ])(
+    'should give the words of the most specific block the readers reach when $condition',
+    ({ expected, readers }) => {
+      // Act
+      const list = BlockModel.listOf(listModel, {
+        id: 'empty-names',
+        readers: readers.map(BlockId.create),
+      });
+
+      // Assert
+      expect(list?.members).toStrictEqual(expected);
+    },
+  );
+
+  it('should give no words for an id no concept carries', () => {
+    // Act
+    const list = BlockModel.listOf(listModel, {
+      id: 'dating-words',
+      readers: [
+        python,
+      ],
+    });
+
+    // Assert
+    expect(list).toBeUndefined();
+  });
+
+  it('should hold no list in a model made without one', () => {
+    // Act
+    const { lists } = BlockModel.create({
+      blocks: [],
+      roles: [],
+      rules: [],
+    });
+
+    // Assert
+    expect(lists).toStrictEqual([]);
   });
 });

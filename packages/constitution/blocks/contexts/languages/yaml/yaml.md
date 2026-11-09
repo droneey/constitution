@@ -2,8 +2,6 @@
 id: yaml
 summary: "YAML files: scalars, keys, aliases, loaders and the extension."
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**/*.yaml", "**/*.yml"]
 ---

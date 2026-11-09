@@ -1,0 +1,15 @@
+yaml-js:
+  yaml-package-home-is-where-yaml-is-read-or-written:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=yaml-package-home-is-where-yaml-is-read-or-written]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
+              - ^${role.source}/${role.generic-library}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/yaml/

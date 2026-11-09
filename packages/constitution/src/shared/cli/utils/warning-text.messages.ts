@@ -36,9 +36,7 @@ const FILL = {
 type ChosenKind =
   | WarningKind.MemberConfigUnparsed
   | WarningKind.KeyUnknown
-  | WarningKind.AbstractListed
   | WarningKind.BlockNeeded
-  | WarningKind.RequirementNotMet
   | WarningKind.ConfigurationsUnchecked
   | WarningKind.ReleaseLinkLoops;
 
@@ -80,10 +78,6 @@ const warningMessages: Omit<TextsOf<WarningDetails>, ChosenKind> = {
     `${file} is not inside a block folder of a domain, a context or an implementation`,
   [WarningKind.FolderMisnamed]: ({ file }) =>
     `${file} is in a block folder whose name is not a kebab-case block id — rename the folder`,
-  [WarningKind.BaseNoBlock]: ({ base, block }) =>
-    `${block} extends ${base}, which is not a block — fix its front matter`,
-  [WarningKind.BaseConcrete]: ({ base, block }) =>
-    `${block} extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
   [WarningKind.RequiredNoBlock]: ({ block, required }) =>
     `${block} requires ${required}, which is not a block — fix its front matter`,
   [WarningKind.TightensUnknownRule]: ({ rule, tightens }) =>
@@ -113,16 +107,7 @@ const checkKeyMessage = (file: string): string =>
 const unknownKeyMessage = ({ file, key }: WarningDetails[WarningKind.KeyUnknown]): string =>
   `${file} has the unknown key ${key} — remove it`;
 
-interface AbstractListedInput {
-  readonly heirs: string;
-  readonly name: string;
-}
-
-const abstractListedMessage = ({ heirs, name }: AbstractListedInput): string =>
-  `${name} cannot be listed — list ${heirs}`;
-
-const UNNAMED_HEIRS = 'one of its heirs';
-const LAST_HEIR_SEPARATOR = ' or ';
+const LAST_CHOICE_SEPARATOR = ' or ';
 
 const inUnitMessage = (unit: string): string => ` in ${unit}`;
 
@@ -137,15 +122,6 @@ interface BlockNeededInput {
 const blockNeededMessage = (input: BlockNeededInput): string =>
   `${input.block}${input.where} needs ${input.required} — add ${input.offered} to ${input.key}`;
 
-interface RequirementNotMetInput {
-  readonly block: string;
-  readonly requirement: string;
-  readonly where: string;
-}
-
-const requirementNotMetMessage = (input: RequirementNotMetInput): string =>
-  `${input.block}${input.where} does not meet ${input.requirement} — see its Requirements table`;
-
 const configurationsUncheckedMessage = (): string => 'cannot check the configurations';
 
 const configurationsUncheckedBecauseMessage = (reason: string): string =>
@@ -155,18 +131,15 @@ const releaseLinkLoopsMessage = (unit: string): string =>
   `${unit}${PATH_SEPARATOR}${releaseFolderInProject} leads back into a folder that holds it — link it to the release outside the unit`;
 
 export {
-  abstractListedMessage,
   blockNeededMessage,
   checkKeyMessage,
   configurationsUncheckedBecauseMessage,
   configurationsUncheckedMessage,
   inUnitMessage,
-  LAST_HEIR_SEPARATOR,
+  LAST_CHOICE_SEPARATOR,
   memberUnparsedMessage,
   packagesKeyMessage,
   releaseLinkLoopsMessage,
-  requirementNotMetMessage,
-  UNNAMED_HEIRS,
   unknownKeyMessage,
   warningMessages,
 };

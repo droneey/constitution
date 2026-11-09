@@ -4,8 +4,9 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { cliPath } from './cli.fixtures';
-import { environmentOf } from './package.fixtures';
+import { environmentOf, installedIn, toolEnvironment, writeFiles } from './package.fixtures';
 import { removePluginRoots } from './plugin-root.fixtures';
 import {
   createLinkedProject,
@@ -21,20 +22,26 @@ interface Ran {
 }
 
 const runnerPack = (check: string): Readonly<Record<string, string>> => ({
+  'DECISIONS.md': linesOf(
+    '# Decision Log',
+    '',
+    '## ADR-0001 — The package runs its own checks',
+    '**Date:** 2026-10-17 · **Status:** Accepted',
+  ),
   [`${MEMBER}/pack/blocks/implementations/own-runner/own-runner.md`]: linesOf(
     '---',
     'id: own-runner',
     "summary: The package's own runner.",
     'requires: []',
-    'extends: null',
-    'abstract: false',
     'languages: []',
     'governs: []',
     '---',
     '',
     '# own-runner',
+    '',
+    "> The package's own runner.",
   ),
-  [`${MEMBER}/pack/presets/own-runner/foundation.yaml`]: linesOf(
+  [`${MEMBER}/pack/presets/own-runner/@foundation.yaml`]: linesOf(
     'own-runner:',
     "  '*':",
     "    '*':",
@@ -63,7 +70,36 @@ afterAll(() => {
   removePluginRoots();
 });
 
-const projectOf = (check = 'echo checked > checked.txt'): string =>
+const seamWithCorePath = `${MEMBER}/pack/blocks/implementations/own-runner/@foundation/with/core.md`;
+
+const seamWithCore: Readonly<Record<string, string>> = {
+  [seamWithCorePath]: linesOf(
+    '# Core',
+    '',
+    '> Governs the runner beside core.',
+    '',
+    '## General',
+    '',
+    '### own-runner-runs-every-check · MUST',
+    '',
+    'Every check runs through the own runner.',
+    '',
+    '#### Why',
+    '',
+    'a check run apart is skipped.',
+    '',
+    '#### Examples',
+    '',
+    '```sh title="Prefer"',
+    'constitution run check',
+    '```',
+  ),
+};
+
+const projectOf = (
+  check = 'echo checked > checked.txt',
+  extra: Readonly<Record<string, string>> = {},
+): string =>
   createLinkedProject({
     layout: {
       config: configOf({}),
@@ -75,6 +111,7 @@ const projectOf = (check = 'echo checked > checked.txt'): string =>
           }),
         }),
         ...runnerPack(check),
+        ...extra,
       },
     },
     root,
@@ -166,6 +203,33 @@ describe('constitution run', () => {
     });
   });
 
+  it("should fail on a pack's finding of a MUST and run no unit's command", () => {
+    // Arrange
+    const project = projectOf(undefined, seamWithCore);
+
+    // Act
+    const ran = runIn({
+      args: [
+        'run',
+        'check',
+      ],
+      folder: project,
+    });
+
+    // Assert
+    expect({
+      exitCode: ran.exitCode,
+      marks: marksOf(project),
+      named: ran.stdout.includes(
+        `${seamWithCorePath}: [seam-never-pairs-with-core-or-a-related-block]`,
+      ),
+    }).toStrictEqual({
+      exitCode: 1,
+      marks: [],
+      named: true,
+    });
+  });
+
   it.each<{
     args: readonly string[];
     condition: string;
@@ -210,4 +274,151 @@ describe('constitution run', () => {
       settings: true,
     });
   });
+
+  it.each([
+    {
+      condition: 'they pass',
+      exitCode: 0,
+      reported: '(pass) should hold when run',
+      spec: "test('should hold when run', () => {\n  expect(true).toBeTrue();\n});",
+    },
+    {
+      condition: 'one fails',
+      exitCode: 1,
+      reported: '(fail) should fail when run',
+      spec: "test('should fail when run', () => {\n  expect(false).toBeTrue();\n});",
+    },
+  ])(
+    "should run a Bun unit's specs for its test when $condition",
+    ({ exitCode, reported, spec }) => {
+      // Arrange
+      const unit = installedIn(
+        appliedUnit({
+          implementations: [
+            'js-runtime/bun',
+            'task-runner',
+            'bun-test',
+          ],
+          languages: [
+            'typescript',
+          ],
+        }),
+      );
+
+      writeFiles({
+        files: {
+          'src/__tests__/hold.test.ts': `import { expect, test } from 'bun:test';\n\n${spec}\n`,
+        },
+        folder: unit,
+      });
+
+      // Act
+      const ran = spawnSync(
+        cliPath,
+        [
+          'run',
+          'test',
+          '--plain',
+        ],
+        {
+          cwd: unit,
+          encoding: 'utf8',
+          env: toolEnvironment(),
+        },
+      );
+
+      // Assert
+      expect({
+        exitCode: ran.status,
+        ran: ran.stdout.split('\n')[0],
+        reported: ran.stderr.includes(reported),
+      }).toStrictEqual({
+        exitCode,
+        ran: '$ bun run test',
+        reported: true,
+      });
+    },
+  );
+
+  it.each([
+    {
+      args: [],
+      condition: 'alone',
+      whys: [],
+    },
+    {
+      args: [
+        '--why',
+      ],
+      condition: 'with its Why when asked',
+      whys: [
+        "  Why: A naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
+        '  Why: A debug print left in code that reaches its users leaks what it prints to whoever reads the output, and a breakpoint halts the program for a user who has no debugger.',
+      ],
+    },
+  ])(
+    "should name under the failed step each rule a tool's diagnostics show broken, $condition",
+    ({ args, whys }) => {
+      // Arrange
+      const unit = installedIn(
+        appliedUnit({
+          implementations: [
+            'js-runtime/bun',
+            'task-runner',
+            'biome',
+          ],
+          languages: [
+            'typescript',
+          ],
+        }),
+      );
+
+      writeFiles({
+        files: {
+          'src/doubled.ts': linesOf(
+            'export const doubled = (count: number): number => {',
+            '  const data = count + count;',
+            '',
+            '  debugger;',
+            '',
+            '  return data;',
+            '};',
+          ),
+        },
+        folder: unit,
+      });
+
+      // Act
+      const ran = spawnSync(
+        cliPath,
+        [
+          'run',
+          'check',
+          ...args,
+          '--plain',
+        ],
+        {
+          cwd: unit,
+          encoding: 'utf8',
+          env: toolEnvironment(),
+        },
+      );
+
+      // Assert
+      expect({
+        exitCode: ran.status,
+        named: ran.stderr
+          .split('\n')
+          .filter((line) => line.includes(' · ') || line.startsWith('  Why: ')),
+      }).toStrictEqual({
+        exitCode: 1,
+        named: [
+          "biome-refuses-empty-names · MUST — Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only by one of the empty names fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.",
+          ...whys.slice(0, 1),
+          "debug-output-never-ships · MUST — All code that reaches its users is free of every debug output and breakpoint. Debug output is output written only to follow a run while the code is developed, such as a printed value or a dump. Exempt: a diagnostic written through the diagnostic handles at a level the program's settings can turn off.",
+          ...whys.slice(1),
+        ],
+      });
+    },
+  );
 });

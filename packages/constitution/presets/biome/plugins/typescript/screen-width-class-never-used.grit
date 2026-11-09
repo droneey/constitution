@@ -1,0 +1,14 @@
+language js
+
+or {
+  jsx_attribute(name=$name, value=$classes) where { $name <: r"className" },
+  or {
+    `cva($...)`,
+    `cn($...)`,
+    `clsx($...)`,
+    `twMerge($...)`
+  } as $classes where { $classes <: not within jsx_attribute() }
+} where {
+  $classes <: r"(?s).*\bw-screen\b.*",
+  register_diagnostic(span=$classes, message="[screen-width-class-never-used] Size to the container with w-full: w-screen counts the scrollbar", severity="error")
+}

@@ -1,6 +1,6 @@
 import type { AccentScale } from '@droneey/design-cli';
 
-import type { SessionsPlace } from '#/features/session/adapters/session-store';
+import type { SessionsPlace } from '#/features/session/infrastructure/session-store';
 import type { CommandIo, CommandPlaces, ExitCode } from '#/shared/cli';
 
 import type { Streams } from './presentation';
@@ -14,6 +14,7 @@ interface ProgramInput {
     readonly pluginRoot: string | undefined;
     readonly sessions: SessionsPlace;
     readonly today?: string;
+    readonly tools: Readonly<Record<string, string | undefined>>;
   };
   readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
   readonly io: CommandIo;

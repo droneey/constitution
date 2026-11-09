@@ -1,16 +1,15 @@
 import type { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
-import type { ReviewDebt, SessionState } from '../domain/entities';
-import { SessionMark } from '../domain/entities';
-import type { SessionId } from '../domain/value-objects';
-import { TreeFingerprint } from '../domain/value-objects';
+import type { SessionQueries } from '../application/contracts/repositories/queries';
+import type { SessionState } from '../domain/session/entities';
+import { SessionMark } from '../domain/session/entities';
+import type { SessionId } from '../domain/session/value-objects';
+import type { ReviewDebt } from '../domain/stop-judgement/entities';
+import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf, ownChangesIn, reviewDebtIn } from './session.fixtures';
 
-const createFakeSessionQueryRepository = (
-  sessions: HeldSessions = heldSessionsOf(),
-): SessionQueryRepository => ({
+const createFakeSessionQueries = (sessions: HeldSessions = heldSessionsOf()): SessionQueries => ({
   fingerprint: (asked): TreeFingerprint | undefined => {
     const text = sessions.get(asked.session)?.marks.get(asked.mark);
 
@@ -25,4 +24,4 @@ const createFakeSessionQueryRepository = (
     sessions.get(session)?.marks.get(SessionMark.Unjudged),
 });
 
-export { createFakeSessionQueryRepository };
+export { createFakeSessionQueries };

@@ -1,4 +1,12 @@
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 .claude/settings.local.json
 .claude/worktrees/
 .DS_Store
@@ -17,18 +25,11 @@
 *~
 .env*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+/local/
 
-# _js-runtime
+# js-runtime/bun
+.npmrc
+
+# js-runtime
 **/node_modules/
 *.tgz
-
-# bun
-.npmrc

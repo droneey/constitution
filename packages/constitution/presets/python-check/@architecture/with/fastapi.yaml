@@ -1,0 +1,10 @@
+contracts/api:
+  server-framework-imported-by-the-presentation:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              fastapi:
+                - edge
+                - ${role.presentation-layer}

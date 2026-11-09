@@ -1,0 +1,111 @@
+import { describe, expect, it } from 'bun:test';
+
+import { Layer } from '#/kernel/constants';
+import type { ProblemOf } from '#/kernel/types';
+import { BlockId } from '#/kernel/value-objects';
+import { textOf } from '#/shared/cli';
+
+import type { RequiresDetails } from '../../../domain/validate-constitution/services';
+import { RequiresCode } from '../../../domain/validate-constitution/services';
+import { requiresTexts } from '../requires-texts.utils';
+
+describe('requiresTexts', () => {
+  it.each<{
+    problem: ProblemOf<RequiresDetails>;
+    text: string;
+  }>([
+    {
+      problem: {
+        code: RequiresCode.RequiresCore,
+        details: {},
+      },
+      text: 'requires core, which is always active',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresNoBlock,
+        details: {
+          required: BlockId.create('webgl'),
+        },
+      },
+      text: 'requires webgl, which is not a block',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresItself,
+        details: {},
+      },
+      text: 'requires itself',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+            Layer.Platform,
+          ],
+          layer: Layer.Platform,
+          required: BlockId.create('typescript'),
+          requiredLayer: Layer.Language,
+        },
+      },
+      text: 'requires typescript, a language block; a platform block requires only domain blocks or platform blocks',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+          ],
+          layer: Layer.Domain,
+          required: BlockId.create('biome'),
+          requiredLayer: Layer.Implementation,
+        },
+      },
+      text: 'requires biome, an implementation block; a domain block requires only domain blocks',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+      },
+      text: "requires react, which it sits under; a block's folder already turns its parent on",
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresThroughParent,
+        details: {
+          parent: BlockId.create('react'),
+          required: BlockId.create('presentation'),
+        },
+      },
+      text: 'requires presentation, which its parent react already turns on; a passport lists only what its block needs beyond the blocks it sits under',
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+            Layer.Platform,
+            Layer.Language,
+          ],
+          layer: Layer.Implementation,
+          required: BlockId.create('core'),
+          requiredLayer: Layer.Core,
+        },
+      },
+      text: 'requires core, a core block; an implementation block requires only domain blocks, platform blocks or language blocks',
+    },
+  ])('should say $problem.code as the report words it', ({ problem, text }) => {
+    // Act
+    const said = textOf(requiresTexts, problem.code, problem.details);
+
+    // Assert
+    expect(said).toBe(text);
+  });
+});

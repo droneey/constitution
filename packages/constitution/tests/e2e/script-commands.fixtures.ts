@@ -1,3 +1,4 @@
+import type { SpawnSyncReturns } from 'node:child_process';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -6,7 +7,14 @@ import { dirname, join } from 'node:path';
 import { z } from 'zod';
 
 import { miseBinary } from './mise.fixtures';
-import { gitIn, searchPathWith, toolEnvironment } from './package.fixtures';
+import {
+  gitIn,
+  linkRelease,
+  release,
+  searchPathWith,
+  toolEnvironment,
+  writeFiles,
+} from './package.fixtures';
 import { widestAppliedUnit } from './preset-load.fixtures';
 
 interface Analysis {
@@ -33,33 +41,86 @@ const manifest = z.object({
   scripts: z.record(z.string(), z.string()),
 });
 
-const analyseScript = (text: string): Analysis => {
+const analysisOf = (run: SpawnSyncReturns<string>): Analysis => ({
+  codes: [
+    ...new Set(shellcheckReport.parse(JSON.parse(run.stdout)).map(({ code }) => code)),
+  ].toSorted((left, right) => left - right),
+  exitCode: run.status ?? undefined,
+});
+
+const analyseScript = (text: string): Analysis =>
+  analysisOf(
+    spawnSync(
+      shellcheck,
+      [
+        '--rcfile',
+        join(widestAppliedUnit('shellcheck'), RC_FILE),
+        '--format=json',
+        '-',
+      ],
+      {
+        encoding: 'utf8',
+        env: toolEnvironment(),
+        input: text,
+      },
+    ),
+  );
+
+const shippedScripts = (): readonly string[] =>
+  [
+    ...new Bun.Glob('presets/**/*.sh').scanSync({
+      cwd: release,
+    }),
+  ].toSorted((left, right) => left.localeCompare(right));
+
+const strictAnalysisOf = (script: string): Analysis =>
+  analysisOf(
+    spawnSync(
+      shellcheck,
+      [
+        '--enable=all',
+        '--severity=style',
+        '--format=json',
+        join(release, script),
+      ],
+      {
+        encoding: 'utf8',
+        env: toolEnvironment(),
+      },
+    ),
+  );
+
+interface FormatCheck {
+  readonly difference: string;
+  readonly exitCode: number | undefined;
+}
+
+const formatCheckOf = (script: string): FormatCheck => {
   const run = spawnSync(
-    shellcheck,
+    shfmt,
     [
-      '--rcfile',
-      join(widestAppliedUnit('shellcheck'), RC_FILE),
-      '--format=json',
-      '-',
+      '--diff',
+      '--simplify',
+      '--indent=2',
+      '--case-indent',
+      join(release, script),
     ],
     {
       encoding: 'utf8',
       env: toolEnvironment(),
-      input: text,
     },
   );
 
   return {
-    codes: [
-      ...new Set(shellcheckReport.parse(JSON.parse(run.stdout)).map(({ code }) => code)),
-    ].toSorted((left, right) => left - right),
+    difference: run.stdout,
     exitCode: run.status ?? undefined,
   };
 };
 
 const unitScripts = (): Readonly<Record<string, string>> =>
-  manifest.parse(JSON.parse(readFileSync(join(widestAppliedUnit('bun'), 'package.json'), 'utf8')))
-    .scripts;
+  manifest.parse(
+    JSON.parse(readFileSync(join(widestAppliedUnit('js-runtime/bun'), 'package.json'), 'utf8')),
+  ).scripts;
 
 const poeTasks = z.object({
   tool: z.object({
@@ -77,7 +138,9 @@ const unitShellTasks = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
     Object.entries(
       poeTasks.parse(
-        Bun.TOML.parse(readFileSync(join(widestAppliedUnit('poe'), 'pyproject.toml'), 'utf8')),
+        Bun.TOML.parse(
+          readFileSync(join(widestAppliedUnit('task-runner/poe'), 'pyproject.toml'), 'utf8'),
+        ),
       ).tool.poe.tasks,
     ).flatMap(([task, declared]) => {
       const parsed = shellTask.safeParse(declared);
@@ -132,6 +195,7 @@ const exitCodeBesideDeletedFile = (task: string): number | undefined => {
       'base',
     ]);
     rmSync(join(folder, 'gone.sh'));
+    linkRelease(folder);
 
     return (
       spawnSync(
@@ -161,4 +225,66 @@ const exitCodeBesideDeletedFile = (task: string): number | undefined => {
   }
 };
 
-export { analyseScript, exitCodeBesideDeletedFile, unitTasks };
+const SHELL_FILES_RUNNER = '.droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh';
+
+const filesHandedBesideMember = (member: string): readonly string[] => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-member-shell-'));
+  const shellFile = '#!/bin/sh\n';
+
+  try {
+    writeFiles({
+      files: {
+        '.gitignore': 'ignored.sh\n',
+        'ignored.sh': shellFile,
+        'kept.sh': shellFile,
+        [`${member}/skipped.sh`]: shellFile,
+        'untracked.bash': shellFile,
+      },
+      folder,
+    });
+    gitIn(folder, [
+      'init',
+      '--quiet',
+    ]);
+    gitIn(folder, [
+      'add',
+      '.gitignore',
+      'kept.sh',
+      member,
+    ]);
+    linkRelease(folder);
+
+    return spawnSync(
+      SHELL_FILES_RUNNER,
+      [
+        'printf',
+        String.raw`%s\n`,
+        '--',
+        member,
+      ],
+      {
+        cwd: folder,
+        encoding: 'utf8',
+        env: toolEnvironment(),
+      },
+    )
+      .stdout.split('\n')
+      .filter((line) => line !== '')
+      .toSorted((left, right) => left.localeCompare(right));
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
+};
+
+export {
+  analyseScript,
+  exitCodeBesideDeletedFile,
+  filesHandedBesideMember,
+  formatCheckOf,
+  shippedScripts,
+  strictAnalysisOf,
+  unitTasks,
+};

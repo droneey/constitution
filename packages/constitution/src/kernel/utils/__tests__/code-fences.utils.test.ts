@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { withoutCodeFences } from '../code-fences.utils';
+import { fencedBlocksOf, withoutCodeFences } from '../code-fences.utils';
 
 describe('withoutCodeFences', () => {
   it.each([
@@ -79,5 +79,51 @@ describe('withoutCodeFences', () => {
 
     // Assert
     expect(stripped).toBe(text);
+  });
+});
+
+describe('fencedBlocksOf', () => {
+  it('should give each fence its info and inner lines, a shorter fence inside it and an unclosed one included', () => {
+    // Arrange
+    const lines = [
+      'prose',
+      '````md title="Prefer" ',
+      '```ts',
+      'code',
+      '```',
+      '````',
+      '~~~',
+      'tree',
+      '~~~',
+      '```',
+      'open',
+    ];
+
+    // Act
+    const blocks = fencedBlocksOf(lines);
+
+    // Assert
+    expect(blocks).toStrictEqual([
+      {
+        info: 'md title="Prefer"',
+        lines: [
+          '```ts',
+          'code',
+          '```',
+        ],
+      },
+      {
+        info: '',
+        lines: [
+          'tree',
+        ],
+      },
+      {
+        info: '',
+        lines: [
+          'open',
+        ],
+      },
+    ]);
   });
 });

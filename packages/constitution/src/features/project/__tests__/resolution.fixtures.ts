@@ -23,17 +23,15 @@ import {
   UnitPath,
 } from '#/kernel/value-objects';
 
+import type { BlockSetSource, SourceFile } from '../domain/block-set/entities';
+import { SourceStatus } from '../domain/block-set/entities';
+import type { DeclaredUnit, ProjectConfig } from '../domain/project-config/entities';
 import type {
   BlockListing,
-  BlockSetSource,
-  DeclaredUnit,
   ListedBlock,
-  ProjectConfig,
-  SourceFile,
   UnitBlock,
   UnitListing,
-} from '../domain/entities';
-import { SourceStatus } from '../domain/entities';
+} from '../domain/resolution/entities';
 import type { BlockSetBlockFixture, BlockSetRuleFixture } from './block-set.fixtures';
 import { blockSetBlockOf, blockSetRuleOf } from './block-set.fixtures';
 import type { BlockFixture } from './project.fixtures';
@@ -180,6 +178,7 @@ interface ModelFixture {
 
 const modelOf = (input: ModelFixture = {}): BlockModel => ({
   blocks: (input.blocks ?? []).map(blockSetBlockOf),
+  lists: [],
   roles: input.roles ?? [],
   rules: (input.rules ?? []).map(blockSetRuleOf),
 });
@@ -286,18 +285,6 @@ const listingOf = (input: Partial<BlockListing> = {}): BlockListing => ({
   units: input.units ?? [],
 });
 
-const requirementsOf = (answers: Readonly<Record<string, string>>): string =>
-  [
-    '## Requirements',
-    '',
-    '| Requirement | How | Met |',
-    '|---|---|---|',
-    ...Object.entries(answers).map(
-      ([requirement, met]) => `| \`${requirement}\` | A way. | ${met} |`,
-    ),
-    '',
-  ].join('\n');
-
 export {
   activeOf,
   configOf,
@@ -308,7 +295,6 @@ export {
   modelOf,
   mustOf,
   parsedOf,
-  requirementsOf,
   sourceOf,
   today,
   unitListingOf,

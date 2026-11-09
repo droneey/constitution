@@ -1,12 +1,8 @@
-import { settingModel } from '../adapters/configuration/models';
-import type {
-  ConfigurationFile,
-  ConfigurationFormat,
-  ConfigurationTarget,
-  ConfigurationWrite,
-} from '../domain/contracts';
-import { SettingShape } from '../domain/contracts';
-import type { Setting } from '../domain/entities';
+import type { ConfigurationFormat, ConfigurationTarget } from '../application/contracts';
+import type { ConfigurationFile, ConfigurationWrite } from '../domain/configuration-file/entities';
+import { SettingShape } from '../domain/configuration-file/entities';
+import type { Setting } from '../domain/setting/entities';
+import { settingModel } from '../infrastructure/configuration/models';
 
 const NEWLINE = '\n';
 const PAIR = '=';
@@ -15,6 +11,7 @@ const DOT = '.';
 const INDENT = 2;
 const JSON_FILE = '.json';
 const TEXT_FILE = '.py';
+const WHOLE_TEXT_FILE = '.grit';
 
 const jsonOf = (text: string): Setting | undefined => {
   try {
@@ -54,6 +51,10 @@ const linesOf = (text: string): Setting => text.split(NEWLINE).filter((line) => 
 const createFakeConfigurationFormat = (): ConfigurationFormat => ({
   canSortKeys: (target: ConfigurationTarget): boolean => target.writtenPath.endsWith(JSON_FILE),
   read: (file: ConfigurationFile): Setting | undefined => {
+    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+      return file.text;
+    }
+
     if (file.filePath.endsWith(JSON_FILE)) {
       return jsonOf(file.text);
     }
@@ -65,6 +66,10 @@ const createFakeConfigurationFormat = (): ConfigurationFormat => ({
     return isOfNoFormat(file.filePath) && isPairs(file) ? pairsOf(file.text) : linesOf(file.text);
   },
   write: (file: ConfigurationWrite): string => {
+    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+      return typeof file.settings === 'string' ? file.settings : '';
+    }
+
     if (file.filePath.endsWith(TEXT_FILE)) {
       return file.text;
     }

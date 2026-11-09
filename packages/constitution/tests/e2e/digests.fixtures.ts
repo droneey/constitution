@@ -8,13 +8,13 @@ const BROWSER_APP_WITH_PACK_AND_OVERRIDE_NAMES = [
   'version-control',
   'browser',
   'typescript',
-  '_react',
   'betterleaks',
   'biome',
   'git',
   'lefthook',
   'matomo',
-  'react-dom',
+  'react',
+  'react/react-dom',
   'tanstack-query',
   'paraglide',
   'pack',
@@ -25,21 +25,16 @@ const EVERY_CODE_NAMES = [
   'ui',
   'version-control',
   'typescript',
-  '_react',
   'git',
   'matomo',
-  'react-dom',
+  'react',
+  'react/react-dom',
 ] as const;
 
 const EVERY_CODE_WARNINGS = [
   [
     'config',
     'platforms',
-  ],
-  [
-    'blocks',
-    '_react',
-    'react-dom',
   ],
   [
     'blocks',
@@ -51,13 +46,8 @@ const EVERY_CODE_WARNINGS = [
   ],
   [
     'requirements',
-    'react-dom',
+    'react/react-dom',
     'browser',
-  ],
-  [
-    'requirements',
-    'matomo',
-    'analytics-consent-first',
   ],
   [
     'overrides',

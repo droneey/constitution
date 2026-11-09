@@ -3,10 +3,17 @@
 /.complexipy_cache/
 
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 /.droneey
 .claude/settings.local.json
 .claude/worktrees/
-/local/
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -23,24 +30,17 @@
 *~
 .env*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+/local/
 
-# mise
-mise.local.toml
+# js-runtime/bun
+.npmrc
 
-# _js-runtime
+# js-runtime
 **/node_modules/
 *.tgz
 
-# bun
-.npmrc
+# mise
+mise.local.toml
 
 # python
 __pycache__/
@@ -53,3 +53,6 @@ __pycache__/
 # uv
 .venv/
 **/dist/
+
+# lefthook
+lefthook-local.yaml

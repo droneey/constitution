@@ -22,8 +22,8 @@ let root = '';
 
 const acmeNames = [
   'packs/acme/blocks/implementations/acme/acme.md',
-  'packs/acme/blocks/implementations/acme/foundation/dependencies.md',
-  'packs/acme/blocks/implementations/acme/architecture/root.md',
+  'packs/acme/blocks/implementations/acme/@foundation/dependencies.md',
+  'packs/acme/blocks/implementations/acme/@architecture/root.md',
   'acme-reached-through-its-entry',
   'acme-client-wired-by-the-root',
 ];
@@ -108,7 +108,7 @@ describe('a pack checked against its base', () => {
 
     // Assert
     expect({
-      named: checked.output.includes('blocks/implementations/acme/foundation/dependencies.md'),
+      named: checked.output.includes('blocks/implementations/acme/@foundation/dependencies.md'),
       passed: checked.passed,
     }).toStrictEqual({
       named: true,

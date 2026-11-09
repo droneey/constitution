@@ -24,47 +24,47 @@ const messageRejections = [
   {
     commit: 'docs: Explain the presets',
     condition: 'its type is not one of the four',
-    rule: 'commit-header-type-and-subject',
+    rule: 'commit-header-follows-conventional-commits',
   },
   {
     commit: 'feat(biome): Add a preset',
     condition: 'it has a scope',
-    rule: 'commit-header-type-and-subject',
+    rule: 'commit-header-follows-conventional-commits',
   },
   {
     commit: 'feat:Add a preset',
     condition: 'the colon has no space after it',
-    rule: 'commit-header-type-and-subject',
+    rule: 'commit-header-follows-conventional-commits',
   },
   {
     commit: 'fix: keep the header short',
     condition: 'the subject starts in lower case',
-    rule: 'commit-header-type-and-subject',
+    rule: 'commit-subject-opens-with-a-capital',
   },
   {
     commit: 'chore: Wip',
     condition: 'the subject is a placeholder',
-    rule: 'commit-subject-never-a-placeholder',
+    rule: 'commit-msg-hook-rejects-a-placeholder-subject',
   },
   {
     commit: 'fix: Fix stuff',
     condition: 'the subject is a placeholder of two words',
-    rule: 'commit-subject-never-a-placeholder',
+    rule: 'commit-msg-hook-rejects-a-placeholder-subject',
   },
   {
     commit: `feat: ${'A'.repeat(95)}`,
     condition: 'the header passes 100 characters',
-    rule: 'commit-header-type-and-subject',
+    rule: 'commit-header-within-100-characters',
   },
   {
     commit: 'feat: Add a preset\n\nBecause the kit needs one',
     condition: 'it carries a body',
-    rule: 'commit-body-empty-and-footer-only-trailers',
+    rule: 'commit-body-left-empty',
   },
   {
     commit: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
     condition: 'its footer holds prose beside a trailer',
-    rule: 'commit-body-empty-and-footer-only-trailers',
+    rule: 'commit-body-left-empty',
   },
 ];
 
@@ -148,7 +148,7 @@ describe('the commit message hook', () => {
     expect(check).toStrictEqual({
       exitCode: 1,
       rules: [
-        'commit-body-empty-and-footer-only-trailers',
+        'commit-body-left-empty',
       ],
     });
   });
@@ -162,7 +162,7 @@ describe('the commit message hook', () => {
       // Act
       const check = checkCommitMessage(`${message}\n`, {
         lowered: [
-          'commit-header-type-and-subject',
+          'commit-header-follows-conventional-commits',
         ],
       });
 
@@ -170,7 +170,7 @@ describe('the commit message hook', () => {
       expect(check).toStrictEqual({
         exitCode: 1,
         rules: [
-          'commit-subject-never-a-placeholder',
+          'commit-msg-hook-rejects-a-placeholder-subject',
         ],
       });
     },
@@ -184,8 +184,8 @@ describe('the commit message hook', () => {
     expect(check).toStrictEqual({
       exitCode: 1,
       rules: [
-        'commit-header-type-and-subject',
-        'commit-subject-never-a-placeholder',
+        'commit-header-follows-conventional-commits',
+        'commit-msg-hook-rejects-a-placeholder-subject',
       ],
     });
   });
@@ -195,24 +195,48 @@ describe('the jobs of the commit message hook', () => {
   it.each([
     {
       jobs: [
-        'commit-header',
+        'commit-header-length',
+        'commit-header-format',
+        'commit-subject-capital',
         'commit-placeholder',
       ],
-      rule: 'commit-body-empty-and-footer-only-trailers',
+      rule: 'commit-body-left-empty',
     },
     {
       jobs: [
         'commit-body',
+        'commit-header-format',
+        'commit-subject-capital',
         'commit-placeholder',
       ],
-      rule: 'commit-header-type-and-subject',
+      rule: 'commit-header-within-100-characters',
     },
     {
       jobs: [
         'commit-body',
-        'commit-header',
+        'commit-header-length',
+        'commit-subject-capital',
+        'commit-placeholder',
       ],
-      rule: 'commit-subject-never-a-placeholder',
+      rule: 'commit-header-follows-conventional-commits',
+    },
+    {
+      jobs: [
+        'commit-body',
+        'commit-header-length',
+        'commit-header-format',
+        'commit-placeholder',
+      ],
+      rule: 'commit-subject-opens-with-a-capital',
+    },
+    {
+      jobs: [
+        'commit-body',
+        'commit-header-length',
+        'commit-header-format',
+        'commit-subject-capital',
+      ],
+      rule: 'commit-msg-hook-rejects-a-placeholder-subject',
     },
   ])('should keep every job but that of $rule when an override lowers it', ({ jobs, rule }) => {
     // Act

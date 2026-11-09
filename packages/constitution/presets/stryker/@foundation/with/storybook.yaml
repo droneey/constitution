@@ -1,0 +1,6 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.${role.config-file}.json:
+        mutate:
+          - '!${role.source}/**/*.${role.story}.*'

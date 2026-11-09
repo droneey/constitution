@@ -1,6 +1,7 @@
 import type { Axis } from '../constants';
 import {
   AXES,
+  AXIS_FOLDER_NAME,
   BLOCKS_FOLDER_NAME,
   LAYER_FOLDER_NAME,
   LAYERS,
@@ -90,6 +91,7 @@ interface LayerFolder {
 }
 
 const HIDDEN_NAME_PREFIX = '.';
+const AXIS_MARK = '@';
 
 const prefixOf = (layer: Layer): string =>
   `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}`;
@@ -115,10 +117,33 @@ const STRAY = {
 const isMarkdown = (name: string): boolean =>
   !name.startsWith(HIDDEN_NAME_PREFIX) && name.endsWith(MARKDOWN_EXTENSION);
 
+const axisNamed = (name: string | undefined): Axis | undefined =>
+  AXES.find((axis) => AXIS_FOLDER_NAME[axis] === name);
+
+const seamFileOf = (input: { axis: Axis; segments: readonly string[] }): FileInBlock => {
+  const written = input.segments.join(PATH_SEPARATOR);
+
+  if (!isMarkdown(written)) {
+    return STRAY;
+  }
+
+  const other = written.slice(0, -MARKDOWN_EXTENSION.length);
+
+  return BlockId.is(other)
+    ? {
+        axis: input.axis,
+        kind: BlockFileKind.Seam,
+        other,
+      }
+    : {
+        kind: BlockFileKind.SeamOfNoBlockId,
+      };
+};
+
 const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBlock => {
-  const [first, name, seam, ...deeper] = input.segments;
-  const own = `${input.id}${MARKDOWN_EXTENSION}`;
-  const axis = AXES.find((candidate) => candidate === first);
+  const [first, name, ...seam] = input.segments;
+  const own = `${BlockId.lastSegmentOf(input.id)}${MARKDOWN_EXTENSION}`;
+  const axis = axisNamed(first);
 
   if (name === undefined) {
     return first === own
@@ -128,11 +153,11 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
       : STRAY;
   }
 
-  if (axis === undefined || deeper.length > 0) {
+  if (axis === undefined) {
     return STRAY;
   }
 
-  if (seam === undefined) {
+  if (seam.length === 0) {
     if (!isMarkdown(name)) {
       return STRAY;
     }
@@ -148,51 +173,59 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
         };
   }
 
-  if (name !== SEAM_FOLDER_NAME || !isMarkdown(seam)) {
-    return STRAY;
-  }
-
-  const other = seam.slice(0, -MARKDOWN_EXTENSION.length);
-
-  return BlockId.is(other)
-    ? {
+  return name === SEAM_FOLDER_NAME
+    ? seamFileOf({
         axis,
-        kind: BlockFileKind.Seam,
-        other,
-      }
-    : {
-        kind: BlockFileKind.SeamOfNoBlockId,
-      };
+        segments: seam,
+      })
+    : STRAY;
 };
 
-const placeInBlockFolder = (input: {
-  dir: string;
+const isFolderBelowBlock = (folder: string, index: number): boolean =>
+  index > 0 && (folder.startsWith(AXIS_MARK) || folder.startsWith(HIDDEN_NAME_PREFIX));
+
+const blockFoldersOf = (segments: readonly string[]): readonly string[] => {
+  const folders = segments.slice(0, -1);
+  const below = folders.findIndex(isFolderBelowBlock);
+
+  return below === -1 ? folders : folders.slice(0, below);
+};
+
+const placeInLayer = (input: {
   layer: Layer;
-  name: string;
   path: string;
+  prefix: string;
   segments: readonly string[];
-}): PlaceFields =>
-  BlockId.is(input.name)
-    ? {
-        file: fileOf({
-          id: input.name,
-          segments: input.segments,
-        }),
-        folder: {
-          dir: input.dir,
-          id: input.name,
-          layer: input.layer,
-        },
-        path: input.path,
-        placement: Placement.InBlock,
-      }
-    : {
-        dir: input.dir,
-        layer: input.layer,
-        name: input.name,
-        path: input.path,
-        placement: Placement.MisnamedFolder,
-      };
+}): PlaceFields => {
+  const names = blockFoldersOf(input.segments);
+  const misnamed = names.find((name) => !BlockId.isSegment(name));
+
+  if (misnamed !== undefined) {
+    return {
+      dir: `${input.prefix}${names.slice(0, names.indexOf(misnamed) + 1).join(PATH_SEPARATOR)}`,
+      layer: input.layer,
+      name: misnamed,
+      path: input.path,
+      placement: Placement.MisnamedFolder,
+    };
+  }
+
+  const id = BlockId.create(names.join(PATH_SEPARATOR));
+
+  return {
+    file: fileOf({
+      id,
+      segments: input.segments.slice(names.length),
+    }),
+    folder: {
+      dir: `${input.prefix}${id}`,
+      id,
+      layer: input.layer,
+    },
+    path: input.path,
+    placement: Placement.InBlock,
+  };
+};
 
 const placeOf = (path: string): PlaceFields | undefined => {
   const folder = layerFolders.find((candidate) => path.startsWith(candidate.prefix));
@@ -201,32 +234,35 @@ const placeOf = (path: string): PlaceFields | undefined => {
     return undefined;
   }
 
-  const rest = path.slice(folder.prefix.length);
+  const segments = path.slice(folder.prefix.length).split(PATH_SEPARATOR);
 
   if (folder.layer === Layer.Core) {
-    return placeInBlockFolder({
-      dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
-      layer: folder.layer,
-      name: coreBlockId,
+    return {
+      file: fileOf({
+        id: coreBlockId,
+        segments,
+      }),
+      folder: {
+        dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
+        id: coreBlockId,
+        layer: folder.layer,
+      },
       path,
-      segments: rest.split(PATH_SEPARATOR),
-    });
+      placement: Placement.InBlock,
+    };
   }
 
-  const slash = rest.indexOf(PATH_SEPARATOR);
-
-  return slash === -1
+  return segments.length === 1
     ? {
         layer: folder.layer,
         path,
         placement: Placement.Loose,
       }
-    : placeInBlockFolder({
-        dir: `${folder.prefix}${rest.slice(0, slash)}`,
+    : placeInLayer({
         layer: folder.layer,
-        name: rest.slice(0, slash),
         path,
-        segments: rest.slice(slash + PATH_SEPARATOR.length).split(PATH_SEPARATOR),
+        prefix: folder.prefix,
+        segments,
       });
 };
 
@@ -304,14 +340,11 @@ const pathOf = (input: PathInput): string => {
 
   switch (file.kind) {
     case BlockFileKind.Passport:
-      return `${folder}${input.block}${MARKDOWN_EXTENSION}`;
+      return `${folder}${BlockId.lastSegmentOf(input.block)}${MARKDOWN_EXTENSION}`;
     case BlockFileKind.Chapter:
-      return `${folder}${file.axis}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
+      return `${folder}${AXIS_FOLDER_NAME[file.axis]}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
     case BlockFileKind.Seam:
-      return `${folder}${file.axis}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
-    // Stryker disable next-line ConditionalExpression: no part reaches the default, which only the compiler reads
-    default:
-      return file satisfies never;
+      return `${folder}${AXIS_FOLDER_NAME[file.axis]}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
   }
 };
 

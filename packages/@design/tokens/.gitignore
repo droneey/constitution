@@ -1,7 +1,14 @@
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 .claude/settings.local.json
 .claude/worktrees/
-/local/
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -18,24 +25,17 @@
 *~
 .env*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+/local/
 
-# _js-runtime
-**/node_modules/
-*.tgz
+# js-runtime/bun
+.npmrc
 
 # bun-test
 **/coverage/
 
-# bun
-.npmrc
+# js-runtime
+**/node_modules/
+*.tgz
 
 # rumdl
 .rumdl_cache/
@@ -46,4 +46,4 @@ reports/mutation/
 
 # tsc
 *.tsbuildinfo
-.tsc-cache/
+tsc-cache.gen/

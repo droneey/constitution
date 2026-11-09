@@ -13,6 +13,7 @@
     "includes": [
       "**",
       "!!**/.droneey",
+      "!!**/biome.gen",
     ],
   },
   "markdown": {
@@ -98,8 +99,9 @@
         "useArraySome": "error",
         "useRegexpTest": "error",
       },
+
+      // biome
       "correctness": {
-        // biome
         "useParseIntRadix": "error",
         "noUnreachable": "error",
         "noUnusedFunctionParameters": "error",
@@ -108,17 +110,12 @@
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
-        // biome
         "noGlobalDirnameFilename": "error",
         "noUndeclaredDependencies": "error",
         "useJsonImportAttributes": "error",
         "noUnusedInstantiation": "error",
       },
 
-      // biome
       "performance": {
         "noAccumulatingSpread": "error",
         "noDynamicNamespaceImportAccess": "error",
@@ -259,7 +256,6 @@
         "useForOf": "error",
         "useGroupedAccessorPairs": "error",
         "useDefaultParameterLast": "error",
-        "useDefaultSwitchClause": "error",
         "useCollapsedIf": "error",
         "useConsistentArrowReturn": "error",
         "noShoutyConstants": "error",
@@ -320,7 +316,6 @@
         "useIsArray": "error",
         "noEmptyBlockStatements": "error",
         "noAlert": "error",
-        "noConsole": "error",
         "noDebugger": "error",
         "noSkippedTests": "error",
         "noFocusedTests": "error",
@@ -505,6 +500,28 @@
         },
       },
     },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "strictCase": true,
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
+          },
+        },
+      },
+    },
 
     // typescript
     {
@@ -603,27 +620,6 @@
         },
       },
     },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/tests/**",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useFilenamingConvention": {
-              "level": "error",
-              "options": {
-                "filenameCases": [
-                  "kebab-case",
-                ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
-              },
-            },
-          },
-        },
-      },
-    },
 
     // biome
     {
@@ -711,7 +707,7 @@
 
     // typescript
     {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/identifier-case-by-kind.grit",
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -732,11 +728,11 @@
       ],
     },
     {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.grit",
       "includes": [],
     },
     {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/module-level-value-never-changed.grit",
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/module-level-variable-declared-const.grit",
       "includes": [
         "**",
         "!**/*.test.ts",
@@ -757,21 +753,7 @@
       ],
     },
     {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.grit",
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -785,16 +767,32 @@
       ],
     },
 
+    // js-runtime
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/spawn-given-an-env-built-for-it.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
     // biome
     "./../../.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
     "./../../.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
 
     // typescript
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
+    "./../../.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
 
     // biome
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
+    "./biome.gen/biome-refuses-empty-verbs.grit",
+    "./biome.gen/biome-refuses-empty-names.grit",
   ],
   "assist": {
     "actions": {

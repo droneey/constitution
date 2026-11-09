@@ -1,0 +1,260 @@
+import { describe, expect, it } from 'bun:test';
+
+import { Layer } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId } from '#/kernel/value-objects';
+
+import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
+import type { RequiresDetails } from '../requires';
+import { RequiresCode, requiresCheck } from '../requires';
+
+const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
+const BIOME = 'blocks/implementations/biome/biome.md';
+
+describe('requiresCheck', () => {
+  it('should report each requires a platform may not have when it names core, a language, an unknown id and itself', () => {
+    // Arrange
+    const files = validFiles();
+
+    files[BROWSER] = passportFile({
+      body: '# Browser\n',
+      id: 'browser',
+      requires: [
+        'core',
+        'typescript',
+        'webgl',
+        'browser',
+      ],
+    });
+
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: RequiresCode.RequiresCore,
+        details: {},
+        path: BROWSER,
+      },
+      {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+            Layer.Platform,
+          ],
+          layer: Layer.Platform,
+          required: BlockId.create('typescript'),
+          requiredLayer: Layer.Language,
+        },
+        path: BROWSER,
+      },
+      {
+        code: RequiresCode.RequiresNoBlock,
+        details: {
+          required: BlockId.create('webgl'),
+        },
+        path: BROWSER,
+      },
+      {
+        code: RequiresCode.RequiresItself,
+        details: {},
+        path: BROWSER,
+      },
+    ]);
+  });
+
+  it('should accept an implementation when it requires another implementation', () => {
+    // Arrange
+    const files = validFiles();
+
+    files[BIOME] = passportFile({
+      body: '# Biome\n',
+      id: 'biome',
+      requires: [
+        'typescript',
+        'lingui',
+      ],
+    });
+
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should report a domain that requires a platform, a layer below it', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': passportFile({
+        body: '# i18n\n',
+        id: 'i18n',
+        requires: [
+          'browser',
+        ],
+      }),
+    });
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+          ],
+          layer: Layer.Domain,
+          required: BlockId.create('browser'),
+          requiredLayer: Layer.Platform,
+        },
+        path: 'blocks/domains/i18n/i18n.md',
+      },
+    ]);
+  });
+
+  it('should leave the requires of core to the front-matter check', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/core/core.md': passportFile({
+        body: '# Core\n',
+        id: 'core',
+        requires: [
+          'i18n',
+        ],
+      }),
+    });
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should accept a domain when it requires the domain it builds on', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': passportFile({
+        body: '# i18n\n',
+        id: 'i18n',
+        requires: [
+          'remote-data',
+        ],
+      } satisfies BlockFixture),
+    });
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+});
+
+const REACT_DOM = 'blocks/implementations/react/react-dom/react-dom.md';
+
+describe('requiresCheck on the blocks a block sits under', () => {
+  it('should find nothing when each block requires only what it needs beyond the blocks it sits under', () => {
+    // Act
+    const findings = requiresCheck(checkInputOf(nestedFiles()));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it.each<{
+    expected: FindingOf<RequiresDetails>;
+    name: string;
+    requires: readonly string[];
+  }>([
+    {
+      expected: {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+        path: REACT_DOM,
+      },
+      name: 'its parent',
+      requires: [
+        'client/browser',
+        'react',
+      ],
+    },
+    {
+      expected: {
+        code: RequiresCode.RequiresThroughParent,
+        details: {
+          parent: BlockId.create('react'),
+          required: BlockId.create('presentation'),
+        },
+        path: REACT_DOM,
+      },
+      name: 'what its parent requires',
+      requires: [
+        'client/browser',
+        'presentation',
+      ],
+    },
+  ])('should report a child block that requires $name', ({ expected, requires }) => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[REACT_DOM] = nestedPassportFile({
+      id: 'react/react-dom',
+      requires,
+    });
+
+    // Act
+    const findings = requiresCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      expected,
+    ]);
+  });
+
+  it('should report a block that requires a block two folders above it', () => {
+    // Arrange
+    const portal = 'blocks/implementations/react/react-dom/portal/portal.md';
+    const files = {
+      ...nestedFiles(),
+      [portal]: nestedPassportFile({
+        id: 'react/react-dom/portal',
+        requires: [
+          'react',
+        ],
+      }),
+    };
+
+    // Act
+    const findings = requiresCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+        path: portal,
+      },
+    ]);
+  });
+});

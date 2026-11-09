@@ -33,7 +33,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py", "**/__main__.py", "**/root/wiring.py", "**/*_gen.py", "**/*_gen/**"]
+omit = ["**/root/**", "**/main.py", "**/__main__.py", "**/*_gen.py", "**/*_gen/**"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -44,7 +44,7 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 [tool.mutmut]
 # mutmut
 source_paths = ["src"]
-do_not_mutate = ["*/root/wiring.py", "*_messages.py", "*/main.py", "*_gen.py", "*_gen/*"]
+do_not_mutate = ["*/root/*", "*/main.py", "*_gen.py", "*_gen/*"]
 # Why: a log call's text and level are no behaviour a caller relies on.
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 # Why: each mutant's run collects the integration specs too, as the coverage gate's run does.
@@ -87,15 +87,14 @@ extend-select = [
   "BLE",
   "EM",
   "TRY",
-  "ERA",
   "FBT",
+  "ERA",
   "FIX",
   "PLR0917",
   "PLR2004",
   "RUF006",
   "S",
   "T10",
-  "T20",
   "E722",
   "G001",
   "G002",
@@ -106,10 +105,7 @@ extend-select = [
   "TC",
   "ANN",
   "ASYNC",
-  "B006",
-  "B012",
   "DTZ",
-  "F403",
   "INP",
   "N",
   "N999",
@@ -133,6 +129,8 @@ extend-select = [
 extend-ignore = ["D1"]
 ignore = ["PLR09"]
 select = [
+  "PGH",
+  "RUF",
   "A",
   "ASYNC",
   "B",
@@ -167,9 +165,7 @@ select = [
   "SIM",
   "SLOT",
   "UP",
-  "W",
-  "PGH",
-  "RUF"
+  "W"
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
@@ -228,7 +224,7 @@ docstring-code-format = true
 quote-style = "single"
 
 [tool.poe]
-# poe
+# task-runner/poe
 executor = "simple"
 
 [tool.poe.tasks]
@@ -273,23 +269,22 @@ executor = "simple"
 # jscpd
 "check:duplicates" = "bunx --bun jscpd"
 
-# poe
-[tool.poe.tasks.test]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in test:*) poe \"$task\" || exit 1;; esac; done"
-
-[tool.poe.tasks.fix]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in fix:*) poe \"$task\" || exit 1;; esac; done"
-
 # tombi
 [tool.poe.tasks."check:toml"]
 shell = "tombi format --check && tombi lint"
 
-# poe
-[tool.poe.tasks.check]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in check:*) poe \"$task\" || exit 1;; esac; done && poe test && poe mutate:branch"
-
 [tool.poe.tasks.build]
 shell = "mkdir -p dist && python -m zipapp src -m droneey_mutation_check_python.main:main -o dist/mutmut-check.pyz"
+
+# task-runner/poe
+[tool.poe.tasks.check]
+shell = "../../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh check && poe test && poe mutate:branch"
+
+[tool.poe.tasks.test]
+shell = "../../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh test"
+
+[tool.poe.tasks.fix]
+shell = "../../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh fix"
 
 # ty
 [tool.ty.rules]
@@ -300,3 +295,6 @@ respect-type-ignore-comments = false
 
 [tool.ty.terminal]
 error-on-warning = true
+
+[tool.poe.tasks.pack]
+cmd = "scripts/pack.sh"

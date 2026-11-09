@@ -4,12 +4,13 @@ import { Axis, Level } from '../../constants';
 import { BlockId, coreBlockId, RuleSlug } from '../../value-objects';
 import { Rule } from '../rule.entity';
 
-const FILE = 'blocks/core/foundation/principles.md';
+const FILE = 'blocks/core/@foundation/principles.md';
 
 const ruleOf = (fields: Partial<Rule>): Rule =>
   Rule.create({
     axis: Axis.Foundation,
     block: coreBlockId,
+    examples: [],
     file: FILE,
     isLevelStated: true,
     level: Level.Must,
@@ -33,6 +34,13 @@ describe('Rule', () => {
       axis: Axis.Architecture,
       block: BlockId.create('ui'),
       chapterTitle: 'Screens',
+      examples: [
+        {
+          code: 'const a = 1;',
+          language: 'ts',
+          title: 'Prefer',
+        },
+      ],
       file: FILE,
       isLevelStated: false,
       level: Level.Should,
@@ -56,6 +64,7 @@ describe('Rule', () => {
     const fields = {
       axis: Axis.Foundation,
       block: coreBlockId,
+      examples: [],
       file: FILE,
       isLevelStated: true,
       level: Level.Must,

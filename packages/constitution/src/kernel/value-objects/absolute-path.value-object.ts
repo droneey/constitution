@@ -39,12 +39,24 @@ const parentOf = (path: AbsolutePath): AbsolutePath => {
   return at <= 0 ? root : create(path.slice(0, at));
 };
 
+/** The folder, then each folder above it, the root last. */
+const upwardFrom = (folderPath: AbsolutePath): readonly AbsolutePath[] =>
+  folderPath === root
+    ? [
+        folderPath,
+      ]
+    : [
+        folderPath,
+        ...upwardFrom(parentOf(folderPath)),
+      ];
+
 const AbsolutePath = {
   create,
   is,
   join,
   parentOf,
   root,
+  upwardFrom,
 } as const;
 
 export { AbsolutePath };

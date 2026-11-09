@@ -1,11 +1,11 @@
 import type { Files } from './constitution.fixtures';
 import { blockFiles, chapterFile, rule } from './constitution.fixtures';
 
-const ACME = 'blocks/implementations/acme/foundation/calls.md';
+const ACME = 'blocks/implementations/acme/@foundation/calls.md';
 
 const packFiles = (parent = 'dependencies-point-inward'): Files => ({
   ...blockFiles({
-    body: '# Acme\n',
+    body: '# Acme\n\n> The Acme client.\n',
     dir: 'blocks/implementations/acme',
     files: {
       'calls.md': chapterFile(

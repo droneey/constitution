@@ -24,7 +24,7 @@ interface ApplyInput {
 const linesOf = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
 const releasePresetFiles: Files = {
-  'presets/markdownlint/foundation.yaml': linesOf(
+  'presets/markdownlint/@foundation.yaml': linesOf(
     'markdownlint:',
     "  '*':",
     "    '*':",
@@ -35,7 +35,7 @@ const releasePresetFiles: Files = {
     '      .markdownlintignore: !default',
     '        - node_modules/',
   ),
-  'presets/markdownlint/foundation/with/ui.yaml': linesOf(
+  'presets/markdownlint/@foundation/with/ui.yaml': linesOf(
     'ui:',
     '  four-data-states:',
     "    '*':",
@@ -52,15 +52,15 @@ const memberPackFiles: Files = {
     'id: own-tool',
     "summary: The package's own tool.",
     'requires: []',
-    'extends: null',
-    'abstract: false',
     'languages: []',
     'governs: []',
     '---',
     '',
     '# own-tool',
+    '',
+    "> The package's own tool.",
   ),
-  [`${MEMBER}/pack/presets/own-tool/foundation.yaml`]: linesOf(
+  [`${MEMBER}/pack/presets/own-tool/@foundation.yaml`]: linesOf(
     'own-tool:',
     "  '*':",
     "    '*':",

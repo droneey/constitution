@@ -1,0 +1,5 @@
+core:
+  secret-never-in-the-repository:
+    typescript:
+      .gitignore:
+        - .npmrc

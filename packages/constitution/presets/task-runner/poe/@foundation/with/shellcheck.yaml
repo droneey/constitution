@@ -1,0 +1,11 @@
+shellcheck:
+  '*':
+    shell:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:shell:
+                shell: !words
+                  - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shellcheck --
+                  - "'${workspace.members}'"

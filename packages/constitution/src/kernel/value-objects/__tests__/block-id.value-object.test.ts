@@ -16,8 +16,8 @@ describe('BlockId', () => {
       text: 'version-control-2',
     },
     {
-      condition: 'it opens with the mark of an abstract block',
-      isBlockId: true,
+      condition: 'it opens with an underscore',
+      isBlockId: false,
       text: '_js-runtime',
     },
     {
@@ -31,9 +31,34 @@ describe('BlockId', () => {
       text: 'Ui',
     },
     {
-      condition: 'it holds a slash',
+      condition: 'it is a path of segments joined by slashes',
+      isBlockId: true,
+      text: 'react/react-native/expo',
+    },
+    {
+      condition: 'it opens with a slash',
       isBlockId: false,
-      text: 'rules/ui',
+      text: '/client',
+    },
+    {
+      condition: 'it ends with a slash',
+      isBlockId: false,
+      text: 'client/',
+    },
+    {
+      condition: 'its slashes are doubled',
+      isBlockId: false,
+      text: 'client//browser',
+    },
+    {
+      condition: 'a segment past the first opens with an underscore',
+      isBlockId: false,
+      text: 'react/_native',
+    },
+    {
+      condition: 'a path opens with an underscore',
+      isBlockId: false,
+      text: '_react/react-dom',
     },
     {
       condition: 'it holds whitespace',
@@ -51,9 +76,29 @@ describe('BlockId', () => {
       text: 'design--system',
     },
     {
-      condition: 'it holds the abstract mark inside',
+      condition: 'it holds an underscore inside',
       isBlockId: false,
       text: 'js_runtime',
+    },
+    {
+      condition: 'it is the seam folder word',
+      isBlockId: false,
+      text: 'with',
+    },
+    {
+      condition: 'a segment is the shared plugins folder word',
+      isBlockId: false,
+      text: 'tools/plugins',
+    },
+    {
+      condition: 'a segment past the first is an axis name',
+      isBlockId: false,
+      text: 'react/workflow',
+    },
+    {
+      condition: 'a segment only opens with a reserved word',
+      isBlockId: true,
+      text: 'withdrawals/foundations',
     },
   ])('should tell a block id when $condition', ({ isBlockId, text }) => {
     // Act
@@ -138,23 +183,86 @@ describe('BlockId', () => {
 
   it.each([
     {
-      condition: 'it opens with the abstract mark',
-      isAbstractId: true,
-      text: '_store',
+      condition: 'it is one segment',
+      isSegment: true,
+      name: 'react-dom',
     },
     {
-      condition: 'it opens with a letter',
-      isAbstractId: false,
-      text: 'store',
+      condition: 'it opens with an underscore',
+      isSegment: false,
+      name: '_react',
     },
-  ])('should say $isAbstractId when $condition', ({ isAbstractId, text }) => {
-    // Arrange
-    const id = BlockId.create(text);
-
+    {
+      condition: 'it holds a slash',
+      isSegment: false,
+      name: 'react/react-dom',
+    },
+    {
+      condition: 'it is an axis name',
+      isSegment: false,
+      name: 'architecture',
+    },
+  ])('should say $isSegment of a folder name when $condition', ({ isSegment, name }) => {
     // Act
-    const isAbstract = BlockId.isAbstract(id);
+    const answer = BlockId.isSegment(name);
 
     // Assert
-    expect(isAbstract).toBe(isAbstractId);
+    expect(answer).toBe(isSegment);
+  });
+
+  it.each([
+    {
+      id: 'client',
+      last: 'client',
+      parent: undefined,
+    },
+    {
+      id: 'client/browser',
+      last: 'browser',
+      parent: 'client',
+    },
+    {
+      id: 'react/react-native/expo',
+      last: 'expo',
+      parent: 'react/react-native',
+    },
+  ])('should read the folder above $id and its own last segment', ({ id, last, parent }) => {
+    // Arrange
+    const blockId = BlockId.create(id);
+
+    // Act
+    const read = {
+      last: BlockId.lastSegmentOf(blockId),
+      parent: BlockId.parentOf(blockId),
+    };
+
+    // Assert
+    expect<object>(read).toStrictEqual({
+      last,
+      parent,
+    });
+  });
+
+  it.each([
+    {
+      ancestors: [],
+      id: 'client',
+    },
+    {
+      ancestors: [
+        'react/react-native',
+        'react',
+      ],
+      id: 'react/react-native/expo',
+    },
+  ])('should read every folder above $id, the nearest first', ({ ancestors, id }) => {
+    // Arrange
+    const blockId = BlockId.create(id);
+
+    // Act
+    const read = BlockId.ancestorsOf(blockId);
+
+    // Assert
+    expect<readonly string[]>(read).toStrictEqual(ancestors);
   });
 });

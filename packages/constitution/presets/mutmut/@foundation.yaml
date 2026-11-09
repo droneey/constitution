@@ -1,0 +1,29 @@
+mutmut:
+  text-for-a-person-left-out-by-configuration:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            do_not_mutate_patterns:
+              - ^\s*logger\.(debug|info|warning|error|exception|critical)\(
+  mutants-run-the-specs-the-gate-counts:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            pytest_add_cli_args:
+              - -p
+              - no:randomly
+              - -o
+              - norecursedirs=.* ${role.end-to-end-suite}
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            source_paths:
+              - ${role.source}
+            do_not_mutate:
+              - '*/${role.entry}.py'
+              - '*_${role.generated-file}.py'
+              - '*_${role.generated-file}/*'

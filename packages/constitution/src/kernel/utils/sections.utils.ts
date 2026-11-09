@@ -1,3 +1,5 @@
+import { fencedLinesOf } from './code-fences.utils';
+
 const HEADING = /^#{1,6}(?:\s|$)/;
 
 interface MarkdownSection {
@@ -8,13 +10,15 @@ interface MarkdownSection {
 const isHeading = (line: string): boolean => HEADING.test(line);
 
 const sectionsOf = (text: string): readonly MarkdownSection[] => {
+  const lines = text.split('\n');
+  const fenced = fencedLinesOf(lines);
   const sections: {
     readonly heading: string;
     readonly lines: string[];
   }[] = [];
 
-  for (const line of text.split('\n')) {
-    if (isHeading(line)) {
+  for (const [index, line] of lines.entries()) {
+    if (fenced[index] !== true && isHeading(line)) {
       sections.push({
         heading: line,
         lines: [],

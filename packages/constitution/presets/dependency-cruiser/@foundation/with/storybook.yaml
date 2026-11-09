@@ -1,0 +1,19 @@
+core:
+  test-code-never-reached-from-production:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-stories-in-production]:
+          severity: error
+          from:
+            pathNot:
+              - \.${role.story}\.[^/]+$
+              - ^\.storybook/
+          to:
+            path: \.${role.story}\.[^/]+$
+  production-code-imports-no-tool:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-development-dependency-in-production]:
+          from:
+            pathNot:
+              - \.${role.story}\.[^/]+$

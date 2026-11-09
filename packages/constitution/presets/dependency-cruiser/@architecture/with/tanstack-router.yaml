@@ -1,0 +1,29 @@
+tanstack-router:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error
+  router-primitives-only-in-the-root:
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowed[comment=router-primitives-only-in-the-root]:
+          from:
+            path:
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-router/
+        forbidden[name=router-only-in-its-home]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-router/

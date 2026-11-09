@@ -1,8 +1,0 @@
-betterleaks:
-  scan-redacted:
-    '*':
-      lefthook.yaml:
-        pre-commit:
-          jobs[name=secrets]:
-            run@redaction:
-              - --redact

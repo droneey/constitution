@@ -21,7 +21,7 @@ const strykerUnit = (blocks: readonly string[] = []): string =>
   appliedUnit({
     blocks,
     implementations: [
-      'bun',
+      'js-runtime/bun',
       'bun-test',
       'stryker',
     ],

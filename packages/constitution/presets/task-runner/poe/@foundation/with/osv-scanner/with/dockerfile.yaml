@@ -1,0 +1,13 @@
+osv-scanner:
+  built-image-scanned-at-its-base-stage:
+    dockerfile:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:audit-image:
+                shell: !words
+                  - ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+                  - slot: inputs
+                  - --
+                  - slot: flags

@@ -1,15 +1,13 @@
 import type { Axis, Layer, Level } from '../constants';
 import { LAYER_RANK } from '../constants';
-import type { BlockId, Glob, RuleSlug } from '../value-objects';
-import { coreBlockId } from '../value-objects';
-import type { RoleKind } from './term.entity';
-import { Term } from './term.entity';
+import type { Glob, RuleSlug } from '../value-objects';
+import { BlockId, coreBlockId } from '../value-objects';
+import type { SpelledKind } from './term.entity';
+import { Term, TermKind } from './term.entity';
 
 interface ModelBlock {
-  readonly extends?: BlockId;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
-  readonly isAbstract: boolean;
   readonly languages: readonly BlockId[];
   readonly layer: Layer;
   readonly requires: readonly BlockId[];
@@ -21,15 +19,25 @@ interface ModelRule {
   readonly level: Level;
   readonly seam?: BlockId;
   readonly slug: RuleSlug;
+  readonly statement: string;
+  readonly why: string;
 }
 
 interface RoleTerm {
   readonly axis: Axis;
   readonly block: BlockId;
   readonly id?: string;
-  readonly kind: RoleKind;
+  readonly kind: SpelledKind;
   readonly seam?: BlockId;
   readonly term: string;
+}
+
+interface ListTerm {
+  readonly axis: Axis;
+  readonly block: BlockId;
+  readonly id: string;
+  readonly members: readonly string[];
+  readonly seam?: BlockId;
 }
 
 interface BlockText {
@@ -41,39 +49,85 @@ interface BlockText {
 
 interface BlockModel {
   readonly blocks: readonly ModelBlock[];
+  readonly lists: readonly ListTerm[];
   readonly roles: readonly RoleTerm[];
   readonly rules: readonly ModelRule[];
 }
 
-const create = (input: BlockModel): BlockModel => ({
+interface Defined {
+  readonly block: BlockId;
+  readonly id?: string;
+  readonly seam?: BlockId;
+}
+
+interface TextTerm {
+  readonly term: Term;
+  readonly text: BlockText;
+}
+
+const create = (
+  input: Omit<BlockModel, 'lists'> & {
+    readonly lists?: readonly ListTerm[];
+  },
+): BlockModel => ({
   blocks: input.blocks,
+  lists: input.lists ?? [],
   roles: input.roles,
   rules: input.rules,
 });
 
+const termsOf = (texts: readonly BlockText[]): readonly TextTerm[] =>
+  texts.flatMap((text) =>
+    Term.allIn(text.body).terms.map((term) => ({
+      term,
+      text,
+    })),
+  );
+
+const placeOf = (text: BlockText): Pick<RoleTerm, 'axis' | 'block' | 'seam'> => ({
+  axis: text.axis,
+  block: text.block,
+  ...(text.seam === undefined
+    ? {}
+    : {
+        seam: text.seam,
+      }),
+});
+
+// Why: a file is a role where a block spells it under an id, and a name such as `<entry>` stands
+// for the file its language's block spells under the same id.
+const roleKindOf = (
+  term: Term,
+  fileIds: ReadonlySet<string | undefined>,
+): SpelledKind | undefined => {
+  if (Term.isRoleKind(term.kind)) {
+    return term.kind;
+  }
+
+  return term.id !== undefined && fileIds.has(term.id) ? TermKind.File : undefined;
+};
+
 const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
+  const read = termsOf(texts);
+  const fileIds = new Set(
+    read.filter(({ term }) => term.kind === TermKind.File).map(({ term }) => term.id),
+  );
   const roles = new Map<string, RoleTerm>();
 
-  for (const { axis, block, body, seam } of texts) {
-    for (const { id, kind, term } of Term.allIn(body).terms) {
-      if (Term.isRoleKind(kind) && !roles.has(term)) {
-        roles.set(term, {
-          axis,
-          block,
-          ...(id === undefined
-            ? {}
-            : {
-                id,
-              }),
-          kind,
-          ...(seam === undefined
-            ? {}
-            : {
-                seam,
-              }),
-          term,
-        });
-      }
+  for (const { term, text } of read) {
+    const kind = roleKindOf(term, fileIds);
+
+    if (kind !== undefined && !roles.has(term.term)) {
+      roles.set(term.term, {
+        ...placeOf(text),
+        ...(term.id === undefined
+          ? {}
+          : {
+              id: term.id,
+            }),
+        kind,
+        term: term.term,
+      });
     }
   }
 
@@ -82,10 +136,24 @@ const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
   ];
 };
 
-const extendedAndRequiredOf = (block: ModelBlock): readonly BlockId[] =>
+const listsIn = (texts: readonly BlockText[]): readonly ListTerm[] =>
+  termsOf(texts).flatMap(({ term, text }) =>
+    // Stryker disable next-line ConditionalExpression: a term lists its words only where it carries an id, so the test of its id only narrows the type
+    term.id === undefined || term.members === undefined
+      ? []
+      : [
+          {
+            ...placeOf(text),
+            id: term.id,
+            members: term.members,
+          },
+        ],
+  );
+
+const linksOf = (block: ModelBlock): readonly BlockId[] =>
   [
-    block.extends,
     ...block.requires,
+    BlockId.parentOf(block.id),
   ].filter((link) => link !== undefined);
 
 const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
@@ -111,14 +179,14 @@ const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
 
     if (block !== undefined && !reached.has(next)) {
       reached.add(next);
-      queue.push(...extendedAndRequiredOf(block));
+      queue.push(...linksOf(block));
     }
   }
 
   return reached;
 };
 
-const definersOf = (role: RoleTerm): readonly BlockId[] =>
+const definersOf = (role: Defined): readonly BlockId[] =>
   role.seam === undefined
     ? [
         role.block,
@@ -133,7 +201,12 @@ interface RoleAsked {
   readonly readers: readonly BlockId[];
 }
 
-const reachedRoleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined => {
+const reachedOf = <TDefined extends Defined>(
+  model: BlockModel,
+  input: RoleAsked & {
+    defined: readonly TDefined[];
+  },
+): TDefined | undefined => {
   const reached = new Set(
     model.blocks
       .filter((block) => input.readers.includes(block.id))
@@ -144,7 +217,7 @@ const reachedRoleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefine
   const [specific] = model.blocks
     .toSorted((left, right) => LAYER_RANK[right.layer] - LAYER_RANK[left.layer])
     .flatMap((block) =>
-      model.roles.filter(
+      input.defined.filter(
         (role) =>
           role.id === input.id &&
           role.block === block.id &&
@@ -155,29 +228,39 @@ const reachedRoleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefine
   return specific;
 };
 
+const reachedRoleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined =>
+  reachedOf(model, {
+    ...input,
+    defined: model.roles,
+  });
+
 const definitionOf = (model: BlockModel, id: string): RoleTerm | undefined =>
   model.roles.find((role) => role.id === id);
 
 const roleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined =>
   reachedRoleOf(model, input) ?? definitionOf(model, input.id);
 
+const listOf = (model: BlockModel, input: RoleAsked): ListTerm | undefined =>
+  reachedOf(model, {
+    ...input,
+    defined: model.lists,
+  }) ?? model.lists.find((list) => list.id === input.id);
+
 const blockOf = (model: BlockModel, id: string): ModelBlock | undefined =>
   model.blocks.find((block) => block.id === id);
-
-const isExtensible = (model: BlockModel, id: string): boolean =>
-  blockOf(model, id)?.isAbstract === true;
 
 const BlockModel = {
   blockOf,
   create,
   definersOf,
   definitionOf,
-  isExtensible,
+  listOf,
+  listsIn,
   reachedRoleOf,
   reachOf,
   roleOf,
   rolesIn,
 } as const;
 
-export type { BlockText, ModelBlock, ModelRule, RoleTerm };
+export type { BlockText, ListTerm, ModelBlock, ModelRule, RoleTerm };
 export { BlockModel };

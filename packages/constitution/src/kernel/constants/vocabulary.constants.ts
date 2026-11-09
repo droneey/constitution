@@ -1,3 +1,5 @@
+import { PLUGINS_FOLDER_NAME } from './presets-folders.constants';
+
 enum Axis {
   Foundation = 'foundation',
   Architecture = 'architecture',
@@ -9,6 +11,12 @@ const AXES = [
   Axis.Architecture,
   Axis.Workflow,
 ] as const;
+
+const AXIS_FOLDER_NAME = {
+  [Axis.Architecture]: '@architecture',
+  [Axis.Foundation]: '@foundation',
+  [Axis.Workflow]: '@workflow',
+} as const satisfies Readonly<Record<Axis, string>>;
 
 enum Layer {
   Core = 'core',
@@ -44,6 +52,11 @@ const LAYER_FOLDER_NAME = {
 
 const BLOCKS_FOLDER_NAME = 'blocks';
 const SEAM_FOLDER_NAME = 'with';
+const reservedWords: ReadonlySet<string> = new Set([
+  SEAM_FOLDER_NAME,
+  PLUGINS_FOLDER_NAME,
+  ...AXES,
+]);
 const MARKDOWN_EXTENSION = '.md';
 
 enum Level {
@@ -64,15 +77,15 @@ const LOWERED_LEVELS = [
 
 type LoweredLevel = (typeof LOWERED_LEVELS)[number];
 
-const RULE_TABLE_HEADER = '| Why |';
-const RULE_TABLE_CELLS = 1;
+const RULE_WHY_HEADING = '#### Why';
+const RULE_EXAMPLES_HEADING = '#### Examples';
 
-const REQUIREMENTS_HEADING = '## Requirements';
-const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
+const VOCABULARY_SECTION = 'Vocabulary';
 
 export type { LoweredLevel };
 export {
   AXES,
+  AXIS_FOLDER_NAME,
   Axis,
   BLOCKS_FOLDER_NAME,
   LAYER_FOLDER_NAME,
@@ -83,9 +96,9 @@ export {
   Level,
   LOWERED_LEVELS,
   MARKDOWN_EXTENSION,
-  REQUIREMENTS_HEADING,
-  REQUIREMENTS_TABLE_HEADER,
-  RULE_TABLE_CELLS,
-  RULE_TABLE_HEADER,
+  RULE_EXAMPLES_HEADING,
+  RULE_WHY_HEADING,
+  reservedWords,
   SEAM_FOLDER_NAME,
+  VOCABULARY_SECTION,
 };

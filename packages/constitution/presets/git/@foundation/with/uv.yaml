@@ -1,0 +1,9 @@
+version-control:
+  machine-local-files-ignored:
+    python:
+      .gitignore:
+        - .venv/
+  generated-files-not-committed:
+    python:
+      .gitignore:
+        - '**/dist/'

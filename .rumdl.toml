@@ -2,7 +2,7 @@
 force_exclude = true
 
 # rumdl
-extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD040", "MD045", "MD051", "MD057", "MD059"]
+extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD045", "MD051", "MD057", "MD059", "MD040"]
 
 # workspace
 exclude = [

@@ -1,0 +1,5 @@
+version-control:
+  generated-files-not-committed:
+    markdown:
+      .gitignore:
+        - .rumdl_cache/

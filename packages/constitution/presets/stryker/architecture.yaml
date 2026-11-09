@@ -1,8 +1,0 @@
-core:
-  spec-boundaries-follow-the-tree:
-    typescript:
-      stryker.config.json:
-        mutate:
-          - '!${role.source}/${role.extra-entry}/*/main.{ts,tsx}'
-          - '!${role.source}/${role.host-integration}/*/main.{ts,tsx}'
-          - '!${role.source}/${role.composition-root}/wiring.{ts,tsx}'

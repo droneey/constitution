@@ -2,19 +2,6 @@ import { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from '../constants';
 
 const DOT_SLASH = './';
 
-const fileNameOf = (path: string): string => path.slice(path.lastIndexOf(PATH_SEPARATOR) + 1);
-
-interface StemInput {
-  readonly extension: string;
-  readonly path: string;
-}
-
-const stemOf = (input: StemInput): string => {
-  const name = fileNameOf(input.path);
-
-  return name.endsWith(input.extension) ? name.slice(0, -input.extension.length) : name;
-};
-
 const normalizePath = (path: string): string => {
   const segments: string[] = [];
 
@@ -44,4 +31,4 @@ const isInnerPath = (path: string): boolean =>
 const withoutDotSlash = (path: string): string =>
   path.startsWith(DOT_SLASH) ? path.slice(DOT_SLASH.length) : path;
 
-export { isInnerPath, normalizePath, stemOf, withoutDotSlash };
+export { isInnerPath, normalizePath, withoutDotSlash };
