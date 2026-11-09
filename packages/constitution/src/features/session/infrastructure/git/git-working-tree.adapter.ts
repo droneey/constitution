@@ -1,6 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { lstatSync } from 'node:fs';
+import { lstatSync, readFileSync, readlinkSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 
 import { sessionsFolderInProject } from '#/kernel/constants';
@@ -14,9 +13,16 @@ import { IgnoreStatus } from '../../application/contracts';
 import type { TreeSnapshot, TreeState, UnreadTree } from '../../domain/tree-state/entities';
 import { TreeStateStatus } from '../../domain/tree-state/entities';
 import { FileSignature, TreeFingerprint } from '../../domain/tree-state/value-objects';
-import { gitEndedMessage } from './git-working-tree.messages';
+import { gitEndedMessage, unknownObjectFormatMessage } from './git-working-tree.messages';
+import type { WorkContent } from './tree-content.utils';
+import {
+  GitFileMode,
+  HashName,
+  treeContentFingerprintOf,
+  WorkContentKind,
+} from './tree-content.utils';
 
-// Why: a diff of a large tree runs past the 1 MiB that spawnSync keeps by default.
+// Why: the index's listing of a large tree runs past the 1 MiB that spawnSync keeps by default.
 const OUTPUT_LIMIT_BYTES = 268_435_456;
 
 // Why: the files the hooks write for their sessions are never a change, or what the gate writes
@@ -203,19 +209,25 @@ interface SignedFile extends ListedFile {
 type Listing =
   | {
       readonly files: readonly SignedFile[];
-      readonly statusOutput: Uint8Array;
+      readonly hashName: HashName;
       readonly status: TreeStateStatus.Read;
     }
   | UnreadTree;
 
+// Why: git names the hash of its objects by the repository's object format, spelled as the hash's
+// own name.
+const parseHashName = (format: string): HashName | undefined =>
+  Object.values(HashName).find((name) => name === format);
+
 const listingOf = (input: GitRunInput): Listing => {
   // Why: git names the paths of the status from the top of the repository, which may lie above the
-  // project.
+  // project, and names each object by the hash its repository's object format gives.
   const topLevel = runGit({
     ...input,
     args: [
       'rev-parse',
       '--show-toplevel',
+      '--show-object-format',
     ],
   });
 
@@ -238,9 +250,19 @@ const listingOf = (input: GitRunInput): Listing => {
     return unreadTreeOf(listed.failure);
   }
 
-  const topLevelFolderPath = AbsolutePath.create(
-    new TextDecoder().decode(topLevel.output).trimEnd(),
-  );
+  const named = new TextDecoder().decode(topLevel.output).trimEnd();
+  const lastLine = named.lastIndexOf('\n');
+  const format = named.slice(lastLine + 1);
+  const hashName = parseHashName(format);
+
+  if (hashName === undefined) {
+    return {
+      reason: unknownObjectFormatMessage(format),
+      status: TreeStateStatus.Failed,
+    };
+  }
+
+  const topLevelFolderPath = AbsolutePath.create(named.slice(0, lastLine));
 
   return {
     files: listedFilesOf(listed.output).map((file) => {
@@ -252,8 +274,8 @@ const listingOf = (input: GitRunInput): Listing => {
         signature: signatureOf(filePath),
       };
     }),
+    hashName,
     status: TreeStateStatus.Read,
-    statusOutput: listed.output,
   };
 };
 
@@ -273,6 +295,47 @@ const snapshotOf = (input: GitRunInput): TreeSnapshot => {
     : listing;
 };
 
+const OWNER_EXECUTE = 0o100;
+// Why: a file past this size, as a built artefact, is named by its signature, so no hook reads it
+// whole each time it looks at the tree.
+const MAX_READ_BYTES = 8_388_608;
+
+const modeOfFile = (mode: number): GitFileMode.Executable | GitFileMode.Regular =>
+  (mode & OWNER_EXECUTE) === 0 ? GitFileMode.Regular : GitFileMode.Executable;
+
+// Why: git records a link by its target and a file by its bytes and its owner's execute bit; a
+// folder where git tracked a file is the file gone, and a file that cannot be read is named by its
+// signature, as is one too large to read, so a change to it still changes the tree. A submodule is
+// such a folder too, so a move of the commit it has checked out leaves the fingerprint as it was.
+const readWorkContent = (path: AbsolutePath): WorkContent => {
+  const stats = attempted({
+    effect: () => lstatSync(path),
+    isRecognised: isSystemError,
+  });
+
+  if (stats === undefined || stats.isDirectory()) {
+    return {
+      kind: WorkContentKind.Gone,
+    };
+  }
+
+  const isLink = stats.isSymbolicLink();
+  const bytes =
+    stats.size > MAX_READ_BYTES
+      ? undefined
+      : attempted({
+          effect: () =>
+            isLink ? new TextEncoder().encode(readlinkSync(path)) : readFileSync(path),
+          isRecognised: isSystemError,
+        });
+
+  return {
+    bytes: bytes ?? new TextEncoder().encode(signatureOf(path)),
+    kind: WorkContentKind.Read,
+    mode: isLink ? GitFileMode.Link : modeOfFile(stats.mode),
+  };
+};
+
 const stateOf = (input: GitRunInput): TreeState => {
   const listing = listingOf(input);
 
@@ -280,35 +343,34 @@ const stateOf = (input: GitRunInput): TreeState => {
     return listing;
   }
 
-  // Why: the status names the object in HEAD and in the index of each changed file, the diff of the
-  // work tree against the index each tracked file's change, and the signature of each untracked file
-  // its rewrite, so the fingerprint needs no commit to diff against. The diff is git's plumbing,
-  // which, unlike git diff, takes no lock on the index to refresh it and runs no program the user's
-  // configuration names to diff with or to turn a file into text.
-  const diff = runGit({
+  // Why: the index names the content of every file git tracks, and the status each file whose work
+  // copy differs from it, read here; ls-files is git's plumbing, which takes no lock on the index
+  // and runs no program the user's configuration names to filter a file.
+  const index = runGit({
     ...input,
     args: [
-      'diff-files',
-      '--patch',
+      'ls-files',
+      '--stage',
+      '-z',
+      '--full-name',
       ...PROJECT_BUT_SESSION_FILES,
     ],
   });
 
-  if (diff.status === GitRunStatus.Failed) {
-    return unreadTreeOf(diff.failure);
+  if (index.status === GitRunStatus.Failed) {
+    return unreadTreeOf(index.failure);
   }
-
-  const untrackedSignatures = listing.files
-    .filter((file) => file.kind === StatusEntryKind.Untracked)
-    .map((file) => file.signature);
 
   return {
     fingerprint: TreeFingerprint.create(
-      createHash('sha256')
-        .update(listing.statusOutput)
-        .update(diff.output)
-        .update(JSON.stringify(untrackedSignatures))
-        .digest('hex'),
+      treeContentFingerprintOf({
+        hashName: listing.hashName,
+        indexListing: index.output,
+        workFiles: listing.files.map((file) => ({
+          content: readWorkContent(file.filePath),
+          path: file.path,
+        })),
+      }),
     ),
     status: TreeStateStatus.Read,
   };
