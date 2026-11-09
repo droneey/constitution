@@ -167,7 +167,7 @@ component OrdersSidebar({ title, customerId })
 component OrdersSidebar({ title, recentOrders })
   return Stack(Heading(title), recentOrders)
 
-# presentation/screens/customer
+# presentation/screens/customer-screen
 OrdersSidebar({
   title: customer.name,
   recentOrders: OrdersRecentWidget({ customerId: customer.id })

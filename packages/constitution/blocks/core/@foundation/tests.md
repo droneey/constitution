@@ -164,7 +164,7 @@ for each { name, code } in
 
 ### case-earns-its-place · SHOULD
 
-Every case earns its place by failing for a plausible bug no other case catches. One that cannot fail, such as a restated constant, a check of a library or a duplicate, is deleted. Exempt: a row of a table the constant-others-rely-on-pinned-by-a-table rule asks for.
+Every case earns its place by failing for a plausible bug no other case catches. One that cannot fail, such as a check of what its own arrange step built, a check of a library or a duplicate, is deleted. Exempt: a row of a table the constant-others-rely-on-pinned-by-a-table rule asks for.
 
 #### Why
 
@@ -173,14 +173,14 @@ A case that catches nothing costs reading, running and updating, and makes the s
 #### Examples
 
 ```pseudo title="Avoid"
-test "should set the tax rate"
+test "should create a paid order"
   # Arrange
-  let expected = 0.2
+  let order = createOrder({ status: Paid })
   # Act
-  let rate = TAX_RATE
+  let status = order.status
 
   # Assert
-  assert rate is expected
+  assert status is Paid
 ```
 
 ```pseudo title="Prefer"

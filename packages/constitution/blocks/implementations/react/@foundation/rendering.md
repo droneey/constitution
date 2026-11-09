@@ -112,7 +112,7 @@ createRoot(container).render(
 
 ### modern-react-api-only → deprecated-form-never-used · MUST
 
-Only React's modern API is used. That is `use(Context)`, `<Context value>`, `ref` as a prop and ref callbacks that return their cleanup, never the legacy form of each.
+Every context, ref, ref cleanup and prop default is written in React's current form. That is `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup and a default in the parameter, never the legacy form of each, such as `defaultProps`.
 
 #### Why
 

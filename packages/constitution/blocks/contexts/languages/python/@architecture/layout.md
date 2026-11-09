@@ -104,6 +104,8 @@ from .order.value_objects.order_id_value_object import OrderId
 __all__ = ["DraftOrder", "OrderId", "PaidOrder"]
 ```
 
-```py title="Prefer"
-# src/shop/features/orders/domain/__init__.py
+```text title="Prefer"
+src/shop/features/orders/domain/
+├── __init__.py          empty
+└── order/
 ```

@@ -250,7 +250,7 @@ def assign_courier(order_id: OrderId, courier_id: CourierId) -> Assignment:
 
 ### enumeration-is-a-unique-str-enum → closed-set-declared-as-one-enumeration · MUST
 
-Every closed set of named values the program owns is an `enum.StrEnum` marked `@unique`. It is never a union of `Literal` strings.
+Every closed set of named values the program owns is an `enum.StrEnum` marked `@unique`. It is never a union of `Literal` strings. Exempt: the one-member enumeration of a sentinel, which `not-given-spelled-by-one-sentinel` governs.
 
 #### Why
 
@@ -595,11 +595,11 @@ class Customer:
 
 ### not-given-spelled-by-one-sentinel · MUST
 
-Wherever `None` is itself a value a caller passes, every “not given” is one sentinel declared once. A patch that clears a field passes such a `None`, and the sentinel is the built-in `sentinel` where the `requires-python` floor is 3.15 or later, a one-member enumeration below it.
+Wherever `None` is itself a value a caller passes, every “not given” is one sentinel declared once. A patch that clears a field passes such a `None`, and the sentinel is the built-in `sentinel` where the `requires-python` floor is 3.15 or later, and below it the one member of an `enum.Enum` of its own, never of a `StrEnum` or an `IntEnum`, whose member passes for a `str` or an `int`.
 
 #### Why
 
-Without a declared sentinel “not given” and “cleared” are one `None`, so a patch clears a field its caller never named, and two sentinels for one meaning fail each other's identity check.
+Without a declared sentinel “not given” and “cleared” are one `None`, so a patch clears a field its caller never named, two sentinels for one meaning fail each other's identity check, and a sentinel that is a `str` passes the type check wherever a string is expected, so it is stored as one.
 
 #### Examples
 
@@ -611,9 +611,8 @@ def patch_customer(customer: Customer, *, phone: str | None = None) -> Customer:
 ```
 
 ```py title="Prefer"
-@unique
-class NotGiven(StrEnum):
-    NOT_GIVEN = "not-given"
+class NotGiven(Enum):
+    NOT_GIVEN = auto()
 
 
 def patch_customer(

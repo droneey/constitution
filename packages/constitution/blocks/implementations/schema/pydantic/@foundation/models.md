@@ -140,11 +140,11 @@ cart = CartDto.model_validate_json(body)
 
 ### model-builds-values-through-their-own-check → parsed-value-built-through-its-own-check · MUST
 
-Every pydantic model builds a value that keeps an invariant through the value's dataclass, in an `AfterValidator` or a `field_validator`.
+Every pydantic model builds a value that keeps an invariant through the value's dataclass, in a validator run before its field's parse. That validator is a `BeforeValidator` or a `field_validator` in `mode="before"`, on a field typed as the value.
 
 #### Why
 
-A validator that checks the invariant itself, or a field typed by a second definition of the value, drifts from the dataclass's own check, so the model accepts values the program refuses — a single source of truth.
+A validator that checks the invariant itself, or a field typed by a second definition of the value, drifts from the dataclass's own check, so the model accepts values the program refuses, and pydantic's own parse of a field typed as the dataclass reads it as an object of the dataclass's fields, so it refuses the wire form the value's own parser reads before any later validator sees it — a single source of truth.
 
 #### Examples
 

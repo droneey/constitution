@@ -351,11 +351,11 @@ Sign-in and security
 
 ### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
 
-Every privileged account signs in only with a phishing-resistant factor. An account is privileged when it holds privileges over other accounts, the program's settings or other people's data. Where sign-in goes through an outside provider, the program reads that factor from the assertion the provider makes of it, such as an ID token's `acr` or `amr`, and asks for one of its own where the provider asserts none.
+Every privileged account signs in only with a phishing-resistant factor. An account is privileged when it holds privileges over other accounts, the program's settings or other people's data. Where sign-in goes through an outside provider, the program reads that factor from the assertion the provider makes of it, such as an OpenID Connect ID token's `acr` of `phr` or `phrh`, the values OpenID Connect EAP ACR Values defines, and asks for one of its own where the provider asserts none.
 
 #### Why
 
-An administrator's account is the one an attacker phishes first, and one taken gives everything at once — CISA's guidance on phishing-resistant MFA; NIST SP 800-63B-4 asks such a factor only at AAL3.
+An administrator's account is the one an attacker phishes first, and one taken gives everything at once, while a program that trusts `amr` admits a factor that does not resist phishing — CISA's guidance on phishing-resistant MFA; NIST SP 800-63B-4 asks such a factor only at AAL3.
 
 #### Examples
 
@@ -385,7 +385,7 @@ function admitProviderSignIn(account, claims, context)
 
 ### password-accepted-by-its-length · MUST
 
-Every sign-in password is accepted from eight characters up to at least 64, never truncated, and refused below eight. Eight is the length floor NIST SP 800-63B-4 sets for a password used with another factor.
+Every sign-in password is accepted from eight characters up to at least 64, never truncated, and refused below eight. A character is one Unicode code point, as NIST SP 800-63B-4 counts it. Eight is the length floor NIST SP 800-63B-4 sets for a password used with another factor.
 
 #### Why
 
@@ -398,7 +398,7 @@ let MIN_PASSWORD_LENGTH = 8
 let MAX_PASSWORD_LENGTH = 20
 
 function acceptedPassword(password)
-  if password.length < MIN_PASSWORD_LENGTH
+  if codePoints(password).size < MIN_PASSWORD_LENGTH
     throw new PasswordTooShortError(MIN_PASSWORD_LENGTH)
 
   return password.take(MAX_PASSWORD_LENGTH)  # the rest is cut
@@ -409,10 +409,12 @@ let MIN_PASSWORD_LENGTH = 8
 let MAX_PASSWORD_LENGTH = 128
 
 function checkPasswordLength(password)
-  if password.length < MIN_PASSWORD_LENGTH
+  let length = codePoints(password).size
+
+  if length < MIN_PASSWORD_LENGTH
     throw new PasswordTooShortError(MIN_PASSWORD_LENGTH)
 
-  if password.length > MAX_PASSWORD_LENGTH
+  if length > MAX_PASSWORD_LENGTH
     throw new PasswordTooLongError(MAX_PASSWORD_LENGTH)
 ```
 
@@ -519,7 +521,7 @@ let stored = argon2id.hash(password, {
 
 ### recovery-no-weaker-than-sign-in · MUST
 
-Every account recovery is no weaker than sign-in, never skipping a factor the account requires.
+Every account recovery is no weaker than sign-in, proving as many factors as sign-in takes. Each is no weaker than the factor it stands for, a phishing-resistant one for a privileged account, and a recovery code or link sent to an address the account holds counts as one of them.
 
 #### Why
 

@@ -48,21 +48,21 @@ A refusal answered as an internal error tells its caller to retry, unchanged, a 
 #### Examples
 
 ```pseudo title="Avoid"
-function answerFailure(error)
+function answerFailure(error, context)
   if isExpectedFailure(error) then
-    return callerFailure(error.code, error.details)
+    return callerFailure(error.code, error.details, context.occurrenceId)
 
   return internalError({ occurrenceId: reportDefect(error) })  # a refused input lands here too
 ```
 
 ```pseudo title="Prefer"
-function answerFailure(error)
+function answerFailure(error, context)
   if isExpectedFailure(error) then
-    return callerFailure(error.code, error.details)
+    return callerFailure(error.code, error.details, context.occurrenceId)
   if error is InputRefused then
-    return callerFailure("request.invalid-input", { fields: error.fields })
+    return callerFailure("request.invalid-input", { fields: error.fields }, context.occurrenceId)
   if error is UnknownOperation then
-    return callerFailure("request.unknown-operation", { name: error.operation })
+    return callerFailure("request.unknown-operation", { name: error.operation }, context.occurrenceId)
 
   return internalError({ occurrenceId: reportDefect(error) })
 ```
@@ -109,17 +109,17 @@ A defect answered as the caller's failure tells the caller to change a request t
 #### Examples
 
 ```pseudo title="Avoid"
-function answerFailure(error)
+function answerFailure(error, context)
   if isExpectedFailure(error) then
-    return callerFailure(error.code, error.details)
+    return callerFailure(error.code, error.details, context.occurrenceId)
 
-  return callerFailure("request.failed", { occurrenceId: reportDefect(error) })
+  return callerFailure("request.failed", {}, reportDefect(error))
 ```
 
 ```pseudo title="Prefer"
-function answerFailure(error)
+function answerFailure(error, context)
   if isExpectedFailure(error) then
-    return callerFailure(error.code, error.details)
+    return callerFailure(error.code, error.details, context.occurrenceId)
 
   return internalError({ occurrenceId: reportDefect(error) })
 ```

@@ -10,7 +10,7 @@
 
 #### Why
 
-The library's own examples build the client at a module's top level, where on the server every request shares it, one user's data with the next, and every spec shares it with the others.
+A client built outside the root is configured where the composition root cannot see it, and one built at a module's top level, as the library's own examples build it, is shared by every spec that imports that module.
 
 #### Examples
 

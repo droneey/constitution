@@ -1,10 +1,12 @@
 # Screens
 
-> Governs a screen's place in the tree, its screen pieces and its navigation.
+> Governs a screen's place in the tree, its name, its screen pieces and its navigation.
 
 ## Vocabulary
 
 A **screen piece** is a presentational component a screen's layout is composed of.
+
+A screen's role word is **`Screen`**{#screen-role-word}: `-screen` ends its folder's name, as in `order-screen/`, and `Screen` its type's, as in `OrderScreen`. It is a default a language's block respells where a module's name takes no hyphen.
 
 ## General
 
@@ -19,7 +21,7 @@ A screen whose screen pieces load their own data fills in one screen piece at a 
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/order
+# presentation/screens/order-screen
 component OrderScreen({ params })
   return Stack(
     OrderDetails({ orderId: params.orderId }),
@@ -28,7 +30,7 @@ component OrderScreen({ params })
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/order
+# presentation/screens/order-screen
 component OrderScreen({ params })
   let order = showOrder(params.orderId)
 
@@ -52,22 +54,32 @@ Markup a screen lays out outside its screen pieces is proven only through the sc
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/order
-component OrderScreenLayout({ order })
-  return Stack(
-    OrderDetails({ order }),
-    Row(Text("Total"), Text(formatMoney(order.total)))  # markup outside any piece
-  )
+# presentation/screens/order-screen
+component OrderScreen({ params })
+  let order = showOrder(params.orderId)
+
+  when order
+    is Loading then return LoadingIndicator()
+    is Failed then return ErrorNotice(error: order.error, onRetry: order.retry)
+    is Loaded then return Stack(
+      OrderDetails({ order: order.data }),
+      Row(Text("Total"), Text(formatMoney(order.data.total)))  # markup outside any piece
+    )
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/order
-component OrderScreenLayout({ order })
-  return Stack(
-    OrderDetails({ order }),
-    OrderTotal({ total: order.total }),
-    OrdersRecommendationsWidget({ orderId: order.id })
-  )
+# presentation/screens/order-screen
+component OrderScreen({ params })
+  let order = showOrder(params.orderId)
+
+  when order
+    is Loading then return LoadingIndicator()
+    is Failed then return ErrorNotice(error: order.error, onRetry: order.retry)
+    is Loaded then return Stack(
+      OrderDetails({ order: order.data }),
+      OrderTotal({ total: order.data.total }),
+      OrdersRecommendationsWidget({ orderId: order.data.id })
+    )
 ```
 
 ### screen-piece-knows-no-screen · SHOULD
@@ -151,18 +163,42 @@ src/features/orders/presentation/
 ├── bindings/
 ├── components/
 ├── screens/
-│   └── order/
+│   └── order-screen/
 └── widgets/
 ```
 
 ```text title="Prefer"
 src/
 ├── presentation/screens/
-│   └── order/
+│   └── order-screen/
 └── features/orders/presentation/
     ├── bindings/
     ├── components/
     └── widgets/
+```
+
+### screen-named-with-its-role-word → role-word-ends-the-name · MUST
+
+Every screen's name ends in its role word, its folder's in `-screen` and its type's in `Screen`.
+
+#### Why
+
+A screen named like a component must be opened to learn that it is a place of the program, and its type takes the name of the domain type it shows, as a screen `Order` takes the aggregate's, so the file that renders one imports two things of one name.
+
+#### Examples
+
+```text title="Avoid"
+presentation/screens/
+└── order/
+    ├── order          Order
+    └── <surface>
+```
+
+```text title="Prefer"
+presentation/screens/
+└── order-screen/
+    ├── order-screen   OrderScreen
+    └── <surface>
 ```
 
 ## Navigation
@@ -178,7 +214,7 @@ A screen, widget or component that imports the navigation library is tied to it 
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/order
+# presentation/screens/order-screen
 import { currentParams, navigator } from "router"
 
 component OrderScreen()
@@ -189,7 +225,7 @@ component OrderScreen()
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/order
+# presentation/screens/order-screen
 component OrderScreen({ params, onCancelled })
   return OrderView({ orderId: params.orderId, onCancelled })
 

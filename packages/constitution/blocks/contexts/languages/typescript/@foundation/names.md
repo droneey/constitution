@@ -50,13 +50,13 @@ export type Page<TItem> = {
 };
 ```
 
-### function-kinds-spelled-on-the-companion → function-named-for-what-it-does · SHOULD
+### function-kinds-spelled-on-the-companion → function-kind-spelled-on-its-type · SHOULD
 
-Every parse of, conversion into and derived value of a type that has a companion is a member of that companion. One of a type that has none, such as an enumeration, is a free function. Exempt: a parse or a conversion from an outside system's own shape, such as a response or a row, which the code that reaches that system holds; a parse of one value's text, such as an amount's, is none.
+Every function `function-kind-spelled-on-its-type` spells on a type that has a companion is a member of that companion. One of a type that has none, such as an enumeration, is a free function.
 
 #### Why
 
-A free function beside the type it builds reads as one more helper, and a derived value named by its noun collides with a local binding of that noun; reached through its companion, each reads as what it builds and collides with nothing.
+A derived value written as a free function and named by its noun collides with a local binding of that noun, as `total` with the `total` its caller computes, while one reached through its companion collides with nothing.
 
 #### Examples
 

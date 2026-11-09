@@ -15,7 +15,7 @@ A choice changed only from one place is out of reach wherever the person is, so 
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/privacy
+# presentation/screens/privacy-screen
 Button(label: "Change cookie choices", onPress: openConsentPanel)
 ```
 

@@ -192,7 +192,7 @@ Every violation of a store's constraint that holds an invariant is mapped to an 
 
 #### Why
 
-A violation left unmapped reaches the caller as a defect, so a taken name or a missing reference is shown as a crash instead of the failure the caller can act on.
+A violation left unmapped reaches the caller as a defect, so a name taken or a reference removed by a race past the command's check is shown as a crash, instead of a failure its command runs again from its load.
 
 #### Examples
 

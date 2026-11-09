@@ -128,13 +128,13 @@ class OrderRepositoryPort(Protocol):
     async def get(self, order_id: OrderId) -> Order: ...
 ```
 
-### function-kinds-spelled-on-their-class → function-named-for-what-it-does · SHOULD
+### function-kinds-spelled-on-their-class → function-kind-spelled-on-its-type · SHOULD
 
-Every parse of, conversion into and derived value of a class is spelled on the class. A parse or a conversion into it is a classmethod, and a derived value of it a property; one of a type that is no class of the program's own, such as a `NewType`, is a snake_case module function. Exempt: a parse or a conversion from an outside system's own shape, such as a response or a row, which the code that reaches that system holds; a parse of one value's text, such as an amount's, is none.
+Every function `function-kind-spelled-on-its-type` spells on a class takes the class's form. A parse or a conversion into it is a classmethod, and a derived value of it a property; one of a type that is no class of the program's own, such as a `NewType`, is a snake_case module function.
 
 #### Why
 
-A parse or a conversion kept apart from its class is not found where the standard library's readers look for an alternate constructor, and a derived value written as a method reads as an act; `from` alone is a keyword, so a conversion takes its source after it.
+A parse or a conversion kept apart from its class is not found where the standard library's readers look for an alternate constructor, and a derived value written as a method reads as an act.
 
 #### Examples
 

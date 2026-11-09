@@ -292,7 +292,7 @@ A result held back by motion makes the interface slow however fast its work is.
 
 ```pseudo title="Avoid"
 function onArchive(order)
-  call animateOut(rowOf(order), { duration: tokens.motion.duration.moderate })
+  call animateOut(rowOf(order), { transition: tokens.motion.exit.standard })
   call archiveOrder(order.id)
 ```
 
@@ -300,7 +300,7 @@ function onArchive(order)
 function onArchive(order)
   call archiveOrder(order.id)
 
-  animateOut(rowOf(order), { duration: tokens.motion.duration.moderate })
+  animateOut(rowOf(order), { transition: tokens.motion.exit.standard })
 ```
 
 ### frequent-interaction-never-waits-on-motion · SHOULD
@@ -316,14 +316,14 @@ An animation seen for the hundredth time is only a wait, even one that holds not
 ```pseudo title="Avoid"
 CommandPalette(
   isOpen: isPaletteOpen,
-  enter: { fade: true, scaleFrom: 0.96, duration: tokens.motion.duration.moderate }
+  enter: { fade: true, scaleFrom: 0.96, transition: tokens.motion.enter.standard }
 )
 ```
 
 ```pseudo title="Prefer"
 CommandPalette(
   isOpen: isPaletteOpen,
-  exit: { fade: true, duration: tokens.motion.duration.fast }
+  exit: { fade: true, transition: tokens.motion.exit.quick }
 )
 ```
 

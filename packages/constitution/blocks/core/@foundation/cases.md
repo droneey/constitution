@@ -187,7 +187,9 @@ test "should cancel the order"
   let order = createOrder()
   # Act
   let cancelled = cancel(order)
+
   # Assert
+  let isCancelled = cancelled.status is Cancelled
 ```
 
 ```pseudo title="Prefer"

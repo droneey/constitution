@@ -117,13 +117,13 @@ function up(schema)
   schema.alterColumn("orders", "note", text({ maxLength: 500 }).nullable())
 ```
 
-### schema-migration-removes-only-what-no-running-release-reads → format-changed-in-steps · MUST
+### schema-migration-removes-only-what-no-running-release-uses → format-changed-in-steps · MUST
 
-Every schema migration removes only what no running release reads. It drops, renames or changes the meaning of a part of the schema, such as a table, a column or a stored value, only once every release still running has stopped reading it, an older release during a rolling deploy included. Exempt: a store whose readers all stop while its schema migration runs, such as an embedded database its one program migrates as it opens it.
+Every schema migration removes only what no running release uses. It drops, renames or changes the meaning of a part of the schema, such as a table, a column or a stored value, only once every release still running has stopped reading and writing it, an older release during a rolling deploy included. Exempt: a store whose every reader and writer stops while its schema migration runs, such as an embedded database its one program migrates as it opens it.
 
 #### Why
 
-A schema migration applied before its release starts drops what the release still running beside it reads, so every request that older release serves fails until the deploy ends — the expand–contract pattern.
+A schema migration applied before its release starts drops what the release still running beside it reads or writes, so every request that older release serves fails until the deploy ends — the expand–contract pattern.
 
 #### Examples
 

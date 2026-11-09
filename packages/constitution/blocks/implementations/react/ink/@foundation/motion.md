@@ -24,7 +24,10 @@ export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
       return;
     }
 
-    const timer = setInterval(() => setFrame((current) => current + 1), theme.duration.spinner);
+    const timer = setInterval(
+      () => setFrame((current) => current + 1),
+      theme.motion.spin.standard.duration,
+    );
 
     return () => clearInterval(timer);
   }, [isReducedMotion, theme]);
@@ -36,7 +39,10 @@ export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
 ```tsx title="Prefer"
 export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
   const theme = useTheme();
-  const { frame } = useAnimation({ interval: theme.duration.spinner, isActive: !isReducedMotion });
+  const { frame } = useAnimation({
+    interval: theme.motion.spin.standard.duration,
+    isActive: !isReducedMotion,
+  });
 
   return <Text>{spinnerFrames[frame % spinnerFrames.length]}</Text>;
 };
@@ -55,7 +61,7 @@ An animation left active keeps moving after the person asked for stillness, and 
 ```tsx title="Avoid"
 export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
   const theme = useTheme();
-  const { frame } = useAnimation({ interval: theme.duration.spinner });
+  const { frame } = useAnimation({ interval: theme.motion.spin.standard.duration });
 
   return <Text>{isReducedMotion ? '' : spinnerFrames[frame % spinnerFrames.length]}</Text>;
 };
@@ -64,7 +70,10 @@ export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
 ```tsx title="Prefer"
 export const Spinner = ({ isReducedMotion }: SpinnerProps): ReactElement => {
   const theme = useTheme();
-  const { frame } = useAnimation({ interval: theme.duration.spinner, isActive: !isReducedMotion });
+  const { frame } = useAnimation({
+    interval: theme.motion.spin.standard.duration,
+    isActive: !isReducedMotion,
+  });
 
   return <Text>{spinnerFrames[frame % spinnerFrames.length]}</Text>;
 };

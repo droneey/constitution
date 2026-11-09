@@ -54,7 +54,7 @@ A component sized by the viewport's width overflows a narrow container on a wide
 
 ### component-styles-scoped-to-its-root · MUST
 
-Every component's stylesheet styles only the component's own elements. Its rules sit in `@scope (<its root>) to (<its slots>)`, or under its root's class where `@scope` is not available.
+Every component's stylesheet styles only the component's own elements. Its rules sit in `@scope (<its root>) to (<its slots>)`, or under its root's class where a browser the program supports does not read `@scope`.
 
 #### Why
 

@@ -8,11 +8,13 @@ The program's **configuration inputs** are the settings its host hands it under 
 
 The **configuration provider** is the unit that reads them and parses them by the program's configuration declaration, as the settings chapter defines it, into the values the root hands on.
 
+**`infrastructure/config/`**{#configuration-provider-folder}, at the top of the source, holds the configuration provider.
+
 ## General
 
 ### configuration-provider-sits-at-the-edge → effects-held-only-by-the-edge · MUST
 
-The configuration provider sits at the edge, in the top-level `infrastructure/`.
+The configuration provider sits at the edge, in the top-level `infrastructure/config/`.
 
 #### Why
 

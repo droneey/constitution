@@ -6,7 +6,7 @@
 
 ### server-process-time-zone-is-utc → time-never-read-in-the-machines-zone · MUST
 
-Every server's process runs in UTC, never in its host's zone or in one its configuration chooses.
+Every server's process runs in UTC, never in its host's zone or in another zone its configuration chooses.
 
 #### Why
 

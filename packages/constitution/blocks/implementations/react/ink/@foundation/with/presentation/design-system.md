@@ -4,9 +4,9 @@
 
 ## Motion
 
-### ink-animation-interval-from-a-duration-token → motion-from-tokens · MUST
+### ink-animation-interval-from-a-motion-token → motion-from-tokens · MUST
 
-Every interval `useAnimation` takes is a duration token of the design system, read through its theme, never a number in the component.
+Every interval `useAnimation` takes is the duration of a semantic motion token, read through the theme, never a number in the component.
 
 #### Why
 
@@ -20,5 +20,8 @@ const { frame } = useAnimation({ interval: 80, isActive: !isReducedMotion });
 
 ```tsx title="Prefer"
 const theme = useTheme();
-const { frame } = useAnimation({ interval: theme.duration.spinner, isActive: !isReducedMotion });
+const { frame } = useAnimation({
+  interval: theme.motion.spin.standard.duration,
+  isActive: !isReducedMotion,
+});
 ```

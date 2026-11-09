@@ -15,7 +15,7 @@ A component imported from a package sits outside the kit's homes, so a reader do
 #### Examples
 
 ```tsx title="Avoid"
-// src/presentation/screens/cart/cart.tsx
+// src/presentation/screens/cart-screen/cart-screen.tsx
 import { Button } from '@acme/shadcn-components';
 ```
 

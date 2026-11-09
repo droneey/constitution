@@ -74,6 +74,6 @@ test('should read gift wrap as checked', () => {
   render(<GiftWrapCheck isChecked />, { stdout, isScreenReaderEnabled: true }).unmount();
 
   // Assert
-  expect(stdout.lastFrame()).toMatch(/checkbox.*Gift wrap.*checked/);
+  expect(stdout.lastFrame()).toContain('checkbox: (checked) Gift wrap');
 });
 ```

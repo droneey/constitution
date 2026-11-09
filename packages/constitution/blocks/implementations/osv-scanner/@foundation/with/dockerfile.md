@@ -37,7 +37,7 @@ The scan builds the image to the stage named `base`, so a Dockerfile without one
 ```dockerfile title="Avoid"
 FROM node:22.11.0-bookworm-slim@sha256:66abef25028edbf19b3e6fa5d293a19adfdfe6cc2e8fd9ca7392c3f6f0c64615 AS runtime
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates=20230311 \
+ && apt-get install -y --no-install-recommends ca-certificates=20230311+deb12u1 \
  && rm -rf /var/lib/apt/lists/*
 
 FROM runtime
@@ -48,7 +48,7 @@ USER 1000:1000
 ```dockerfile title="Prefer"
 FROM node:22.11.0-bookworm-slim@sha256:66abef25028edbf19b3e6fa5d293a19adfdfe6cc2e8fd9ca7392c3f6f0c64615 AS base
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates=20230311 \
+ && apt-get install -y --no-install-recommends ca-certificates=20230311+deb12u1 \
  && rm -rf /var/lib/apt/lists/*
 
 FROM base

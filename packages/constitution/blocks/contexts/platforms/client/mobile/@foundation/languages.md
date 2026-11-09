@@ -46,7 +46,7 @@ An app that declares no languages gets no per-app language in the system's setti
 
 ### language-picked-in-the-app-kept-by-the-system · SHOULD
 
-Every language picked inside the app is kept by the system as its per-app language, never stored by the app itself. The app hands the choice to the system or, on a system that lets no app set its per-app language, its picker opens the app's page in the system's settings.
+Every language picked inside the app is kept by the system as its per-app language, never stored by the app itself. The app hands the choice to the system or, on a system that lets no app set its per-app language, its picker opens the app's page in the system's settings. Exempt: a system with no per-app language and no page to set one, such as Android before 13, where the choice is kept by the platform's compatibility library, which hands it to the system once the system has one.
 
 #### Why
 

@@ -71,7 +71,7 @@ setting checkoutTimeout
 
 ### missing-setting-fails-the-start-of-its-work → outside-value-parsed-once-where-it-enters · MUST
 
-Every missing or malformed setting fails the start of the work that needs it, before that work begins. A setting is missing when its declaration requires it and its host hands it none. Such work is the program, a subcommand or the part that reads the setting.
+Every missing or malformed setting fails the start of the work that needs it, before that work begins. A setting is missing when the work needs it, its host hands it none and its declaration gives it no default. Such work is the program, a subcommand or the part that reads the setting.
 
 #### Why
 

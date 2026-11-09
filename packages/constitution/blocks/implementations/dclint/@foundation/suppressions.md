@@ -20,6 +20,7 @@ services:
   shop-api:
     build: .
     image: registry.shop.example/shop-api:2.4.0
+    pull_policy: build
     security_opt: ['no-new-privileges:true']
     cap_drop: [ALL]
     read_only: true
@@ -31,6 +32,7 @@ services:
     build: .
     # Why: the build tags the image the release pushes
     image: registry.shop.example/shop-api:2.4.0 # dclint disable-line no-build-and-image
+    pull_policy: build
     security_opt: ['no-new-privileges:true']
     cap_drop: [ALL]
     read_only: true

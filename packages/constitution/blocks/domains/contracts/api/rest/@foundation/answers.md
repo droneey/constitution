@@ -273,7 +273,7 @@ Idempotency-Key: "pay-2026-11-08-0042"
 
 ### created-resource-identifier-carried-in-its-path · SHOULD
 
-Every REST creation whose caller makes the identifier of what it creates carries that identifier in its path.
+Every REST creation whose caller sends the identifier of what it creates carries that identifier in its path.
 
 #### Why
 

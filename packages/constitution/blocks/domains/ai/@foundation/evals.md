@@ -349,11 +349,11 @@ score          0.86 ± 0.02
 
 ### eval-case-repeated-as-its-noise-needs · SHOULD
 
-Every eval runs each case often enough to bring its score's standard error under a bound the project sets.
+Every eval repeats each case until run-to-run variation adds at most a bound the project sets to its score's standard error.
 
 #### Why
 
-A language model answers differently from one run to the next, so a case run once passes or fails by chance.
+A language model answers differently from one run to the next, so a case run once passes or fails by chance, while repeats leave the spread between cases as it is, which only more cases narrow.
 
 #### Examples
 
@@ -362,11 +362,11 @@ let result = runEval(triageTicketEval, { repeatsPerCase: 1 })
 ```
 
 ```pseudo title="Prefer"
-let maxStandardError = 0.02
+let maxRunToRunError = 0.01
 let repeatsPerCase = 1
 let result = runEval(triageTicketEval, { repeatsPerCase })
 
-while result.standardError > maxStandardError
+while result.withinCaseStandardError > maxRunToRunError
   repeatsPerCase = repeatsPerCase * 2
   result = runEval(triageTicketEval, { repeatsPerCase })
 ```

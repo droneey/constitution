@@ -382,11 +382,11 @@ function transfer({ from, to, amount })
 
 ### lock-never-held-while-waiting-on-another-system · MUST
 
-Every lock is released before its holder waits on another system. Exempt: a lock held across one call that has a timeout and takes no other lock, a lock a store holds within one of its transactions while its holder waits on that store alone, and a lock held across its holder's calls to one target outside the program, the thing those calls change whatever systems it spans, where that target never waits on the program and the lock only keeps other work off it while the holder changes it and ends by itself once its holder stops.
+Every lock is released before its holder waits on another system. Exempt: a lock held across one call that has a timeout, to a system that never waits on the program, while its holder takes no other lock, a lock a store holds within one of its transactions while its holder waits on that store alone, and a lock held across its holder's calls to one target outside the program, the thing those calls change whatever systems it spans, where that target never waits on the program and the lock only keeps other work off it while the holder changes it and ends by itself once its holder stops.
 
 #### Why
 
-A lock held while waiting on another system stalls every piece of work that needs it for as long as that system takes, and deadlocks it when that system waits on the program, where a store that holds a lock for one of its own transactions bounds that wait itself, and a lock that only guards one outside target while its holder changes it stalls only work that would wait for that change anyway, waits on a target that never waits on its changer, and cannot outlive a holder that stops.
+A lock held while waiting on another system stalls every piece of work that needs it for as long as that system takes, and deadlocks it when that system waits on the program, where one call to a system that never waits on the program stalls that work no longer than that call's timeout, a store that holds a lock for one of its own transactions bounds that wait itself, and a lock that only guards one outside target while its holder changes it stalls only work that would wait for that change anyway, waits on a target that never waits on its changer, and cannot outlive a holder that stops.
 
 #### Examples
 

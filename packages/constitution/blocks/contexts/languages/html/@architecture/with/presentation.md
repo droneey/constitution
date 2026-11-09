@@ -23,8 +23,8 @@ export const documentMetadata = {
 ```
 
 ```tsx title="Prefer"
-// src/presentation/screens/orders/orders.tsx
-export const OrdersPage = (): ReactElement => (
+// src/presentation/screens/orders-screen/orders-screen.tsx
+export const OrdersScreen = (): ReactElement => (
   <>
     <title>Orders</title>
     <meta name="description" content="Every order you placed." />
@@ -53,8 +53,8 @@ A script declared in a shared document runs on every screen, those that never us
 ```
 
 ```tsx title="Prefer"
-// src/presentation/screens/help/help.tsx
-export const HelpPage = (): ReactElement => (
+// src/presentation/screens/help-screen/help-screen.tsx
+export const HelpScreen = (): ReactElement => (
   <>
     <script async src="https://widget.support-chat.example/loader.js" />
     <HelpArticles />

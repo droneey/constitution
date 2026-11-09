@@ -31,13 +31,13 @@ test('should list the orders', async () => {
 test('should list the orders', async () => {
   // Arrange
   const moduleRef = await Test.createTestingModule({ imports: [RootModule] }).compile();
-  const app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+  const nest = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+  await using app = Object.assign(nest, { [Symbol.asyncDispose]: () => nest.close() });
 
   await app.init();
 
   // Act
   const response = await app.inject({ method: 'GET', url: '/orders' });
-  await app.close();
 
   // Assert
   expect(response.statusCode).toBe(200);
@@ -76,13 +76,13 @@ test('should list the orders', async () => {
 test('should list the orders', async () => {
   // Arrange
   const moduleRef = await Test.createTestingModule({ imports: [RootModule] }).compile();
-  const app = moduleRef.createNestApplication();
+  const nest = moduleRef.createNestApplication();
+  await using app = Object.assign(nest, { [Symbol.asyncDispose]: () => nest.close() });
 
   await app.init();
 
   // Act
   const response = await request(app.getHttpServer()).get('/orders');
-  await app.close();
 
   // Assert
   expect(response.status).toBe(200);

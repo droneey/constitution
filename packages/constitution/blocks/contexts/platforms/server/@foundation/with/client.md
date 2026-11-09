@@ -6,7 +6,7 @@
 
 ### device-program-configuration-holds-only-public-keys → device-program-holds-nothing-hidden · MUST
 
-Every configuration a server sends a device program holds only the keys a public schema of that configuration names.
+Every configuration a server sends a device program holds only the keys the server picks for it one by one. Each is copied by name from the server's configuration, never the configuration whole, and a type alone, erased before the run, picks none.
 
 #### Why
 

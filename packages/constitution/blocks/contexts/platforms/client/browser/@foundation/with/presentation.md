@@ -124,7 +124,7 @@ Content that moves while people read it or reach for it makes them lose their pl
 
 ### first-render-matches-the-served-markup · SHOULD
 
-Every tab's first render of prerendered markup matches that markup. Markup is prerendered when a server or a build renders it before the tab runs. Until the tab has taken over the markup, nothing the render draws depends on the clock, chance, the tab's locale or its storage. Exempt: an attribute of the document's root that a script sets before the first paint, such as the theme mode its user chose.
+Every tab's first render of prerendered markup matches that markup. Markup is prerendered when a server or a build renders it before the tab runs. Until the tab has taken over the markup, nothing the render draws depends on what its prerender could not know or what changes between renders, such as the clock, chance, the tab's locale, its time zone or its storage. Exempt: an attribute of the document's root that a script sets before the first paint, such as the theme mode its user chose.
 
 #### Why
 
@@ -227,8 +227,8 @@ The parent orders focus within a screen, and this rule starts that order where t
 #### Examples
 
 ```tsx title="Avoid"
-// src/presentation/screens/order/order.tsx
-export const OrderPage = ({ order }: OrderPageProps): ReactElement => (
+// src/presentation/screens/order-screen/order-screen.tsx
+export const OrderScreen = ({ order }: OrderScreenProps): ReactElement => (
   <main>
     <h1>Order {order.number}</h1> {/* focus stays on the link that is gone */}
     <OrderDetails order={order} />
@@ -237,8 +237,8 @@ export const OrderPage = ({ order }: OrderPageProps): ReactElement => (
 ```
 
 ```tsx title="Prefer"
-// src/presentation/screens/order/order.tsx
-export const OrderPage = ({ order }: OrderPageProps): ReactElement => {
+// src/presentation/screens/order-screen/order-screen.tsx
+export const OrderScreen = ({ order }: OrderScreenProps): ReactElement => {
   const heading = useFocusOnArrival();
 
   return (
@@ -253,7 +253,7 @@ export const OrderPage = ({ order }: OrderPageProps): ReactElement => {
 ```
 
 ```ts title="Prefer"
-// src/presentation/screens/order/order.hooks.ts
+// src/presentation/screens/order-screen/order-screen.hooks.ts
 export const useFocusOnArrival = (): RefObject<HTMLHeadingElement | null> => {
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -276,13 +276,13 @@ A tab, a bookmark, the history and a screen reader name the page by its title, s
 #### Examples
 
 ```tsx title="Avoid"
-export const OrderPage = ({ order }: OrderPageProps): ReactElement => (
+export const OrderScreen = ({ order }: OrderScreenProps): ReactElement => (
   <OrderDetails order={order} /> // keeps the last screen's title
 );
 ```
 
 ```tsx title="Prefer"
-export const OrderPage = ({ order }: OrderPageProps): ReactElement => (
+export const OrderScreen = ({ order }: OrderScreenProps): ReactElement => (
   <>
     <title>{`Order ${order.number} · Shop`}</title>
     <OrderDetails order={order} />

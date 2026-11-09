@@ -15,14 +15,14 @@ Without a locale these calls take the runtime's own, the server's or the device'
 #### Examples
 
 ```ts title="Avoid"
-export const formatPrice = (price: Money): string =>
+export const priceText = (price: Money): string =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currency }).format(
     Money.toDecimal(price),
   );
 ```
 
 ```ts title="Prefer"
-export const formatPrice = (price: Money, locale: string): string =>
+export const priceText = (price: Money, locale: string): string =>
   new Intl.NumberFormat(locale, { style: 'currency', currency: price.currency }).format(
     Money.toDecimal(price),
   );

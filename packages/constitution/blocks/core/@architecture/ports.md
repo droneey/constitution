@@ -84,7 +84,7 @@ function createExpireCart({ cartRepository })
 ```
 
 ```pseudo title="Prefer"
-# kernel/contracts/clock.port
+# carts/application/contracts/clock.port
 type ClockPort = { now: function(): Instant }
 
 # carts/application/use-cases/commands/expire-cart.use-case
@@ -367,8 +367,11 @@ An event handed on before its change is kept announces what may never happen —
 # orders/application/use-cases/commands/place-order.use-case
 let { order, events } = Order.place(input.orderId, input.lines)
 
-call eventPort.handOn(events, context)
 call orderRepository.save(order, events, context)
+
+# orders/infrastructure/database/outbox-relay
+for entry in call client.outboxEntries({ isolation: ReadUncommitted, limit: BATCH_SIZE })
+  call eventPort.handOn(toEvent(entry), context)
 ```
 
 ```pseudo title="Prefer"
@@ -449,9 +452,17 @@ An event no one unit is charged with handing on reaches no reaction, or reaches 
 #### Examples
 
 ```pseudo title="Avoid"
+# rentals/application/use-cases/commands/take-deposit.use-case
+let { deposit, events } = Deposit.take(input.rentalId, input.amount)
+
+call payments.capture(deposit.amount, { key: deposit.paymentKey }, context)
+context.collected.add(events)
+
 # rentals/presentation/bindings/commands/take-deposit
-let events = call takeDeposit(input, context)
-call eventPort.handOn(events, context)
+let collected = createEventCollector()
+
+call takeDeposit(input, { ...context, collected })
+call eventPort.handOn(collected.drain(), context)
 ```
 
 ```pseudo title="Prefer"

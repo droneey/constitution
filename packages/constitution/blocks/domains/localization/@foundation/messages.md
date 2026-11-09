@@ -423,8 +423,8 @@ addedToList = "Ajouté à l'{listName}"
 
 ```text title="Prefer"
 locales/fr catalogue
-addedToList = "Ajouté à l''{listName}"
-              shown: Ajouté à l'Anniversaire
+addedToList = "Ajouté à l’{listName}"
+              shown: Ajouté à l’Anniversaire
 ```
 
 ## Development

@@ -61,7 +61,7 @@ call span.setAttributes({
 ```
 
 ```pseudo title="Prefer"
-let genAi = semanticConventions("gen_ai", { version: "1.40.0" })
+let genAi = semanticConventions("gen_ai", { revision: "4f1c2e9" })
 
 call span.setAttributes({
   [genAi.requestModel]: request.model,

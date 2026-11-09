@@ -6,7 +6,7 @@
 
 ### refused-message-acknowledged-as-handled → last-resort-handler-one-per-interface · MUST
 
-Every message refused by a rule of the business is acknowledged as handled by its message consumer's handler of last resort. Its outcome is recorded or published. Exempt: a message that hands the program's own event to what reacts to it within the program.
+Every message refused by a rule of the business is acknowledged as handled by its message consumer's handler of last resort. Exempt: a message that hands the program's own event to what reacts to it within the program.
 
 #### Why
 
@@ -19,6 +19,33 @@ A refusal dead-lettered pages someone for an outcome of the business, and one re
 function settleMessage(message, error, context)
   if isBusinessRefusal(error) then
     return message.deadLetter(error)
+  ...
+```
+
+```pseudo title="Prefer"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if isBusinessRefusal(error) then
+    call outcomes.publish(messageRefused(message.id, error.code), context)
+    return message.ack()
+  ...
+```
+
+### refused-message-outcome-recorded → last-resort-handler-one-per-interface · MUST
+
+Every message a rule of the business refuses has its refusal recorded or published by its message consumer's handler of last resort. Exempt: a message that hands the program's own event to what reacts to it within the program.
+
+#### Why
+
+A refusal acknowledged with no trace of it leaves its publisher waiting for an effect that never comes, and nobody able to learn why.
+
+#### Examples
+
+```pseudo title="Avoid"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if isBusinessRefusal(error) then
+    return message.ack()
   ...
 ```
 
@@ -216,9 +243,9 @@ every day
     }))
 ```
 
-### key-held-while-its-message-is-dead-lettered · MUST
+### key-parked-while-its-message-is-dead-lettered · MUST
 
-Where their order matters to its message consumer, each later message of a key is held while an earlier one is dead-lettered. Exempt: a message that hands the program's own event to what reacts to it within the program.
+Where their order matters to its message consumer, each later message of a key is parked behind its key's dead letter. Exempt: a message that hands the program's own event to what reacts to it within the program.
 
 #### Why
 
@@ -233,15 +260,17 @@ function onStockChanged(message, context)
 
 ```pseudo title="Prefer"
 function onStockChanged(message, context)
-  if deadLetters.holdsKey(message.orderingKey) then
-    return Held
+  let earlier = deadLetters.firstOfKey(message.orderingKey)
+
+  if earlier is not <absent> then
+    return message.deadLetter(parkedBehind(earlier.messageId))
 
   call stockLevels.apply(parseStockChanged(message), context)
 ```
 
-### dead-letter-holds-back-only-its-key · MUST
+### only-its-keys-messages-parked-behind-a-dead-letter · MUST
 
-Where it holds back later messages, every dead letter holds back only those of its own ordering key, never another key's.
+Where later messages are parked behind it, every dead letter holds back only those of its own ordering key, never another key's.
 
 #### Why
 
@@ -251,19 +280,54 @@ A dead letter that stops its whole partition or queue holds every other object's
 
 ```pseudo title="Avoid"
 function onStockChanged(message, context)
-  if deadLetters.count() > 0 then
-    call subscription.pause()
-    return Held
+  let earlier = deadLetters.first()
+
+  if earlier is not <absent> then
+    return message.deadLetter(parkedBehind(earlier.messageId))
 
   call stockLevels.apply(parseStockChanged(message), context)
 ```
 
 ```pseudo title="Prefer"
 function onStockChanged(message, context)
-  if deadLetters.holdsKey(message.orderingKey) then
-    return Held
+  let earlier = deadLetters.firstOfKey(message.orderingKey)
+
+  if earlier is not <absent> then
+    return message.deadLetter(parkedBehind(earlier.messageId))
 
   call stockLevels.apply(parseStockChanged(message), context)
+```
+
+### parked-messages-handed-on-after-their-dead-letter · MUST
+
+Every message parked behind a dead letter is handed on in its key's order. It goes only after that dead letter is handed on again, and after the messages parked before it; where the command gives the dead letter up, those parked behind it wait for a command of their own.
+
+#### Why
+
+A parked message handed on before the one it waits behind applies a later change on top of one that never took effect, the state its parking kept out.
+
+#### Examples
+
+```pseudo title="Avoid"
+function replayDeadLetter(command, context)
+  call requireOperator(context)
+  let deadLetter = deadLetters.take(command.deadLetterId, context)
+
+  for parked in deadLetters.takeParkedBehind(deadLetter.messageId, context)
+    call broker.republish(parked.message, context)
+
+  call broker.republish(deadLetter.message, context)
+```
+
+```pseudo title="Prefer"
+function replayDeadLetter(command, context)
+  call requireOperator(context)
+  let deadLetter = deadLetters.take(command.deadLetterId, context)
+
+  call broker.republish(deadLetter.message, context)
+
+  for parked in deadLetters.takeParkedBehind(deadLetter.messageId, context)
+    call broker.republish(parked.message, context)
 ```
 
 ## Specs

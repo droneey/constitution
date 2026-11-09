@@ -3229,6 +3229,23 @@
   - A budget that leaves the examples out of the count: a file is read whole by its reviewer, examples and all, and a measure that skips part of it lets a chapter grow past what one sitting reads.
 - **Why.** An example beside its rule changes in the same edit as the rule and is reviewed with it, and a Why in a section of its own reads as prose and costs the gate nothing, since the gate hands neither.
 
+## ADR-0297 — A screen's role word, semantic motion tokens, a creation's identifier and plain embedded shell
+
+**Date:** 2026-11-09 · **Status:** Accepted
+
+- **Decision.**
+  - A screen carries the role word `Screen`, as a widget carries `Widget`: its folder ends in `-screen` and its type in `Screen`, on every platform.
+  - A semantic motion token is `motion.<kind of motion>.<step>`, one W3C `transition` composite over primitive duration and easing tokens, as a semantic font token is one `typography` composite.
+  - A creation's idempotency key is the identifier of what it creates, held by the caller before it asks, made by the caller or issued to it ahead by the server; a REST creation is a `PUT` to that identifier's path.
+  - Shell code another file holds is one simple command or simple commands joined by `&&`; anything more moves into a shell script. A tool's preset never depends on the Constitution's code: the logic the presets embed today moves into scripts the preset ships, as Biome's plugins are shipped.
+- **Rejected.**
+  - `Page` as the role word, or a browser block respelling `Screen` as `Page`: `Page` is the web's word only, and one concept named two ways splits a product whose web and mobile programs sit side by side.
+  - No role word for a screen, the `screens/` folder alone marking it: a screen `Order` collides with the aggregate it shows in the same file.
+  - A motion token per property, `motion.enter.duration`, whose parts drift apart; no semantic tier for motion, which needs an exemption from `component-never-reads-a-primitive-token` and leaves a theme no way to change how motion feels.
+  - A `POST` creation with an `Idempotency-Key` the server keeps: it needs a store of keys with a lifetime, a repeat after the key expires creates a second record, and `command-returns-nothing` already has the caller hold the identifier.
+  - A number of commands as the bound of embedded shell: any number is arbitrary and guards nothing, while a branch, a loop or a pipeline is what fails unseen under a runner's flags. A preset's hook calling the Constitution's command line: a preset is the tool's alone.
+- **Why.** Each was a place where a rule could be read two ways or held nothing; each now has one reading a reviewer can check.
+
 ## Rule aliases
 
 > Every rule slug removed, merged, split, renamed or moved between blocks since the release 0.88, with where its meaning lives now and the entry under which it was recorded (ADR-0274). A slug that moved keeps its name; the others name their successor, or say what holds them.

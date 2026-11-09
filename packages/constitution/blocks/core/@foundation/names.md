@@ -307,6 +307,29 @@ function parseEmail(text) -> Email | InvalidEmailError
 function parent(path) -> Path
 ```
 
+### function-kind-spelled-on-its-type · SHOULD
+
+Every parse of, conversion into and derived value of a type is spelled on that type. Each takes the form its language gives a type's own functions. Exempt: a parse or a conversion from an outside system's own shape, such as a response or a row, which the code that reaches that system holds, though the text of one value, such as an amount's, is no such shape; a rendering of the value for a person, such as its text in a locale, which the code that shows it to that person holds; and a conversion between two types whose homes may not know each other, which the code that knows both holds.
+
+#### Why
+
+A function that builds a type or answers about it, kept apart from it, is not found where its reader looks, reads as one more helper and is soon written again beside the first, while one reached through its type reads as what it builds.
+
+#### Examples
+
+```pseudo title="Avoid"
+type Money = { amount: Decimal, currency: Currency }
+
+function parseMoney(text) -> Money | InvalidMoneyError
+function minorUnits(money) -> Int
+```
+
+```pseudo title="Prefer"
+type Money = { amount: Decimal, currency: Currency }
+  function parse(text) -> Money | InvalidMoneyError
+  function minorUnits(money) -> Int
+```
+
 ### function-name-never-opens-with-a-hollow-prefix · SHOULD
 
 No function's name opens with a hollow prefix. Exempt: a handler named for the event it answers, and a name a contract, a framework or the language's convention imposes.
@@ -363,7 +386,7 @@ let total = order.total
 
 ### literal-with-a-meaning-is-named · MUST
 
-Every literal with a meaning is a named constant. Such literals include a limit, a threshold and a key. Exempt: zero, one, an empty value and the literals of a test case.
+Every literal with a meaning is a named constant. Such literals include a limit, a threshold and a name something is looked up by, such as a setting's, a secret's or a cache entry's. Exempt: zero, one, an empty value and the literals of a test case.
 
 #### Why
 
@@ -452,18 +475,18 @@ A name whose last word differs between its file and its type makes its reader gu
 #### Examples
 
 ```pseudo title="Avoid"
-# orders/infrastructure/sql-order-repository.adapter
+# orders/infrastructure/database/sql-order-repository.adapter
 type SqlAdapterOrderRepository implements OrderRepositoryPort
 
-# orders/domain/order-repository.port
+# orders/application/contracts/order-repository.port
 interface PortOrderRepository
 ```
 
 ```pseudo title="Prefer"
-# orders/infrastructure/sql-order-repository.adapter
+# orders/infrastructure/database/sql-order-repository.adapter
 type SqlOrderRepositoryAdapter implements OrderRepositoryPort
 
-# orders/domain/order-repository.port
+# orders/application/contracts/order-repository.port
 interface OrderRepositoryPort
 ```
 

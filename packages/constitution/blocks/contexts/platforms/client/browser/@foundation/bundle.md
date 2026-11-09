@@ -4,7 +4,7 @@
 
 ## Vocabulary
 
-A **release reload** is a full load of the current release at the tab's next navigation, or after its user accepts a reload, which keeps what they typed.
+A **release reload** is a full load of the current release, at the tab's next navigation or after its user accepts one, that keeps what its user typed and has not sent.
 
 ## Size
 

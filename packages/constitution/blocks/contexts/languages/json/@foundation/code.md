@@ -14,7 +14,8 @@ A strict reader refuses the whole file for one comment, as a linter may refuse o
 
 #### Examples
 
-```json title="Avoid"
+```text title="Avoid"
+fixtures/order.json
 {
   "orderId": "ord_1042",
   "lines": [
@@ -23,7 +24,8 @@ A strict reader refuses the whole file for one comment, as a linter may refuse o
 }
 ```
 
-```json title="Prefer"
+```text title="Prefer"
+fixtures/order.json
 {
   "orderId": "ord_1042",
   "lines": [

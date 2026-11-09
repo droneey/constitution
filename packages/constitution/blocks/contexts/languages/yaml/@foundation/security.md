@@ -6,7 +6,7 @@
 
 ### tag-naming-a-type-or-a-function-refused → outside-input-never-rebuilt-as-objects · MUST
 
-Every loader of outside input in YAML refuses each tag naming a type or a function of the program's language.
+Every loader of outside input in YAML honours no tag naming a type or a function of the program's language. It fails on the tag, or reads the tagged node as the plain data it holds, never building or calling what the tag names.
 
 #### Why
 

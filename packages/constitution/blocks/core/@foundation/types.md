@@ -12,7 +12,7 @@ A value's **stage** is the part of its data that decides which moves it may make
 
 A value is **equal by its data** when two values whose data are equal are one value to the program, such as two amounts of one sum in one currency, unlike an entity.
 
-An **exact quantity** is money or any other quantity counted in exact decimal steps.
+An **exact quantity** is money or any other quantity of a unit counted in exact decimal steps, such as an amount in its currency or a weight in grams; a bare count of things, such as attempts or lines, is none.
 
 A **wall time** is a calendar date and a time of day with no offset, as a clock in some place shows them.
 

@@ -16,6 +16,8 @@ A **message channel** is where a message broker keeps messages for the message c
 
 An **ordering key** is the value by which a message broker keeps messages in order: it keeps the order only among the messages of one key, such as a partition key, a message group or a session.
 
+A message consumer **parks** a message behind a dead letter by moving it to its dead letters, its cause naming that dead letter.
+
 ## Identity
 
 ### message-identifier-kept-across-retries → idempotency-key-minted-once-per-intent · MUST

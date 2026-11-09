@@ -118,7 +118,7 @@ Fields named in two cases make a caller guess each field's spelling and fail on 
 
 ### write-takes-an-idempotency-key → operation-idempotent-by-design · MUST
 
-Every write a repeat would perform twice takes an idempotency key. For a creation the key is the identifier the caller makes for what it creates, which the record keeps as long as it lives; for any other write, such as a payment captured or a message sent, it is a key the server keeps.
+Every write a repeat would perform twice takes an idempotency key. For a creation the key is the identifier of what it creates, which the caller holds before it asks, made by itself or issued to it ahead by the server, and which the record keeps as long as it lives; for any other write, such as a payment captured or a message sent, it is a key the server keeps.
 
 #### Why
 

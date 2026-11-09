@@ -10,7 +10,7 @@ Every tab below the oldest release its server supports loads the current release
 
 #### Why
 
-A reload that drops what its user typed costs them their work, while one at the next navigation, or one they accept, keeps it.
+A reload forced on its user mid-task interrupts them and one that drops what they typed costs them their work, so it waits for the next navigation or their consent and carries their unsent input across.
 
 #### Examples
 

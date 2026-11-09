@@ -15,6 +15,10 @@ No transaction spans programs, so a process that fails midway is either undone s
 #### Examples
 
 ```pseudo title="Avoid"
+# checkout/presentation/bindings/commands/check-out
+function onCheckOut(message, checkOut, context)
+  call checkOut(parseCheckOutInput(message), context)
+
 # checkout/application/use-cases/commands/check-out.use-case
 function createCheckOut({ inventory, payments })
   return function(input, context)
@@ -24,6 +28,10 @@ function createCheckOut({ inventory, payments })
 ```
 
 ```pseudo title="Prefer"
+# checkout/presentation/bindings/commands/check-out
+function onCheckOut(message, checkOut, context)
+  call checkOut(parseCheckOutInput(message), context)
+
 # checkout/application/use-cases/commands/check-out.use-case
 function createCheckOut({ inventory, payments })
   return function(input, context)
@@ -38,7 +46,7 @@ function createCheckOut({ inventory, payments })
 
 ### multi-step-process-state-kept-in-a-store · MUST
 
-Every business process that spans several programs or transactions keeps its state in a store, never in memory alone. Exempt: a process its caller runs again from its first step after a stop, every step of it idempotent.
+Every business process that spans several programs or transactions keeps its state in a store, never in memory alone. Exempt: a process that a durable record outside it runs again from its first step until it ends, such as a message redelivered until it is settled or a schedule that runs it again, every step of it idempotent.
 
 #### Why
 

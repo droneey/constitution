@@ -19,15 +19,15 @@ The localization block's mark puts a dot in a module's name, which Python reads 
 #### Examples
 
 ```text title="Avoid"
-src/shop/presentation/screens/
+src/shop/features/receipts/infrastructure/mail/
 ├── __init__.py
-├── checkout.py
-└── checkout.messages.json    no module, and no name Python imports
+├── receipt_mail_adapter.py
+└── receipt_mail.messages.json    no module, and no name Python imports
 ```
 
 ```text title="Prefer"
-src/shop/presentation/screens/
+src/shop/features/receipts/infrastructure/mail/
 ├── __init__.py
-├── checkout.py
-└── checkout_messages.py
+├── receipt_mail_adapter.py
+└── receipt_mail_messages.py
 ```

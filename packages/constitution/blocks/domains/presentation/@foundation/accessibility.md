@@ -345,21 +345,21 @@ A target smaller than a fingertip or a tremor allows is missed and the wrong act
 IconButton({
   icon: CloseIcon,
   label: "Remove " + line.productName,
-  size: tokens.size.icon.small,   # hit area 16 × 16
+  size: tokens.size.icon.sm,   # hit area 16 × 16
   onPress: () => onRemove(line.id)
 })
 ```
 
 ```pseudo title="Prefer"
 # design/tokens
-size.icon.small = 16
+size.icon.sm = 16
 size.target.minimum = 24
 
 # cart/cart-line
 IconButton({
   icon: CloseIcon,
   label: "Remove " + line.productName,
-  iconSize: tokens.size.icon.small,
+  iconSize: tokens.size.icon.sm,
   hitArea: tokens.size.target.minimum,
   onPress: () => onRemove(line.id)
 })
@@ -657,7 +657,7 @@ Motion makes some people ill, dizzy or unable to read on — WCAG 2.2, Animation
 
 ```pseudo title="Avoid"
 function Hero({ image })
-  return ParallaxLayer({ speed: tokens.motion.parallax }, Image(image))   # moves whatever the person asked
+  return SlideIn({ transition: tokens.motion.enter.standard }, Image(image))   # moves for everyone
 ```
 
 ```pseudo title="Prefer"
@@ -665,7 +665,7 @@ function Hero({ image, isMotionReduced })
   if isMotionReduced then
     return Image(image)
 
-  return ParallaxLayer({ speed: tokens.motion.parallax }, Image(image))
+  return SlideIn({ transition: tokens.motion.enter.standard }, Image(image))
 ```
 
 ### reduced-motion-keeps-its-feedback · MUST
@@ -683,15 +683,15 @@ function addedToCartMotion(isMotionReduced)
   if isMotionReduced then
     return <absent>   # nothing shows the item went in
 
-  return FlyToCart({ duration: tokens.motion.duration.medium })
+  return FlyToCart({ transition: tokens.motion.move.standard })
 ```
 
 ```pseudo title="Prefer"
 function addedToCartMotion(isMotionReduced)
   if isMotionReduced then
-    return HighlightCartBadge({ transition: Fade, duration: tokens.motion.duration.short })
+    return HighlightCartBadge({ effect: Fade, transition: tokens.motion.fade.quick })
 
-  return FlyToCart({ duration: tokens.motion.duration.medium })
+  return FlyToCart({ transition: tokens.motion.move.standard })
 ```
 
 ### status-changes-announced · MUST
@@ -823,10 +823,10 @@ A person who needs help looks where they found it last, so help that moves is he
 #### Examples
 
 ```pseudo title="Avoid"
-# screens/cart
+# screens/cart-screen
 Page({ header: Header([Logo(), HelpLink()]), footer: Footer() }, CartView())
 
-# screens/checkout
+# screens/checkout-screen
 Page({ header: Header([Logo()]), footer: Footer([HelpLink()]) }, CheckoutView())   # help moved to the footer
 ```
 
@@ -835,10 +835,10 @@ Page({ header: Header([Logo()]), footer: Footer([HelpLink()]) }, CheckoutView())
 function ShopLayout({ children })
   return Page({ header: Header([Logo(), HelpLink()]), footer: Footer() }, children)
 
-# screens/cart
+# screens/cart-screen
 ShopLayout(CartView())
 
-# screens/checkout
+# screens/checkout-screen
 ShopLayout(CheckoutView())
 ```
 
@@ -890,7 +890,7 @@ function ReviewCard({ review })
 
 ### rendered-state-scanned-for-accessibility-once · MUST
 
-Each state the interface renders is scanned for accessibility once, and passes with no violation. The scan runs in the narrowest spec the platform renders the state in: a component's states in the component's spec where the platform renders a component alone, the states a screen adds in the screen's.
+Each state the interface renders is scanned for accessibility, with no violation, in the narrowest spec the platform renders it in. A component's states are scanned in the component's spec where the platform renders a component alone, and the states a screen adds in the screen's. No wider spec adds a scan for a state a narrower one scans.
 
 #### Why
 
@@ -900,20 +900,22 @@ A state never scanned ships the violations a tool would have caught on every cha
 
 ```pseudo title="Avoid"
 # cart/presentation/components/cart-line/__tests__/cart-line.test
-test "should pass the accessibility scan"
-  # Act
-  render CartLine({ line: createLine() })
+for stock in [InStock, OutOfStock]
+  test "should pass the accessibility scan when " + stock
+    # Act
+    render CartLine({ line: createLine({ stock }) })
 
-  # Assert
-  assert scanAccessibility() has no violations
+    # Assert
+    assert scanAccessibility() has no violations
 
-# presentation/screens/cart/__tests__/cart.test
-test "should pass the accessibility scan"
-  # Act
-  render CartScreen({ cart: createCart() })
+# presentation/screens/cart-screen/__tests__/cart-screen.test
+for stock in [InStock, OutOfStock]   # the line's states again, the empty cart never
+  test "should pass the accessibility scan when its line is " + stock
+    # Act
+    render CartScreen({ cart: createCart({ lines: [createLine({ stock })] }) })
 
-  # Assert
-  assert scanAccessibility() has no violations   # its lines scanned again, the empty cart never
+    # Assert
+    assert scanAccessibility() has no violations
 ```
 
 ```pseudo title="Prefer"
@@ -926,10 +928,17 @@ for stock in [InStock, OutOfStock]
     # Assert
     assert scanAccessibility() has no violations
 
-# presentation/screens/cart/__tests__/cart.test
+# presentation/screens/cart-screen/__tests__/cart-screen.test
 test "should pass the accessibility scan when the cart is empty"
   # Act
   render CartScreen({ cart: createCart({ lines: [] }) })
+
+  # Assert
+  assert scanAccessibility() has no violations
+
+test "should pass the accessibility scan when the cart holds lines"
+  # Act
+  render CartScreen({ cart: createCart({ lines: [createLine()] }) })
 
   # Assert
   assert scanAccessibility() has no violations
@@ -985,14 +994,14 @@ A check that names no element leaves each violation to be hunted through the scr
 #### Examples
 
 ```text title="Avoid"
-presentation/screens/cart/__tests__/cart.test
+presentation/screens/cart-screen/__tests__/cart-screen.test
   should pass the accessibility scan
   FAIL  2 violations: control without a name,
         field without a label
 ```
 
 ```text title="Prefer"
-presentation/screens/cart/__tests__/cart.test
+presentation/screens/cart-screen/__tests__/cart-screen.test
   should pass the accessibility scan
   FAIL  control without a name
           on IconButton(TrashIcon)

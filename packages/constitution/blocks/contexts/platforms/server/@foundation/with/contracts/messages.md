@@ -47,15 +47,23 @@ A message taken before the store is reached, or while it cannot be reached, fail
 #### Examples
 
 ```ts title="Avoid"
-// src/root/invoice-consumer.ts
-export const startInvoiceConsumer = async (consumer: InvoiceConsumer): Promise<void> => {
-  await consumer.subscribe();   // takes messages while the store is still out of reach
+// src/root/invoice-subscription.ts
+export const startInvoiceSubscription = (subscription: InvoiceSubscription): void => {
+  subscription.start();   // takes messages while the store is still out of reach
 };
 ```
 
 ```ts title="Prefer"
-// src/root/invoice-consumer.ts
-export const startInvoiceConsumer = (consumer: InvoiceConsumer, readiness: Readiness): void => {
-  readiness.onChange((isReady) => (isReady ? consumer.resume() : consumer.pause()));
+// src/root/invoice-subscription.ts
+export const startInvoiceSubscription = (subscription: InvoiceSubscription, readiness: Readiness): void => {
+  readiness.onChange((isReady) => {
+    if (!isReady) {
+      subscription.pause();
+    } else if (subscription.isStarted()) {
+      subscription.resume();
+    } else {
+      subscription.start();
+    }
+  });
 };
 ```

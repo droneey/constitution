@@ -66,7 +66,7 @@ A person knows a control by its name, so a new name for the same action reads as
 # orders/presentation/components/order-row
 IconButton(icon: Trash, accessibleName: "Remove order", onPress: confirmDelete)
 
-# presentation/screens/order
+# presentation/screens/order-screen
 Button(label: "Delete order", onPress: confirmDelete)
 ```
 
@@ -74,7 +74,7 @@ Button(label: "Delete order", onPress: confirmDelete)
 # orders/presentation/components/order-row
 IconButton(icon: Trash, accessibleName: "Delete order", onPress: confirmDelete)
 
-# presentation/screens/order
+# presentation/screens/order-screen
 Button(label: "Delete order", onPress: confirmDelete)
 ```
 

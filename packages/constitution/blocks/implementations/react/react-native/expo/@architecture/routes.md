@@ -47,7 +47,7 @@ Expo Router spreads its primitives over several entry points, so a limit held on
 #### Examples
 
 ```tsx title="Avoid"
-// src/presentation/screens/orders/orders.tsx
+// src/presentation/screens/orders-screen/orders-screen.tsx
 import { Stack } from 'expo-router/stack';
 
 export const OrdersScreen = ({ orders }: OrdersScreenProps): ReactElement => (
@@ -61,7 +61,7 @@ export const OrdersScreen = ({ orders }: OrdersScreenProps): ReactElement => (
 ```tsx title="Prefer"
 // src/app/orders.tsx
 import { Stack, useRouter } from 'expo-router';
-import { OrdersScreen } from '../presentation/screens/orders';
+import { OrdersScreen } from '../presentation/screens/orders-screen';
 
 export default function OrdersRoute(): ReactElement {
   const router = useRouter();

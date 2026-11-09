@@ -210,13 +210,13 @@ The program's presentation spans every feature, so one import past a surface tie
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/order
+# presentation/screens/order-screen
 import { OrderQueriesPort } from "features/orders/application/contracts"
 import { isRefundable } from "features/orders/domain/order/value-objects"
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/order
+# presentation/screens/order-screen
 import { getOrder, isRefundable } from "features/orders"
 import { getInvoice } from "features/billing"
 import { Money } from "kernel"

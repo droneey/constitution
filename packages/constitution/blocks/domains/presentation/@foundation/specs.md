@@ -118,18 +118,18 @@ A selector handed to a framework is a contract with markup the program does not 
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/checkout/checkout
+# presentation/screens/checkout-screen/checkout-screen
 paymentWidget.mount({ into: "#payment-frame" })  # no spec reads it
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/checkout/constants/selectors.constants
+# presentation/screens/checkout-screen/constants/selectors.constants
 let PAYMENT_FRAME_SELECTOR = "#payment-frame"
 
-# presentation/screens/checkout/checkout
+# presentation/screens/checkout-screen/checkout-screen
 paymentWidget.mount({ into: PAYMENT_FRAME_SELECTOR })
 
-# presentation/screens/checkout/__tests__/checkout.test
+# presentation/screens/checkout-screen/__tests__/checkout-screen.test
 test "should render the element the payment widget mounts into"
   # Act
   let screen = render(CheckoutScreen(cart: createCart()))
@@ -149,7 +149,7 @@ A simulated screen computes no layout and fakes focus, so a spec there passes wh
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/checkout/__tests__/checkout.test, in a simulated document
+# presentation/screens/checkout-screen/__tests__/checkout-screen.test, in a simulated document
 test "should keep Place order in view when the cart is long"
   # Act
   let screen = render(CheckoutScreen(cart: createCart({ lines: 40 })))
@@ -159,7 +159,7 @@ test "should keep Place order in view when the cart is long"
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/checkout/__tests__/checkout.test, in the platform's own engine
+# presentation/screens/checkout-screen/__tests__/checkout-screen.test, in the platform's own engine
 test "should keep Place order in view when the cart is long"
   # Arrange
   let screen = render(CheckoutScreen(cart: createCart({ lines: 40 })))
@@ -182,7 +182,7 @@ Screenshots elsewhere fail on every harmless change of style and are approved wi
 #### Examples
 
 ```pseudo title="Avoid"
-# presentation/screens/orders/__tests__/orders.test
+# presentation/screens/orders-screen/__tests__/orders-screen.test
 test "should show the orders when they load"
   # Act
   let screen = render(OrdersScreen(orders: createOrders(3)))
@@ -192,7 +192,7 @@ test "should show the orders when they load"
 ```
 
 ```pseudo title="Prefer"
-# presentation/screens/orders/__tests__/orders.test
+# presentation/screens/orders-screen/__tests__/orders-screen.test
 test "should show the orders when they load"
   # Act
   let screen = render(OrdersScreen(orders: createOrders(3)))

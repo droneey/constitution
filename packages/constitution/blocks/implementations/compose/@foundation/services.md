@@ -141,7 +141,7 @@ services:
 
 ### service-image-checked-against-its-digest → download-checked-against-its-digest · MUST
 
-Every service's `image` names its digest beside its version, as `<image>:x.y.z@sha256:<digest>`.
+Every service's `image` names its digest beside its version, as `<image>:x.y.z@sha256:<digest>`. Exempt: the `image` of a service whose `build` makes it and whose `pull_policy` is `build`, which names the image that build tags.
 
 #### Why
 
@@ -316,9 +316,26 @@ services:
     <<: *hardened
   orders-db:
     image: postgres:17.2@sha256:3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f
+    user: postgres
+    volumes:
+      - orders-data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'orders']
     <<: *hardened
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    environment:
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD_FILE: /run/secrets/orders-db-password
+    secrets: [orders-db-password]
+
+volumes:
+  orders-data:
+
+secrets:
+  orders-db-password:
+    file: ./secrets/orders-db-password
 ```
 
 ```yaml title="Prefer"
@@ -336,11 +353,28 @@ services:
     <<: *hardened
   orders-db:
     image: postgres:17.2@sha256:3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f
+    user: postgres
+    volumes:
+      - orders-data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'orders']
       interval: 2s
       retries: 15
     <<: *hardened
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    environment:
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD_FILE: /run/secrets/orders-db-password
+    secrets: [orders-db-password]
+
+volumes:
+  orders-data:
+
+secrets:
+  orders-db-password:
+    file: ./secrets/orders-db-password
 ```
 
 ### test-services-never-restart → flaky-test-fixed-never-retried · SHOULD

@@ -6,6 +6,8 @@
 
 A document's **CSP** is the policy its `Content-Security-Policy` header declares.
 
+A **bearer token** is a credential an API grants to whoever presents it in a request, such as an OAuth access token sent in the `Authorization` header; a cookie the browser attaches itself is none.
+
 ## Secrets
 
 ### credential-never-readable-by-script · MUST

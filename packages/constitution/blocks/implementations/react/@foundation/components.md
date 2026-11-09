@@ -82,7 +82,7 @@ A part imported on its own renders outside its root and loses what the root shar
 // src/presentation/components/order-card/index.ts
 export { OrderCard, OrderCardHeader, OrderCardTotal } from './order-card';
 
-// src/presentation/screens/order/order.tsx
+// src/presentation/screens/order-screen/order-screen.tsx
 <OrderCard>
   <OrderCardHeader order={order} />
   <OrderCardTotal order={order} />
@@ -94,7 +94,7 @@ export { OrderCard, OrderCardHeader, OrderCardTotal } from './order-card';
 export { OrderCard } from './order-card';
 export type { OrderCardProps } from './order-card';
 
-// src/presentation/screens/order/order.tsx
+// src/presentation/screens/order-screen/order-screen.tsx
 <OrderCard>
   <OrderCard.Header order={order} />
   <OrderCard.Total order={order} />

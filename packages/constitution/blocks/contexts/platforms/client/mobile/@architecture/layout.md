@@ -6,7 +6,7 @@
 
 ### app-extension-is-an-entrypoint → package-laid-out-by-the-tree · MUST
 
-Every app extension that starts the app's composition root is an artefact of its own under `entrypoints/`. An app extension is a part of the app that the system runs apart from it, such as an extension shown on the home screen or the lock screen, a share or notification extension, or a watch app. Exempt: an extension written in another language or assembled apart from the app, which is a package of its own.
+Every app extension that starts the app's composition root is an artefact of its own under `entrypoints/`. An app extension is a part of the app that the system runs apart from it, such as an extension shown on the home screen or the lock screen, a share or notification extension, or a watch app. Exempt: an extension written in another language than the app, or built by a build of its own, apart from the app's, such as an Xcode project or an Android build of its own, which is a package of its own.
 
 #### Why
 

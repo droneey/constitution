@@ -6,7 +6,7 @@
 
 ### security-event-recorded · MUST
 
-Every security event is recorded in an audit record. Security events include a sign-in, a failed sign-in, a sign-out, a change of credentials, a grant or revocation of rights and a refused access.
+Every security event is recorded in an audit record. Security events include a sign-in, a failed sign-in, a sign-out, a change to an account's email, password, factors or issued keys, a grant or revocation of rights and a refused access.
 
 #### Why
 

@@ -26,8 +26,8 @@ src/
 
 ```text title="Prefer"
 src/
-├── presentation/screens/orders/
-│   └── orders.tsx
+├── presentation/screens/orders-screen/
+│   └── orders-screen.tsx
 └── root/
     ├── routes/
     │   ├── __root.tsx
@@ -110,7 +110,7 @@ Code that imports the router outside the root changes with every change of the r
 #### Examples
 
 ```tsx title="Avoid"
-// src/presentation/screens/orders/orders.tsx
+// src/presentation/screens/orders-screen/orders-screen.tsx
 import { useNavigate } from '@tanstack/react-router';
 
 export const OrdersScreen = ({ orders }: OrdersScreenProps): ReactElement => {

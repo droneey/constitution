@@ -28,7 +28,7 @@ export const Button = ({ className, ...props }: ButtonPrimitive.Props): ReactEle
   <ButtonPrimitive data-slot="button" className={cn(buttonVariants(), className)} {...props} />
 );
 
-// src/presentation/screens/cart/cart.tsx
+// src/presentation/screens/cart-screen/cart-screen.tsx
 <Button nativeButton={false} render={<a href={cartUrl} />}>{t`View cart`}</Button>
 ```
 

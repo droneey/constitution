@@ -37,13 +37,13 @@ main() {
 }
 ```
 
-### shell-code-another-file-holds-kept-short · SHOULD
+### shell-code-another-file-holds-is-plain-commands · SHOULD
 
-Every piece of shell code another file holds stays within the number of shell commands the project sets. Such code includes a manifest's script, an automation step's and a hook's, and what grows longer moves into a shell script that code runs.
+Every piece of shell code another file holds is one shell command or shell commands joined by `&&`. It holds no branch, loop, function, trap, pipeline, command substitution or `||`. Such code includes a manifest's script, an automation step's and a hook's, and code that needs more moves into a shell script that code runs. Exempt: a pipeline in code whose file sets its shell with `-o pipefail`, such as a `RUN` under such a `SHELL`.
 
 #### Why
 
-Shell code embedded in another file runs under the `set` flags its runner chose and reaches a shell linter only through that file, or not at all, so what grows there grows hard to read and to check.
+Shell code embedded in another file runs under the `set` flags its runner chose and reaches a shell linter only through that file, or not at all, so a branch, a loop or a pipeline there can fail unseen, while commands joined by `&&` stop at the first that fails, whatever flags the runner chose.
 
 #### Examples
 

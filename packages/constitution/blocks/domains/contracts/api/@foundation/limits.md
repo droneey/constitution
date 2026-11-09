@@ -50,11 +50,10 @@ function sendAnswer(answer, output)
 let maxAnswerBytes = 5 MB
 
 function sendAnswer(answer, output)
-  let body = serialize(answer)
+  let body = new BoundedBuffer(maxAnswerBytes, function()
+    return new AnswerTooLargeError(maxAnswerBytes))
 
-  if body.size > maxAnswerBytes then
-    throw new AnswerTooLargeError(maxAnswerBytes)
-
+  call serializeInto(answer, body)
   call output.write(body)
 ```
 

@@ -725,14 +725,14 @@ component HelpArticle({ article })
 
 ```pseudo title="Prefer"
 # tokens
-size.measure: 80 characters
-size.measureCjk: 40 characters
+size.prose.latin: 80 characters
+size.prose.cjk: 40 characters
 
 # help/help-article
 component HelpArticle({ article })
   return Box(
     width: Full,
-    maxLineLength: if article.isInCjk then tokens.size.measureCjk else tokens.size.measure,
+    maxLineLength: if article.isInCjk then tokens.size.prose.cjk else tokens.size.prose.latin,
     RichText(article.body)
   )
 ```

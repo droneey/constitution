@@ -86,7 +86,7 @@ The app stores show these declarations to people before they install, and one th
             <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
         </array>
     </dict>
-</array> <!-- misses the crash data the crash-reporting library collects -->
+</array> <!-- misses the crash data the app's own crash reporter collects -->
 ```
 
 ```xml title="Prefer"

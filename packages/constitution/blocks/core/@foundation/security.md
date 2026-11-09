@@ -509,20 +509,14 @@ A structure that grows faster than its input lets a sender of a modest request e
 #### Examples
 
 ```pseudo title="Avoid"
-let pairs = []
+let minimaByWindow = [request.prices]
 
-for each line in cart.lines
-  for each other in cart.lines
-    pairs.add({ line, other, discount: bundleDiscount(line, other) })
+for each level in 1 .. log2(request.prices.length)
+  minimaByWindow.add(pairwiseMinima(minimaByWindow[level - 1], 2 ** (level - 1)))
 ```
 
 ```pseudo title="Prefer"
-let linesBySku = new Map()
-
-for each line in cart.lines
-  linesBySku.set(line.sku, line)
-
-let discounts = bundleDiscounts(linesBySku)
+let minima = SegmentTree.of(request.prices, min)
 ```
 
 ### outside-input-reaches-interpreters-as-parameters · MUST

@@ -127,7 +127,7 @@ RUN apt-get update \
 ```dockerfile title="Prefer"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates=20230311 \
+      ca-certificates=20230311+deb12u1 \
       fonts-dejavu-core=2.37-6 \
  && rm -rf /var/lib/apt/lists/*
 ```
@@ -145,7 +145,7 @@ Every extra package is size and code to attack that the program never uses.
 ```dockerfile title="Avoid"
 RUN apt-get update \
  && apt-get install -y \
-      ca-certificates=20230311 \
+      ca-certificates=20230311+deb12u1 \
       fonts-dejavu-core=2.37-6 \
  && rm -rf /var/lib/apt/lists/*
 ```
@@ -153,7 +153,7 @@ RUN apt-get update \
 ```dockerfile title="Prefer"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates=20230311 \
+      ca-certificates=20230311+deb12u1 \
       fonts-dejavu-core=2.37-6 \
  && rm -rf /var/lib/apt/lists/*
 ```
@@ -171,7 +171,7 @@ A cached index is size the program never uses, and one removed in a later step s
 ```dockerfile title="Avoid"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates=20230311
+      ca-certificates=20230311+deb12u1
 # the index still ships in the layer above
 RUN rm -rf /var/lib/apt/lists/*
 ```
@@ -179,6 +179,6 @@ RUN rm -rf /var/lib/apt/lists/*
 ```dockerfile title="Prefer"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      ca-certificates=20230311 \
+      ca-certificates=20230311+deb12u1 \
  && rm -rf /var/lib/apt/lists/*
 ```

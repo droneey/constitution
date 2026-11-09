@@ -95,7 +95,7 @@ if (cardsKey !== null) {
 
 ### copied-secret-expires-from-the-clipboard · MUST
 
-Wherever its platform lets it, every secret a device program copies to the clipboard expires from it. Such secrets include a one-time code, a password and a key.
+Every secret a device program copies to the clipboard expires from it. It expires by the platform's own expiry or by a clear the program makes once the secret's time is up, while the clipboard still holds it. Such secrets include a one-time code, a password and a key. Exempt: a platform that offers neither, such as a browser tab, whose script can neither read the clipboard unasked nor write it while unfocused.
 
 #### Why
 

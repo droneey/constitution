@@ -604,8 +604,8 @@ function onProviderNotice(request, context)
 
 ```pseudo title="Prefer"
 # composition/checkout/presentation/bindings/commands/record-charge-notice
-function onChargeNotice(request, recordChargeNotice, context)
-  let input = parseRecordChargeNoticeInput(request.body)
+function onChargeSettled(event: ChargeSettled, recordChargeNotice, context)
+  let input = parseRecordChargeNoticeInput(event)
   call recordChargeNotice(input, context)
 
 # composition/checkout/application/use-cases/commands/record-charge-notice.use-case
@@ -999,7 +999,7 @@ function revive(saga, step, now)
 
 ### pending-step-given-up-with-its-held-event · MUST
 
-Every give-up of a pending step or compensation whose event its edge worker holds also gives up that event, whatever held it: its operator's one command gives up both the step and the event.
+Every give-up of a pending step or compensation whose event its edge worker holds also gives up that event: its operator's one command gives up both the step and the event.
 
 #### Why
 
@@ -1283,13 +1283,14 @@ A feature that subscribes to another depends on it as much as on an import, and 
 
 ```pseudo title="Avoid"
 # shipping/application/use-cases/commands/ship-paid-order.use-case
-import { OrderPaid } from "features/billing"
-
 function createShipPaidOrder({ shipmentRepository })
-  return function(event: OrderPaid, context)
+  return function(event: { orderId: OrderId }, context)
     let shipment = Shipment.schedule(ShipmentId.fromOrder(event.orderId), event.orderId)
 
     call shipmentRepository.save(shipment, context)
+
+# root/subscriptions
+dispatcher.subscribe(OrderPaid, shipPaidOrder)
 ```
 
 ```pseudo title="Prefer"

@@ -44,7 +44,7 @@ src/
 │       └── check-out
 └── presentation/
     └── screens/
-        └── order
+        └── order-screen
 ```
 
 ## What it calls
@@ -73,8 +73,8 @@ function showOrder(request, { getOrder, getInvoice }, context)
 function showOrder(request, { getOrder }, context)
   return ok(getOrder(parseGetOrderInput(request.params), context))
 
-# presentation/screens/order
-function showOrderPage(request, { getOrder, getInvoice }, context)
+# presentation/screens/order-screen
+function showOrderScreen(request, { getOrder, getInvoice }, context)
   let order = getOrder(parseGetOrderInput(request.params), context)
   let invoice = getInvoice(parseGetInvoiceInput({ orderId: order.id }), context)
 

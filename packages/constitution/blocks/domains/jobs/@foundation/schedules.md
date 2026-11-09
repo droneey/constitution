@@ -10,7 +10,7 @@ A scheduled job's **tick** is one instant its schedule names for a run.
 
 ### scheduled-job-runs-once-per-tick · MUST
 
-Every scheduled job runs once per tick, however many instances of the program run. Its tick is claimed once, in a store the instances share or by a scheduler that runs one copy, never by a timer or a lock local to each instance.
+Every scheduled job runs once per tick, however many instances of the program run. Its scheduler claims each tick once, in a store the instances share, or runs as one copy, never by a timer or a lock local to each instance.
 
 #### Why
 

@@ -16,13 +16,11 @@ A crash throws away what its user was doing, and an app store that publishes suc
 
 ```yaml title="Avoid"
 # budgets/app-vitals.yaml
-crashes:
-  userPerceivedCrashRatePercent: 2.0   # above Google Play's 1.09% threshold
+userPerceivedCrashRatePercent: 2.0   # above Google Play's 1.09% threshold
 ```
 
 ```yaml title="Prefer"
 # budgets/app-vitals.yaml
-crashes:
-  userPerceivedCrashRatePercent: 0.5
-  googlePlayThresholdPercent: 1.09
+userPerceivedCrashRatePercent: 0.5
+googlePlayCrashThresholdPercent: 1.09
 ```

@@ -8,9 +8,9 @@ The **design system** is the product's own source of its look: its design tokens
 
 Each design token of the design system sits in a **token tier**: a **primitive token** holds a raw value; a **semantic token** names a purpose and refers to a primitive token, or to a value a declared rule derives from primitive tokens; a **common token** holds a constant of the program's shell, such as the space below its header.
 
-The **token grammar**{#token-grammar} names a semantic or a common token `<category>.<concept>.<role>[.<step>]`. Its category is its family, one of `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion` and `layer`, a stacking order, one for each kind of appearance `tokens-single-source-of-appearance` names; its concept is what it styles, such as `surface`, `text`, `border` or `action`; its role is its purpose or tone, such as `muted`, `danger` or `level-1`; and its step is a place on a closed scale the design system declares once, such as `sm`, `md` and `lg`. A semantic `font` token takes the kind of text it sets as its concept and a step in place of its role, `font.<kind of text>.<step>`, such as `font.heading.lg`. The grammar names a primitive token by its category, its scale and its step.
+The **token grammar**{#token-grammar} names a semantic or a common token `<category>.<concept>.<role>[.<step>]`. Its category is its family, one of `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion` and `layer`, a stacking order, one for each kind of appearance `tokens-single-source-of-appearance` names; its concept is what it styles, such as `surface`, `text`, `border` or `action` for a colour, `inset` or `gap` for a space, `icon` or `target` for a size and `control` for a radius; its role is its purpose or tone, such as `muted`, `danger` or `level-1`; and its step is a place on a closed scale the design system declares once, such as `sm`, `md` and `lg`. A concept whose tokens differ only by a step takes the step in place of its role, such as `space.inset.md`, `radius.control.sm` or `size.icon.lg`. A semantic `font` token takes the kind of text it sets as its concept and a step in place of its role, `font.<kind of text>.<step>`, such as `font.heading.lg`, and a semantic `motion` token takes the kind of motion it times, `motion.<kind of motion>.<step>`, such as `motion.enter.standard` or `motion.exit.quick`. The grammar names a primitive token by its category, its scale and its step.
 
-The **token source** is the design system's one file of tokens in the W3C Design Tokens format, **`.tokens.json`**{#token-source}.
+The **token source** is the design system's one file of tokens in the W3C Design Tokens format, its name ending in **`.tokens.json`**{#token-source}.
 
 ## General
 
@@ -50,16 +50,16 @@ A component that reads a primitive token keeps its colour when the theme changes
 ```pseudo title="Avoid"
 # libs/ui/button
 let buttonStyle = {
-  background: token("color.blue.600"),
-  text: token("color.gray.50")
+  background: tokens.color.blue.600,
+  text: tokens.color.gray.50
 }
 ```
 
 ```pseudo title="Prefer"
 # libs/ui/button
 let buttonStyle = {
-  background: token("color.action.primary"),
-  text: token("color.text.inverse")
+  background: tokens.color.action.primary,
+  text: tokens.color.text.inverse
 }
 ```
 
@@ -102,7 +102,7 @@ color.card.background = {color.gray.50}
 radius.button.default = {radius.base.200}
 
 # libs/ui/card
-let cardStyle = { background: token("color.card.background") }
+let cardStyle = { background: tokens.color.card.background }
 ```
 
 ```pseudo title="Prefer"
@@ -110,7 +110,7 @@ color.surface.raised = {color.gray.50}
 radius.control.default = {radius.base.200}
 
 # libs/ui/card
-let cardStyle = { background: token("color.surface.raised") }
+let cardStyle = { background: tokens.color.surface.raised }
 ```
 
 ### token-never-borrowed-for-another-meaning → tokens-single-source-of-appearance · MUST
@@ -126,14 +126,14 @@ A value borrowed from a token of another meaning changes when that meaning does,
 ```pseudo title="Avoid"
 # libs/ui/divider
 let dividerStyle = {
-  color: token("color.text.muted")  # the same grey, for now
+  color: tokens.color.text.muted  # the same grey, for now
 }
 ```
 
 ```pseudo title="Prefer"
 # libs/ui/divider
 let dividerStyle = {
-  color: token("color.border.muted")
+  color: tokens.color.border.muted
 }
 ```
 
@@ -162,7 +162,7 @@ color.surface.muted = {color.gray.100}
 
 ### motion-from-tokens → tokens-single-source-of-appearance · MUST
 
-Every motion driven from code reads the same duration and easing tokens as motion in styles.
+Every motion driven from code reads the same motion tokens as motion in styles.
 
 #### Why
 
@@ -179,10 +179,30 @@ function openDrawer(drawer)
 ```pseudo title="Prefer"
 # libs/ui/drawer
 function openDrawer(drawer)
-  call animate(drawer, { offset: 0 }, {
-    duration: token("motion.duration.moderate"),
-    easing: token("motion.easing.enter")
-  })
+  call animate(drawer, { offset: 0 }, { transition: tokens.motion.enter.standard })
+```
+
+### motion-token-is-one-transition-composite · MUST
+
+Every semantic `motion` token is one composite of the W3C Design Tokens `transition` type. Its `duration` and `delay` each refer to a primitive token of `motion.duration`, and its `timingFunction` to one of `motion.easing`.
+
+#### Why
+
+A motion read from several tokens changes in one and not in the others, so an entrance takes a new duration with its old curve — the W3C Design Tokens format.
+
+#### Examples
+
+```pseudo title="Avoid"
+motion.enter.standard.duration = {motion.duration.200}
+motion.enter.standard.easing = {motion.easing.out}
+```
+
+```pseudo title="Prefer"
+motion.enter.standard = transition {
+  duration: {motion.duration.200},
+  timingFunction: {motion.easing.out},
+  delay: {motion.duration.0}
+}
 ```
 
 ## Typography

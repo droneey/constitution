@@ -162,11 +162,11 @@ def read_cart(body: bytes) -> Cart:
 
 ### re-pattern-on-outside-input-holds-no-nested-quantifier → outside-input-matched-in-linear-time · MUST
 
-No pattern that `re` matches against outside input holds a nested or overlapping quantifier.
+No pattern that `re` matches against outside input holds a nested or overlapping quantifier. It holds for one inside an atomic group or made possessive alike.
 
 #### Why
 
-`re` backtracks and sets no time limit, so it is never the matcher that never backtracks core allows, and a nested quantifier on a crafted input runs for minutes and holds the worker.
+`re` backtracks and sets no time limit, so it is never the matcher that never backtracks core allows, and a nested or overlapping quantifier, whose safe forms a reader cannot tell at a glance from the ones that explode, can run on a crafted input for minutes and hold the worker.
 
 #### Examples
 

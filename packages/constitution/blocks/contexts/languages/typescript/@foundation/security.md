@@ -83,7 +83,7 @@ No pattern that `RegExp` matches against outside input holds a nested or overlap
 
 #### Why
 
-`RegExp` backtracks in every runtime and is never the matcher that never backtracks core allows, so a nested or overlapping quantifier it runs on a crafted input backtracks for minutes and holds the event loop, and every other request with it.
+`RegExp` backtracks in every runtime and is never the matcher that never backtracks core allows, so a nested or overlapping quantifier, whose safe forms a reader cannot tell at a glance from the ones that explode, can backtrack on a crafted input for minutes and hold the event loop, and every other request with it.
 
 #### Examples
 

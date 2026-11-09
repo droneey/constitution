@@ -6,7 +6,7 @@
 
 ### cancellation-by-abort-signal → outside-call-can-be-cancelled · SHOULD
 
-Every function that makes a call across a process boundary takes an `AbortSignal` and hands it on. It takes the signal in its parameter object and hands it to each such call, whether it makes the call itself or through a function it calls.
+Every function that makes a call across a process boundary takes an `AbortSignal` and hands it on. It takes the signal by name, as a field of its parameter object or of a named object it takes beside it, such as one of the call's options or its context, and hands it to each such call, whether it makes the call itself or through a function it calls.
 
 #### Why
 

@@ -23,16 +23,13 @@ tombi:
         format:
           rules:
             trailing-comment-space-width: 1
-        schema:
-          format:
-            rules:
-              array-values-order:
-                enabled: false
-  tombi-is-the-formatter:
+  toml-order-kept-as-written:
     toml:
       tombi.toml:
         schema:
           format:
             rules:
+              array-values-order:
+                enabled: false
               table-keys-order:
                 enabled: false

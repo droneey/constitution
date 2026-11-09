@@ -469,7 +469,7 @@ implementations/tailwind/@foundation/
 
 ### rule-tightening-a-third-block-sits-in-a-seam-with-it · MUST
 
-Every rule of a seam that tightens a third block's rule sits in a seam with that block. A third block is one beyond what the holder and the seam's other block require or sit under.
+Every rule of a seam that tightens a third block's rule sits in a seam with that block. That seam pairs the third block with the one of the two blocks the rule needs, and its holder is the one `seam-held-by-the-block-whose-behaviour-it-constrains` and `rule-beside-a-more-specific-block-is-its` give. A rule that needs both blocks of its seam beside the third is narrowed until it needs one of them, or reported as a gap. A third block is one beyond what the holder and the seam's other block require or sit under.
 
 #### Why
 
