@@ -24,7 +24,7 @@ A list kept by hand misses the next task added under its prefix, which then neve
     "check": "bun run check:types && bun run check:lint",
     "check:lint": "biome ci .",
     "check:types": "tsc --noEmit",
-    "check:packages": "syncpack lint"
+    "check:manifests": "syncpack lint"
   }
 }
 ```
@@ -34,7 +34,7 @@ A list kept by hand misses the next task added under its prefix, which then neve
   "scripts": {
     "check": "bun run --sequential 'check:*'",
     "check:lint": "biome ci .",
-    "check:packages": "syncpack lint",
+    "check:manifests": "syncpack lint",
     "check:types": "tsc --noEmit"
   }
 }
