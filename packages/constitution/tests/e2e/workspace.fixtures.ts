@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
+  cpSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
@@ -10,7 +12,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { z } from 'zod';
@@ -954,12 +956,82 @@ const removeWorkspace = (workspace: string): void => {
   });
 };
 
+const linkedFolders: ReadonlySet<string> = new Set([
+  '.droneey',
+  '.shims',
+]);
+const SOURCE_SEGMENT = '/src/';
+
+interface Workspaces {
+  readonly buildBase: () => void;
+  readonly removeBase: () => void;
+  readonly removeCases: () => void;
+  readonly workspaceOf: (changes?: Files) => string;
+}
+
+const copyOf = (base: string): string => {
+  const folder = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-workspace-')));
+
+  cpSync(base, folder, {
+    filter: (source) =>
+      !(linkedFolders.has(relative(base, source)) || lstatSync(source).isSymbolicLink()),
+    recursive: true,
+  });
+  link(folder);
+
+  return folder;
+};
+
+// Why: presets apply takes seconds, so each case copies one workspace built once, and applies the
+// presets again only when it changes a file outside a unit's sources, which they read.
+const createWorkspaces = (): Workspaces => {
+  const bases: string[] = [];
+  const cases: string[] = [];
+
+  return {
+    buildBase: (): void => {
+      bases.push(createWorkspace());
+    },
+    removeBase: (): void => {
+      for (const folder of bases.splice(0)) {
+        removeWorkspace(folder);
+      }
+    },
+    removeCases: (): void => {
+      for (const folder of cases.splice(0)) {
+        removeWorkspace(folder);
+      }
+    },
+    workspaceOf: (changes: Files = {}): string => {
+      const [base] = bases;
+
+      if (base === undefined) {
+        throw new Error('no base workspace: build it before the cases run');
+      }
+
+      const folder = copyOf(base);
+
+      write({
+        files: changes,
+        folder,
+      });
+
+      if (Object.keys(changes).some((path) => !path.includes(SOURCE_SEGMENT))) {
+        apply(folder);
+      }
+
+      cases.push(folder);
+
+      return folder;
+    },
+  };
+};
+
 export {
   commitBase,
-  createWorkspace,
+  createWorkspaces,
   manifestOf,
   PYTHON_PACKAGES,
-  removeWorkspace,
   repository,
   runTool,
   UNITS,
