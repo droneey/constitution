@@ -24,7 +24,7 @@
 
 ## Critical scenarios
 
-<!-- The journeys that must never break, one line each. Each one has an end-to-end test. -->
+<!-- The journeys that must never break, one line each. Each one has an end-to-end spec. -->
 
 ## Glossary
 

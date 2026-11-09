@@ -28,8 +28,8 @@ const PARAGLIDE: ReadonlyArray<
     'Paraglide',
   ],
   [
-    '<What the library does in this repository, in one sentence that sets its name in bold, which defines it.>',
-    '**Paraglide** compiles the messages of each locale into typed functions.',
+    '<What the library does in this repository, in one sentence.>',
+    'Paraglide compiles the messages of each locale into typed functions.',
   ],
   [
     '<What its preset entries and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
@@ -49,7 +49,7 @@ const PARAGLIDE: ReadonlyArray<
   ],
   [
     '<Its slogan: the shortest true statement of the outcome it asks for.>',
-    'A message is read through its compiled function.',
+    'Every message is read through its compiled function.',
   ],
   [
     "<The sentences that draw the slogan's limits: where it applies and what it covers.>",
@@ -96,4 +96,9 @@ const paraglideCard = (): Readonly<Record<string, string>> => ({
   [`${PARAGLIDE_DIR}/@foundation/messages.md`]: paraglideFromTemplate('@foundation/chapter.md'),
 });
 
-export { paraglideCard };
+const paraglidePack = (): Readonly<Record<string, string>> => ({
+  ...paraglideCard(),
+  'DECISIONS.md': readFileSync(join(templates, 'DECISIONS.md'), 'utf8'),
+});
+
+export { paraglideCard, paraglidePack };
