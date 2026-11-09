@@ -132,47 +132,54 @@ describe('createShellCommandRunner', () => {
     {
       condition: 'it prints in colour',
       isColoured: true,
-      variables: '1 1 unset',
+      variables: '1 1 unset orders',
     },
     {
       condition: 'it prints without colour',
       isColoured: false,
-      variables: 'unset unset 1',
+      variables: 'unset unset 1 orders',
     },
-  ])('should hand each command the colour choice of the program when $condition', async (given) => {
-    // Arrange
-    const outputs = outputsOf({
-      environment: Object.fromEntries([
-        [
-          'CLICOLOR_FORCE',
-          '0',
-        ],
-        [
-          'FORCE_COLOR',
-          '3',
-        ],
-        [
-          'NO_COLOR',
-          '',
-        ],
-        [
-          'PATH',
-          SYSTEM_PATH,
-        ],
-      ]),
-      isColoured: (): boolean => given.isColoured,
-    });
+  ])(
+    'should hand each command its environment with the colour choice of the program when $condition',
+    async (given) => {
+      // Arrange
+      const outputs = outputsOf({
+        environment: Object.fromEntries([
+          [
+            'CLICOLOR_FORCE',
+            '0',
+          ],
+          [
+            'FORCE_COLOR',
+            '3',
+          ],
+          [
+            'NO_COLOR',
+            '',
+          ],
+          [
+            'PATH',
+            SYSTEM_PATH,
+          ],
+          [
+            'SHOP',
+            'orders',
+          ],
+        ]),
+        isColoured: (): boolean => given.isColoured,
+      });
 
-    // Act
-    const ran = await createShellCommandRunner(outputs).run({
-      command:
-        'printf "%s %s %s" "${FORCE_COLOR-unset}" "${CLICOLOR_FORCE-unset}" "${NO_COLOR-unset}"',
-      folderPath: AbsolutePath.create(folder),
-    });
+      // Act
+      const ran = await createShellCommandRunner(outputs).run({
+        command:
+          'printf "%s %s %s %s" "${FORCE_COLOR-unset}" "${CLICOLOR_FORCE-unset}" "${NO_COLOR-unset}" "${SHOP-unset}"',
+        folderPath: AbsolutePath.create(folder),
+      });
 
-    // Assert
-    expect(ran.output).toBe(given.variables);
-  });
+      // Assert
+      expect(ran.output).toBe(given.variables);
+    },
+  );
 
   it('should pass the colours a command prints on, and give its output without them', async () => {
     // Arrange
