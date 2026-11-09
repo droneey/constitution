@@ -16,8 +16,8 @@ interface ShellCommandRunnerInput {
 const SHELL = 'sh';
 const NO_CODE = 1;
 
-// Why: a tool writing into a pipe prints no colour unless forced, and the tools disagree on the
-// variable: Biome reads CLICOLOR_FORCE alone, TypeScript and Bun FORCE_COLOR alone.
+// Why: a tool writing into a pipe prints no colour unless forced, and tools disagree on the
+// variable that forces it, some reading only one of the two.
 const forcingVariables: readonly string[] = [
   'CLICOLOR_FORCE',
   'FORCE_COLOR',
