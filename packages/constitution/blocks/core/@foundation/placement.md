@@ -1021,7 +1021,7 @@ implementations/pino/@architecture/configuration.md
 
 ### setting-sits-in-its-readers-preset · MUST
 
-Every setting sits in the preset of the tool that reads it, of the axis of the rule it holds. A line of a file that only agents, as the agents chapter defines them, read, and no block's tool, sits as a setting whose reader is core.
+Every setting sits in the preset of the tool that reads it, of the axis of the rule it holds. A line of a file that only agents, as the agents chapter defines them, read, and no block's tool, sits as a setting whose reader is core. Exempt: a setting its reader takes only beside a block that requires that reader or sits under it, directly or through another, which sits in that block's own preset of the axis of the rule it holds.
 
 #### Why
 
@@ -1131,7 +1131,7 @@ css:
 
 ### setting-path-names-the-blocks-it-needs · MUST
 
-Every setting that needs a block beyond its tool's reach sits in the tool's `with/` file of that block. One that needs a second block sits in that file's `with/` file of the second, so its path names exactly the blocks it needs. Exempt: a setting its reader takes only beside a block that requires that reader, which sits in that block's own preset under the reader's key.
+Every setting that needs a block beyond its tool's reach sits in the tool's `with/` file of that block. One that needs a second block sits in that file's `with/` file of the second, so its path names exactly the blocks it needs. Exempt: a setting its reader takes only beside a block that requires that reader or sits under it, directly or through another, which sits in that block's own preset of the axis of the rule it holds.
 
 #### Why
 

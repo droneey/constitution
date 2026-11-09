@@ -29,7 +29,7 @@ Beside its settings, a preset ships three kinds of file, each run by the tool al
 
 `plugins` is a reserved word, so no block's id turns `presets/plugins/` into a reader's folder.
 
-An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/@foundation/with/tailwind/with/presentation/design-system.yaml`, as it needs both. A setting a reader takes only beside a block that requires that reader sits in that block's own preset file, under the reader's key, as Bun's test runner gives Bun's `check` script its `test` in `presets/bun-test/@foundation.yaml`.
+An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/@foundation/with/tailwind/with/presentation/design-system.yaml`, as it needs both. A setting a reader takes only beside a block that requires that reader or sits under it, directly or through another, sits in that block's own preset file, as Bun's test runner gives Bun's `check` script its `test` in `presets/bun-test/@foundation.yaml`.
 
 ## An entry
 
