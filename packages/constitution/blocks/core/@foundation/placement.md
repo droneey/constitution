@@ -1061,7 +1061,7 @@ css:
 
 ### setting-path-names-the-blocks-it-needs · MUST
 
-Every setting that needs a block beyond its tool's reach sits in the tool's `with/` file of that block. One that needs a second block sits in that file's `with/` file of the second, so its path names exactly the blocks it needs.
+Every setting that needs a block beyond its tool's reach sits in the tool's `with/` file of that block. One that needs a second block sits in that file's `with/` file of the second, so its path names exactly the blocks it needs. Exempt: a setting its reader takes only beside a block that requires that reader, which sits in that block's own preset under the reader's key.
 
 #### Why
 

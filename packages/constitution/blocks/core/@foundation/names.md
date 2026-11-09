@@ -36,7 +36,7 @@ A **derived value** is computed from a value and changes nothing, and a function
 
 A **predicate** answers yes or no and is named as a boolean is.
 
-The **empty names**{#empty-names} are words such as `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` and `thing`, and the **empty verbs**{#empty-verbs} words such as `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set` and `update`.
+The **empty names**{#empty-names} are `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` and `thing`, and the **empty verbs**{#empty-verbs} are `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set` and `update`.
 
 The **dating words**{#dating-words} are words such as `new`, `old`, `v2`, `legacy`, `fixed`, `improved` and `final`.
 
