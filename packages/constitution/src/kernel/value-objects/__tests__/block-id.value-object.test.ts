@@ -86,6 +86,11 @@ describe('BlockId', () => {
       text: 'with',
     },
     {
+      condition: 'a segment is the shared plugins folder word',
+      isBlockId: false,
+      text: 'tools/plugins',
+    },
+    {
       condition: 'a segment past the first is an axis name',
       isBlockId: false,
       text: 'react/workflow',

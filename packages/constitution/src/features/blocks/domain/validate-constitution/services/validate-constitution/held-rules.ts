@@ -91,7 +91,7 @@ const HELD_RULES = {
   [TermsCode.OutOfReach]: PlacementRule.Reach,
   [TermsCode.Unused]: PlacementRule.TermInVocabulary,
   [TermsCode.WithoutId]: PlacementRule.DetailAsDefault,
-  [ValueFailure.BlockId]: PlacementRule.BlockRoot,
+  [ValueFailure.BlockId]: PlacementRule.BlockIdReserved,
   [WordingCode.ExceptionMisplaced]: PlacementRule.StatementOrder,
   [WordingCode.ModalVerb]: PlacementRule.NoEmphasis,
   [WordingCode.SloganTooLong]: PlacementRule.Slogan,

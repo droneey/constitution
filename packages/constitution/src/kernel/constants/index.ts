@@ -1,6 +1,6 @@
 export { EXECUTABLE_NAME, projectCheck } from './executable.constants';
 export { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from './path.constants';
-export { PRESETS_FOLDER_NAME } from './presets-folder-name.constants';
+export { PLUGINS_FOLDER_NAME, PRESETS_FOLDER_NAME } from './presets-folders.constants';
 export type { ListKey, RequiredConfigKey } from './project.constants';
 export {
   CHECK_KEY,

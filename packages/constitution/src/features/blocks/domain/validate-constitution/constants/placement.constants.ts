@@ -6,6 +6,7 @@ enum PlacementRule {
   DetailAsDefault = 'core-fixes-incidental-detail-only-as-a-default',
   Axis = 'rule-placed-on-the-axis-its-readers-share',
   BlockRoot = 'block-root-holds-its-passport-beside-its-axes',
+  BlockIdReserved = 'block-id-holds-no-reserved-word',
   PassportHoldsNoRule = 'passport-holds-no-rule',
   PassportRequires = 'passport-requires-only-what-its-block-needs',
   Chapter = 'rule-placed-in-the-chapter-named-for-it',
@@ -35,6 +36,7 @@ type HeldLevel = Level.Must | Level.Should;
 const PLACEMENT_LEVEL = {
   [PlacementRule.AxesStoodOn]: Level.Must,
   [PlacementRule.Axis]: Level.Must,
+  [PlacementRule.BlockIdReserved]: Level.Must,
   [PlacementRule.BlockRoot]: Level.Must,
   [PlacementRule.Chapter]: Level.Must,
   [PlacementRule.CoreNamesNoEcosystem]: Level.Must,

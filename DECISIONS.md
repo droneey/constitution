@@ -45,12 +45,12 @@
 
 **Date:** 2026-11-08 · **Status:** Accepted
 
-- **Decision.** A block's root holds its passport `<name>.md`, its axis folders `@foundation/`, `@architecture/` and `@workflow/`, and its child blocks, a plain folder being a child. The passport holds the front matter, the title, one line of what the block is and its setup, never a rule. Every rule lives in a chapter of an axis, one file of one subject named in the block's own terms. A block's id is its path from its rank, `contracts/api/rest`, a context's leaving out its `platforms/` or `languages/` folder, in the passport, every `requires`, `constitution.yaml` and every seam's name. No part of an id is a reserved word: `with`, `foundation`, `architecture` or `workflow`.
+- **Decision.** A block's root holds its passport `<name>.md`, its axis folders `@foundation/`, `@architecture/` and `@workflow/`, and its child blocks, a plain folder being a child. The passport holds the front matter, the title, one line of what the block is and its setup, never a rule. Every rule lives in a chapter of an axis, one file of one subject named in the block's own terms. A block's id is its path from its rank, `contracts/api/rest`, a context's leaving out its `platforms/` or `languages/` folder, in the passport, every `requires`, `constitution.yaml` and every seam's name. No part of an id is a reserved word: `with`, `plugins`, `foundation`, `architecture` or `workflow`.
 - **Rejected.**
   - The base's rules at the block's root, or a required main chapter per axis: one axis laid out unlike the others, or files that hold only a title.
   - Plain axis folders beside child folders: an axis is told from a child only by a list of reserved names.
   - Short unique ids beside the tree (`rest-api`): two names for one block, and a child whose name does not say its parent.
-  - Block ids free to use the reserved words: the site serves an axis without its `@`, so a child named `foundation` would share its address, and a preset path that names a partner after `with/` could be split two ways.
+  - Block ids free to use the reserved words: the site serves an axis without its `@`, so a child named `foundation` would share its address, a preset path that names a partner after `with/` could be split two ways, and a block named `plugins` would own the presets' shared plugins folder as its preset.
 - **Why.** One form reads the same in every block, the digest, the presets and the site; a path is unique by construction and says where a block's parent and rules lie.
 
 ## ADR-0005 — Three axes: foundation, architecture and workflow

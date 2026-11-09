@@ -1,10 +1,14 @@
-import { Level, PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
+import {
+  Level,
+  PATH_SEPARATOR,
+  PLUGINS_FOLDER_NAME,
+  PRESETS_FOLDER_NAME,
+} from '#/kernel/constants';
 import type { BlockModel, ModelRule } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { RepositoryRelativePath, RuleSlug, SourceKind } from '#/kernel/value-objects';
 
 import { PresetEntry, TextPlace } from '../../../../../preset-entry/entities';
-import { PLUGINS_FOLDER_NAME } from '../../../../../shared/constants';
 import type { PresetsFinding } from '../../../../../shared/entities';
 import { PresetsCode } from '../../../../../shared/entities';
 import { Fact, FactKind } from '../../../../../shared/value-objects';

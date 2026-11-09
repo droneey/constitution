@@ -21,7 +21,13 @@ presets/
 
 A `<block>` and a `<partner>` are block ids, so one may run over folders, as in `biome/@foundation/with/client/browser.yaml`. A preset file's path names at most two blocks beside its reader, each one the reader neither reaches nor is reached by.
 
-A plugin of `shell`, such as `lefthook/plugins/shell/commit-body-left-empty.sh`, is a shell script a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. One the runners' scripts and tasks share sits in the folder of the tool it runs, `osv-scanner/plugins/shell/`, and one no rule names in `shell/`, as `shell/run-on-shell-scripts.sh`, which hands a command the unit's shell scripts. A program too large for a script, such as the mutation gate Stryker's preset runs, is built from a package of its own that imports nothing of the Constitution and ships under the release's `tools/`, as `${constitution.path}/tools/mutation-check/dist/main.js`.
+Beside its settings, a preset ships three kinds of file, each run by the tool alone, none depending on the Constitution's code:
+
+- a **plugin** in the tool's own format, such as Biome's GritQL, in `presets/<tool>/plugins/<language>/` and named after the rule it holds, as `biome/plugins/typescript/case-holds-no-logic.grit`;
+- a **shell script** a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. It sits in `presets/<reader>/plugins/shell/` of the tool whose work it does, named after the rule it holds, as `lefthook/plugins/shell/commit-body-left-empty.sh`, or `osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh`, which the runners' tasks run. One that serves any tool and holds no rule sits in `presets/plugins/<language>/`, as `plugins/shell/run-on-shell-scripts.sh`, which hands a command the unit's shell scripts;
+- a **program** too large for a script, built from a package of its own that imports nothing of the Constitution and shipped in the release's `tools/`, as `${constitution.path}/tools/mutation-check/dist/main.js`, the mutation gate Stryker's preset runs.
+
+`plugins` is a reserved word, so no block's id turns `presets/plugins/` into a reader's folder.
 
 An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/@foundation/with/tailwind/with/presentation/design-system.yaml`, as it needs both. A setting a reader takes only beside a block that requires that reader sits in that block's own preset file, under the reader's key, as Bun's test runner gives Bun's `check` script its `test` in `presets/bun-test/@foundation.yaml`.
 

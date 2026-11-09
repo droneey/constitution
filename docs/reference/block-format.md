@@ -15,11 +15,11 @@ blocks/<rank>/<id>/           domains/, contexts/platforms/, contexts/languages/
 └── <child>/                  a child block, whose id is <id>/<child>
 ```
 
-A block's id is its path among the blocks of its rank: `tanstack-query`, `js-runtime/bun`, `contracts/api/rest`, and `client/browser` for a context, which leaves out its `platforms/` or `languages/` folder. A folder at a block's root without the `@` is a child block, and the block whose folder holds it is its parent, the one parent it has. Wherever a block is active, every block it sits under is active too, so listing `react/react-dom` turns `react` on. No part of an id is a reserved word: `with`, `foundation`, `architecture` or `workflow`.
+A block's id is its path among the blocks of its rank: `tanstack-query`, `js-runtime/bun`, `contracts/api/rest`, and `client/browser` for a context, which leaves out its `platforms/` or `languages/` folder. A folder at a block's root without the `@` is a child block, and the block whose folder holds it is its parent, the one parent it has. Wherever a block is active, every block it sits under is active too, so listing `react/react-dom` turns `react` on. No part of an id is a reserved word: `with`, `plugins`, `foundation`, `architecture` or `workflow`.
 
 A seam's name is the other block's id, so a seam with a child block sits in folders: `tailwind/@foundation/with/presentation/design-system.md`. It is titled with the other block's name.
 
-[Placement](../../packages/constitution/blocks/core/@foundation/placement.md) places the passport, the axes, the chapters and the seams: `block-root-holds-its-passport-beside-its-axes`, `rule-placed-on-the-axis-its-readers-share`, `rule-placed-in-the-chapter-named-for-it`, `rule-placed-in-a-seam-only-when-it-needs-both-blocks` and `seam-held-by-the-block-whose-behaviour-it-constrains`. A block with no rules is its passport alone, and the block's id names only the passport, never a chapter. Every passport, chapter and seam holds at most 1500 lines, its examples counted.
+[Placement](../../packages/constitution/blocks/core/@foundation/placement.md) places the passport, the axes, the chapters and the seams: `block-root-holds-its-passport-beside-its-axes`, `block-id-holds-no-reserved-word`, `rule-placed-on-the-axis-its-readers-share`, `rule-placed-in-the-chapter-named-for-it`, `rule-placed-in-a-seam-only-when-it-needs-both-blocks` and `seam-held-by-the-block-whose-behaviour-it-constrains`. A block with no rules is its passport alone, and the block's id names only the passport, never a chapter. Every passport, chapter and seam holds at most 1500 lines, its examples counted.
 
 ## Naming a chapter
 

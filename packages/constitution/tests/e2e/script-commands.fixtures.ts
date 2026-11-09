@@ -225,7 +225,7 @@ const exitCodeBesideDeletedFile = (task: string): number | undefined => {
   }
 };
 
-const SHELL_FILES_RUNNER = '.droneey/constitution/presets/shell/run-on-shell-scripts.sh';
+const SHELL_FILES_RUNNER = '.droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh';
 
 const filesHandedBesideMember = (member: string): readonly string[] => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-member-shell-'));

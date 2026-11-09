@@ -22,8 +22,8 @@
     "check:markdown": "rumdl check . && rumdl fmt --check .",
     "check:renovate": "renovate-config-validator --strict",
     "check:secrets": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "check:shell": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shellcheck -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
-    "check:shell-format": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shfmt -d -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
+    "check:shell": ".droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh shellcheck -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
+    "check:shell-format": ".droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh shfmt -d -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
     "check:toml": "tombi format --check && tombi lint",
     "check:workflows": "actionlint -pyflakes=",
     "check:yaml": "yamllint --strict .",
@@ -32,7 +32,7 @@
     "fix:lint": "biome check --write",
     "fix:manifests": "syncpack fix && syncpack format",
     "fix:markdown": "rumdl check --fix",
-    "fix:shell-format": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shfmt -w -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
+    "fix:shell-format": ".droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh shfmt -w -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
     "fix:toml": "tombi format"
   },
   "workspaces": [

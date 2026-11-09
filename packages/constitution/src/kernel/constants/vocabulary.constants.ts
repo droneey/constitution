@@ -1,3 +1,5 @@
+import { PLUGINS_FOLDER_NAME } from './presets-folders.constants';
+
 enum Axis {
   Foundation = 'foundation',
   Architecture = 'architecture',
@@ -52,6 +54,7 @@ const BLOCKS_FOLDER_NAME = 'blocks';
 const SEAM_FOLDER_NAME = 'with';
 const reservedWords: ReadonlySet<string> = new Set([
   SEAM_FOLDER_NAME,
+  PLUGINS_FOLDER_NAME,
   ...AXES,
 ]);
 const MARKDOWN_EXTENSION = '.md';

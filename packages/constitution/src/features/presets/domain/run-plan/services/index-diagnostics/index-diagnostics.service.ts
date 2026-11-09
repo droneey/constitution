@@ -1,10 +1,10 @@
+import { PLUGINS_FOLDER_NAME } from '#/kernel/constants';
 import type { BlockModel, Lowering, ModelRule } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
 
 import type { EntryText } from '../../../preset-entry/entities';
 import { PresetEntry, TextPlace } from '../../../preset-entry/entities';
-import { PLUGINS_FOLDER_NAME } from '../../../shared/constants';
 import type { DiagnosticIndex, HeldRule } from '../../entities';
 
 interface UnitFile {

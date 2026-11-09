@@ -1,0 +1,4 @@
+const PRESETS_FOLDER_NAME = 'presets';
+const PLUGINS_FOLDER_NAME = 'plugins';
+
+export { PLUGINS_FOLDER_NAME, PRESETS_FOLDER_NAME };

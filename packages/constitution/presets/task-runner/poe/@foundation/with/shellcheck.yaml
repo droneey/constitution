@@ -7,5 +7,5 @@ shellcheck:
             tasks:
               check:shell:
                 shell: !words
-                  - ${constitution.path}/presets/shell/run-on-shell-scripts.sh shellcheck --
+                  - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shellcheck --
                   - "'${workspace.members}'"

@@ -1,6 +1,6 @@
 # Placement
 
-> Governs where a rule goes — its rank, its axis, its file and its section — how it is worded, which level it takes, what it may refer to, which role words it may name, and where the settings that hold it go.
+> Governs where a rule goes — its rank, its axis, its file and its section — how it is worded, which level it takes, what it may refer to, which role words it may name, and where the settings and plugins that hold it go.
 
 ## Vocabulary
 
@@ -20,7 +20,7 @@ An **axis** is a folder of the block's chapters, one of **`@foundation/`**{#foun
 
 A **seam** is a file **`<@axis>/with/<path>.md`**{#seam} of rules that need two blocks, `<path>` being the other block's id: a derivative module, which applies only while both blocks are active.
 
-A **reserved word**{#reserved-word} is `with` or an axis's name without its `@`: `foundation`, `architecture` or `workflow`.
+A **reserved word**{#reserved-word} is `with`, `plugins` or an axis's name without its `@`: `foundation`, `architecture` or `workflow`.
 
 A chapter opens with its **`Governs`**{#governs-line} line, and its sections may include **`Vocabulary`**{#vocabulary-section} and **`General`**{#general-section}.
 
@@ -33,6 +33,8 @@ A rule's **statement** is its **slogan**, its first and shortest true sentence, 
 A **setting** is one named value of the configuration a program or a tool reads.
 
 A **preset** is a tool's file of settings a block ships.
+
+A **plugin** is a file of code a preset ships for its tool to load or run, a script among them.
 
 A part of a rule is an **obligation** of its own when what the rule governs can break that part while it meets everything else in the rule.
 
@@ -169,11 +171,11 @@ domains/version-control/
 
 ### block-root-holds-its-passport-beside-its-axes · MUST
 
-Every block's root holds its passport and, beside it, its axes and its child blocks, and nothing else. No part of a block's id is a reserved word.
+Every block's root holds its passport and, beside it, its axes and its child blocks, and nothing else.
 
 #### Why
 
-A block laid out its own way is learned before it is read, and a tool that looks for a block's parts where the layout puts them misses the ones put elsewhere; a block named by a reserved word is read as an axis or a seam by every path that drops the `@` or splits at `with`.
+A block laid out its own way is learned before it is read, and a tool that looks for a block's parts where the layout puts them misses the ones put elsewhere.
 
 #### Examples
 
@@ -191,6 +193,26 @@ implementations/schema/zod/
 └── @foundation/
     ├── issues.md
     └── schemas.md
+```
+
+### block-id-holds-no-reserved-word · MUST
+
+No part of a block's id is a reserved word.
+
+#### Why
+
+A part that is a reserved word is read as an axis, a seam or a preset's plugins folder by every path that drops the `@`, splits at `with` or reaches `plugins`.
+
+#### Examples
+
+```text title="Avoid"
+implementations/schema/plugins/      a reserved word as a part
+implementations/foundation/
+```
+
+```text title="Prefer"
+implementations/schema/zod/
+implementations/schema/pydantic/
 ```
 
 ### passport-holds-no-rule · MUST
@@ -1025,6 +1047,52 @@ core:
       .dependency-cruiser.jsonc:
         forbidden[name=domain-reaches-only-itself-and-the-kernel]:
           severity: error
+```
+
+### plugin-sits-with-the-tool-whose-work-it-does · MUST
+
+Every plugin a preset ships sits in `presets/<tool>/plugins/<language>/`, `<tool>` being the id of the block of the tool whose work it does. Exempt: a plugin that serves any tool it is handed and holds no rule, which sits in `presets/plugins/<language>/`.
+
+#### Why
+
+A plugin filed under another tool is missed by whoever changes the tool whose work it does, and leaves with the wrong block; a shared one filed under one of its readers looks like that reader's own and leaves with it while the others still run it.
+
+#### Examples
+
+```text title="Avoid"
+presets/
+├── shell/
+│   └── run-on-shell-scripts.sh                       read as the shell block's preset
+└── js-runtime/bun/plugins/shell/
+    └── built-image-scanned-at-its-base-stage.sh
+```
+
+```text title="Prefer"
+presets/
+├── plugins/shell/
+│   └── run-on-shell-scripts.sh
+└── osv-scanner/plugins/shell/
+    └── built-image-scanned-at-its-base-stage.sh
+```
+
+### plugin-named-after-the-rule-it-holds · MUST
+
+Every plugin that holds a rule is named after that rule's slug.
+
+#### Why
+
+A plugin named otherwise cannot be traced to the rule it holds, so whoever changes the rule never finds it.
+
+#### Examples
+
+```text title="Avoid"
+presets/lefthook/plugins/shell/
+└── check-message.sh
+```
+
+```text title="Prefer"
+presets/lefthook/plugins/shell/
+└── commit-body-left-empty.sh
 ```
 
 ### setting-keyed-by-its-rule · MUST
