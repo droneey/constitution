@@ -8,13 +8,12 @@ axes:
   - architecture
   - workflow
 domains:
-  - ui
-  - remote-data
-  - remote-service
-  - untrusted-client
+  - presentation
+  - integrations/remote-data
+  - transports
   - version-control
 platforms:
-  - browser
+  - client/browser
 languages:
   - typescript
   - css
@@ -22,9 +21,11 @@ languages:
   - json
   - toml
 implementations:
-  - react-dom
+  - react/react-dom
+  - tanstack-router
   - biome
-  - bun
+  - js-runtime/bun
+  - task-runner
   - git
 packs:
   - pack
@@ -46,7 +47,7 @@ Every key but `name` is required; a missing or an unknown key is a warning in th
 | `packs` | the folders of blocks it follows beside the Constitution's, relative to the file's folder | `[]` |
 | `overrides` | the rules it lowers | `[]` |
 
-Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
+A block is listed by its id, its path among the blocks of its rank: `react/react-dom`, `client/browser`, `integrations/remote-data`. A listed block turns on every block it sits under, so `react/react-dom` brings `react`, and `integrations/remote-data` brings `integrations`; the blocks a block requires are listed too, and the digest names each one missing. Core is never listed: it is always active.
 
 ## name
 
@@ -58,11 +59,11 @@ The axes beside `foundation`: `architecture` for the program's tree and seams, `
 
 ## domains
 
-The aspects the project has whatever its technology: a user interface, data fetched over a network, a public API. [The domains](../../packages/constitution/blocks/domains) are the blocks to list.
+The aspects the project has whatever its technology: a user interface, data fetched over a network, a public API, as `presentation`, `integrations/remote-data` and `contracts/api` are. [The domains](../../packages/constitution/blocks/domains) are the blocks to list.
 
 ## platforms
 
-Where the project runs: a browser, a server, a command line. [The platforms](../../packages/constitution/blocks/contexts/platforms) are the blocks to list.
+Where the project runs: a browser, a server, a command line, as `client/browser`, `server` and `client/cli` are. [The platforms](../../packages/constitution/blocks/contexts/platforms) are the blocks to list.
 
 ## languages
 
@@ -70,7 +71,7 @@ What the project is written in. [The languages](../../packages/constitution/bloc
 
 ## implementations
 
-The libraries, tools and services the project installs, runs or reaches. [The implementations](../../packages/constitution/blocks/implementations) are the blocks to list, and [Choose the blocks](../guides/choose-blocks.md) says how to find each layer's.
+The libraries, tools and services the project installs, runs or reaches. [The implementations](../../packages/constitution/blocks/implementations) are the blocks to list, and [Choose the blocks](../guides/choose-blocks.md) says how to find each rank's.
 
 ## packs
 
@@ -89,9 +90,11 @@ overrides:
 | Field | Holds |
 |---|---|
 | `rule` | the slug of a rule of the Constitution |
-| `level` | `SHOULD` or `MAY`, lower than the rule's own |
+| `level` | `SHOULD` or `MAY`, lower than the rule's own: `SHOULD` or `MAY` for a `MUST`, `MAY` for a `SHOULD`; a rule set to `MAY` only advises |
 | `reason` | one line, in double quotes |
 | `until` | optional; a date, `YYYY-MM-DD`, after which the override lowers nothing |
+
+`MAY` is a level only an override names: no rule's heading states it. An override never turns a rule off.
 
 [Override a rule](../guides/override-a-rule.md) explains what an override does.
 
@@ -104,17 +107,18 @@ name: '@acme/admin'
 axes:
   - architecture
 domains:
-  - ui
-  - untrusted-client
+  - presentation
   - version-control
 platforms:
-  - browser
+  - client/browser
 languages:
   - typescript
   - html
 implementations:
-  - react-dom
+  - react/react-dom
   - biome
+  - js-runtime/bun
+  - task-runner
   - git
 packs: []
 overrides: []
@@ -128,10 +132,10 @@ The project is the farthest folder with a `constitution.yaml`, up to the root of
 
 ## The YAML it reads
 
-The plugin reads the file with no YAML library, so it takes a plain subset:
+The file is YAML 1.2, read by its core schema, and each value reads where it is written:
 
-- block lists of `- item`, and flow lists, `[a, b]`, which may run over several lines — the yamllint preset forbids flow lists, so a project that runs it writes block lists, as the examples here do;
-- quotes around a value that holds `:` or `#`;
-- no anchors, tags, multi-line strings or nested `{` and `[`, and no tabs in the indentation.
+- lists are block lists of `- item` or flow lists, `[a, b]`; the yamllint preset forbids flow lists, so a project that runs it writes block lists, as the examples here do;
+- a value that holds `:` or `#` is quoted, and so is a name that opens with `@`;
+- an anchor, an alias, a tag or a block scalar, `|` or `>`, makes the file fail to parse.
 
-A file that does not parse leaves only core active, and the digest names the line.
+A file that does not parse leaves only core active, and the digest names its lines.

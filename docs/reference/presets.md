@@ -2,26 +2,28 @@
 
 > How a tool's settings sit in preset files, which of them a unit takes, and how `constitution` writes and checks them.
 
-[Wire the tools](../guides/wire-the-tools.md) shows a project taking them. What an entry sets is in its preset file, and why a tool holds a rule in its block's passport.
+[Wire the tools](../guides/wire-the-tools.md) shows a project taking them. What an entry sets is in its preset file, under the rule it holds; the `Presets` rules of [placement](../../packages/constitution/blocks/core/@foundation/placement.md) say where each setting goes.
 
 ## Layout
 
-A tool's settings sit in preset files in [`presets/`](../../packages/constitution/presets), which the release links as `.droneey/constitution/presets/`, one folder for each tool that reads them and `core/` for the files only agents read, such as `AGENTS.md`:
+A tool's settings sit in preset files in [`presets/`](../../packages/constitution/presets), which the release links as `.droneey/constitution/presets/`, one folder for each tool that reads them, named by its block's id, and `core/` for the files only agents read, such as `AGENTS.md`:
 
 ```text
 presets/
-└── <reader>/                       the tool that reads the settings
-    ├── foundation.yaml             the entries every project takes
-    ├── architecture.yaml           those of the optional axes
-    ├── workflow.yaml
-    ├── <axis>/with/<block>.yaml    those that need a block beyond the reader's reach
-    ├── <axis>/with/<block>/with/<partner>.yaml
-    └── plugins/<language>/<rule>.* a plugin, named by the rule it holds
+└── <reader>/                         the tool that reads the settings: biome, js-runtime/bun
+    ├── @foundation.yaml              the entries every project takes
+    ├── @architecture.yaml            those of the optional axes
+    ├── @workflow.yaml
+    ├── @<axis>/with/<block>.yaml     those that need a block beyond the reader's reach
+    ├── @<axis>/with/<block>/with/<partner>.yaml
+    └── plugins/<language>/<rule>.*   a plugin, named by the rule it holds
 ```
+
+A `<block>` and a `<partner>` are block ids, so one may run over folders, as in `biome/@foundation/with/client/browser.yaml`. A preset file's path names at most two blocks beside its reader, each one the reader neither reaches nor is reached by.
 
 A plugin of `shell`, such as `lefthook/plugins/shell/commit-body-left-empty.sh`, is a shell script a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. One the runners' scripts and tasks share sits in the folder of the tool it runs, `osv-scanner/plugins/shell/`, and one no rule names in `shell/`, as `shell/run-on-shell-scripts.sh`, which hands a command the unit's shell scripts.
 
-An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/foundation/with/tailwind/with/design-system.yaml`, as it needs both.
+An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/@foundation/with/tailwind/with/presentation/design-system.yaml`, as it needs both. A setting a reader takes only beside a block that requires that reader sits in that block's own preset file, under the reader's key, as Bun's test runner gives Bun's `check` script its `test` in `presets/bun-test/@foundation.yaml`.
 
 ## An entry
 
@@ -57,7 +59,7 @@ Within a value, a fact stands for what `constitution` knows of the unit:
 | `${package.name}` | the unit's `name` in `constitution.yaml` |
 | `${unit.parent}` | the folder at the repository's root that holds the unit, `apps` or `packages`, however deep the unit lies in it; nothing for the repository's own unit |
 | `${unit.depth}` | how many folders the unit lies below that folder, `1` for `apps/web`, `2` for `apps/<group>/web`; nothing where `${unit.parent}` is nothing |
-| `${role.<id>}` | the spelling of the folder, the suffix or the file whose term carries that id, a file's without its extension, as the most specific block the entry's language reaches spells it — for an entry of every language, the blocks of its key and its preset file's path; nothing where only a placeholder such as core's `<entry>` names the file |
+| `${role.<id>}` | the spelling of the folder, the suffix or the file whose term carries that id, a file's without its extension, so `${role.entry}` is `main` where TypeScript's `main.ts` carries the id, as the most specific block the entry's language reaches spells it — for an entry of every language, the blocks of its key and its preset file's path; nothing where only a placeholder such as core's `<entry>` names the file |
 | `${term.<id>}` | in a copied plugin only: the words the concept carrying that id lists, as the same block spells them, each in the quotes around the fact and joined by `, `, so a GritQL snippet of `${term.empty-names}` in backticks becomes one snippet for each empty name |
 | `${workspace.members}` | each member's folder, one item each, at the root of a workspace; nothing elsewhere |
 
@@ -109,11 +111,11 @@ The entries of one file join in the blocks' order: a list holds the items of eac
 
 `constitution presets plan` prints, file by file, the entries that write into it.
 
-`constitution presets check`, `constitution check` and the session-start digest report, as `configurations` warnings, a setting a file lacks or holds as an earlier release gave it (`missing`), one an earlier apply wrote that no entry gives (`stale`), one the file loosens (`loosened`), a map kept sorted whose keys the file orders otherwise (`unsorted`), a file or a lock that does not parse, and what is wrong in the presets themselves: an entry of an unknown block or rule, a role no term carries, two entries that clash, a plugin that names a fact other than a role or a term a block defines (`plugin-unknown-fact`), or names one and is named by its path, which fills nothing (`plugin-named-unfilled`), and a file of the release an entry names that the release lacks and its distribution does not pack (`missing-distribution-file`): the distribution's map, `distribution.json` beside the package that delivers it, names each file it packs by the package whose `build` makes it and the file of that build's output, and such a file counts while that package declares a `build`.
+`constitution presets check`, `constitution check` and the session-start digest report, as `configurations` warnings, a setting a file lacks or holds as an earlier release gave it (`missing`), one an earlier apply wrote that no entry gives (`stale`), one the file loosens (`loosened`), a map kept sorted whose keys the file orders otherwise (`unsorted`), a file or a lock that does not parse, and what is wrong in the presets themselves: a preset file out of the layout, or whose path names a block its reader reaches; an entry of an unknown block or rule, off its rule's axis, in a file whose path names other blocks than it needs, or keyed by a rule that is not a `MUST` (`keyed-rule-not-must`), since a rule a tool checks is a `MUST`; a role no term carries, or a role's spelling typed by hand where `${role.<id>}` names it (`hand-typed-role`); two entries that clash; a plugin no entry names, one named after no rule, one whose message names a rule that is not a `MUST` (`plugin-rule-not-must`), a plugin that names a fact other than a role or a term a block defines (`plugin-unknown-fact`), or names one and is named by its path, which fills nothing (`plugin-named-unfilled`), and a file of the release an entry names that the release lacks and its distribution does not pack (`missing-distribution-file`): the distribution's map, `distribution.json` beside the package that delivers it, names each file it packs by the package whose `build` makes it and the file of that build's output, and such a file counts while that package declares a `build`.
 
 ## The block that brings each setting
 
-In every file whose format holds comments — TOML, YAML, JSONC, a file of sections such as `.editorconfig`, and a file of lines such as `.gitignore`, never strict JSON — apply names the block that brings each setting. That block is the first block the entry's preset file is named with, `presets/<reader>/<axis>/with/<block>…`, or the reader where it is named with none: `git` for `presets/git/foundation.yaml`, `tsc` for `presets/git/foundation/with/tsc/with/workspace.yaml`. One rule holds for every format:
+In every file whose format holds comments — TOML, YAML, JSONC, a file of sections such as `.editorconfig`, and a file of lines such as `.gitignore`, never strict JSON — apply names the block that brings each setting. That block is the first block the entry's preset file is named with, `presets/<reader>/@<axis>/with/<block>…`, or the reader where it is named with none: `git` for `presets/git/@foundation.yaml`, `tsc` for `presets/git/@foundation/with/tsc/with/workspace.yaml`, `js-runtime/bun` for `presets/js-runtime/bun/@foundation.yaml`. One rule holds for every format:
 
 - A comment `# <block>`, or `// <block>` in JSONC, stands above a key, a table or an item that one block alone brings, with everything inside it; a key or an item several blocks fill takes none, and its own keys and items are named in turn.
 - Of a run of such keys or items of one map or list that one block brings, back to back, only the first is named; a key of the project's own between them starts a new run.

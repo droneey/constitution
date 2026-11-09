@@ -9,10 +9,10 @@
   <img src=".brand/badges/claude-code.svg" alt="Made for Claude Code">&ensp;<a href="LICENSE.md"><img src=".brand/badges/license.svg" alt="License: PolyForm Internal Use"></a>
 </p>
 
-The Constitution is one set of engineering rules — how code is named, layered, tested, secured, reviewed and released — split into blocks. A project lists the blocks it follows in `constitution.yaml`, and each member of a workspace in one of its own. A Claude Code plugin gives an agent those rules when a session starts, names the ones that govern each file it touches, and holds the hand-back until the project's check passes. The configurations of the tools that hold the rules ship beside them.
+The Constitution is one set of engineering rules — how code is named, layered, tested, secured, reviewed and released — split into blocks. A project lists the blocks it follows in `constitution.yaml`, and each member of a workspace in one of its own. A Claude Code plugin gives an agent the rules that govern each action before it takes it, and holds the hand-back until the project's check passes and a fresh reviewer has judged the change. The configurations of the tools that hold the rules ship beside them.
 
 - **One standard for every repository.** A rule is written once, in the block that gives it meaning, and every project that takes the block follows it.
-- **Rules at the moment they matter.** The agent gets a digest when it starts, a reminder on each file it touches and a review when it asks for one.
+- **Rules at the moment they matter.** The agent gets a digest when it starts, the rules of each file before it touches it, and a review before it hands back.
 - **Held by tools where a tool can hold them.** The executable writes the presets' settings into Biome's, dependency-cruiser's, knip's, Ruff's and the rest's configurations, so a broken rule fails the check.
 - **Pinned.** A project follows the release it names; a new release changes nothing until the project moves its pin.
 
@@ -84,8 +84,8 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 ### Explanation
 
-- [Where a rule goes](packages/constitution/blocks/core/@foundation/placement.md) — its layer, its axis and its chapter
-- [Which rule wins](packages/constitution/blocks/core/core.md#precedence) — overrides and the order of the layers
+- [Where a rule goes](packages/constitution/blocks/core/@foundation/placement.md) — its rank, its axis, its chapter and its section
+- [Which rule wins](packages/constitution/blocks/core/core.md#precedence) — overrides, and what holds while two rules clash
 - [Decisions](DECISIONS.md) — every choice between real alternatives, with what was rejected
 
 ### Blocks

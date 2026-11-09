@@ -38,7 +38,7 @@ Every text a hook gives stays within 10,000 characters, Claude Code's limit for 
 
 ### Which blocks govern a file
 
-A block's `governs` globs say which files it governs. A domain and a platform govern every file of the unit that lists them, as core does; a language governs the files written in it, and a tool's block the files it configures. A block also governs what every active block that needs it governs, through `requires`, `extends` and a seam.
+A block's `governs` globs say which files it governs. A domain and a platform govern every file of the unit that lists them, as core does; a language governs the files written in it, and a tool's block the files it configures. A block also governs what every active block that needs it governs: one that requires it, one that sits under it, and one that holds a seam with it.
 
 ### The digest
 
@@ -47,7 +47,7 @@ It holds:
 1. the release and the folder of its blocks, and the line that says `constitution.yaml` does not parse, when it does not;
 2. [core's passport](../../packages/constitution/blocks/core/core.md), its front matter aside;
 3. three lines on what the rule gate asks of the agent;
-4. the map of the active blocks: their names, one line to a layer, a pack's with its pack in square brackets; then a line for each member of the workspace whose own `constitution.yaml` adds blocks or leaves some out;
+4. the map of the active blocks: their ids, one line to a rank, and the packs' blocks on a line of their own, each with its pack in square brackets; then a line for each member of the workspace whose own `constitution.yaml` adds blocks or leaves some out;
 5. the warnings about `constitution.yaml` and the `presets` findings about the tools' configurations, to tell you at the start of a session.
 
 All after the first part is held to 9,400 bytes, so the digest stays within Claude Code's limit. Core's passport and the three lines are given whole; the warnings are given within a share of 1,000 bytes, with a count of the rest. The map takes the room left and, when it does not fit, is cut from its end, the members' lines first, with a note of how many lines were cut and that `constitution.yaml` names every block.
@@ -104,7 +104,8 @@ When the session ends, its folders in every project the gate wrote rules into ar
 - `constitution presets check` gives the warnings of the project's `constitution.yaml`, of each member's and the `presets` findings, the ones the digest gives; a member of the workspace that keeps no `constitution.yaml` is one of them.
 - `constitution presets plan` prints the configuration files `apply` would write, each with the preset entries that write into it, what each unit's runners give `constitution run`, and what is wrong in the presets.
 - `constitution presets apply` writes into each unit's configuration files what the presets of the release and of the packs it follows give its blocks, beside the settings the files keep of their own, and records what it wrote in the unit's `constitution.lock`, so the next run removes what the blocks no longer give. A value the user loosened is a finding, and apply writes nothing until it is put back or an override in `constitution.yaml` lowers its rule. A `constitution.lock` that does not parse, as a merge's conflict leaves it, is written again from the files, and apply says so; any other finding holds the plan, which then writes nothing. A default is written once, and stays deleted once the user deletes it. It ends by running the `fix` of each unit it wrote a file of, as `constitution run fix` would; `--no-fix` leaves the files as written.
-- `constitution run <check|test|fix>` runs what the runner blocks of the unit around the folder give for that entry point — every unit's, the root's first, from the repository's root — each command printed before it runs, and stops at the first that fails.
+- `constitution run <check|test|fix>` runs what the runner blocks of the unit around the folder give for that entry point — every unit's, the root's first, from the repository's root — each command printed before it runs, and stops at the first that fails. `run check` first checks the blocks of every pack the units list. A failed command is followed by each rule its output shows broken, by a tool's code or a plugin's `[slug]`, as `slug · LEVEL — statement` at the level that binds in its unit; `--why` adds each one's Why.
+- `constitution rules --for <files…>` prints what governs those files: each governing chapter's vocabulary, then each rule's statement at the level that binds where the file lies, `MUST` before `SHOULD`, and last those an override sets to `MAY`, a lowered rule with its override's reason; `--why` adds each rule's Why. It never prints examples.
 - `constitution doctor` says how the installation stands, and changes nothing: the plugin, which differs from this executable only when its own files — its manifest, hooks, skills and agents — differ from those the executable was built with, compared by a hash of their content, its version then saying which is older; the latest release, which it skips without a network; the executable on `PATH`; the project's `.droneey/constitution` link and the release behind it; and lefthook's git hooks. Each part that is not sound comes with what to do.
 - `constitution hook <event>` is what the hooks run.
 
