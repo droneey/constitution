@@ -7,6 +7,7 @@ import {
   renameSync,
   rmSync,
   statSync,
+  symlinkSync,
   utimesSync,
   writeFileSync,
 } from 'node:fs';
@@ -240,7 +241,7 @@ const changedFilesOf = (input: { after: TreeSnapshot; before: TreeSnapshot }): r
     : [];
 
 describe('createGitWorkingTree', () => {
-  it('should give the fingerprint of the status, the diff of the work tree and the signatures of the untracked files when the tree has changed', () => {
+  it('should give the fingerprint of the content of the tree when it has changed', () => {
     // Arrange
     changedRepository();
 
@@ -251,7 +252,7 @@ describe('createGitWorkingTree', () => {
 
     // Assert
     expect(state).toStrictEqual(
-      readOf('2157cb5982e1d73662ac5db99f16fb28f3a853235dbadcdd90d83e3eb87af6e3'),
+      readOf('550ef0b9e91e3a678c4ca98bf9d1afd882ceb2dc6f5990084ca9dd75248b93aa'),
     );
   });
 
@@ -281,7 +282,7 @@ describe('createGitWorkingTree', () => {
 
     // Assert
     expect(state).toStrictEqual(
-      readOf('298665e568ab60413ef1589f8184d67aca8fe53c23b6b25fc32d3d87ae5edda7'),
+      readOf('d49e78837793d043df3c8f97a1ae198b0ee9273dcb4d4b1c6de6b78cc926c135'),
     );
   });
 
@@ -299,21 +300,24 @@ describe('createGitWorkingTree', () => {
         '.gitconfig': '[diff "converted"]\n\ttextconv = /nonexistent/convert\n',
       },
     },
-  ])("should read the state by git's own diff when $condition", ({ configuration }) => {
-    // Arrange
-    changedRepository();
-    writeHome(configuration);
+  ])(
+    'should read the state with no program the configuration names when $condition',
+    ({ configuration }) => {
+      // Arrange
+      changedRepository();
+      writeHome(configuration);
 
-    const tree = realTree();
+      const tree = realTree();
 
-    // Act
-    const state = tree.stateOf(projectPath());
+      // Act
+      const state = tree.stateOf(projectPath());
 
-    // Assert
-    expect(state).toStrictEqual(
-      readOf('2157cb5982e1d73662ac5db99f16fb28f3a853235dbadcdd90d83e3eb87af6e3'),
-    );
-  });
+      // Assert
+      expect(state).toStrictEqual(
+        readOf('550ef0b9e91e3a678c4ca98bf9d1afd882ceb2dc6f5990084ca9dd75248b93aa'),
+      );
+    },
+  );
 
   it.each([
     {
@@ -343,6 +347,120 @@ describe('createGitWorkingTree', () => {
       expect(indexStatOf()).toStrictEqual(before);
     },
   );
+
+  it('should keep the fingerprint when the changes are committed as they are', () => {
+    // Arrange
+    changedRepository();
+    write({
+      path: '0 a.txt',
+      text: 'sorts before every committed path, and holds a blank\n',
+    });
+
+    const tree = realTree();
+    const before = tree.stateOf(projectPath());
+
+    git([
+      'add',
+      '--all',
+    ]);
+    git([
+      'commit',
+      '--quiet',
+      '--message',
+      'changes',
+    ]);
+
+    // Act
+    const after = tree.stateOf(projectPath());
+
+    // Assert
+    expect(
+      fingerprintsOf([
+        before,
+        after,
+      ]),
+    ).toBe(1);
+  });
+
+  it.each([
+    {
+      change: (): void => {
+        chmodSync(join(project, 'a.txt'), 0o755);
+      },
+      condition: "a file's mode changes",
+    },
+    {
+      change: (): void => {
+        rmSync(join(project, 'a.txt'));
+      },
+      condition: 'a file is deleted',
+    },
+    {
+      change: (): void => {
+        write({
+          path: 'a.txt',
+          text: 'two\n',
+        });
+      },
+      condition: 'a committed file is rewritten',
+    },
+    {
+      change: (): void => {
+        rmSync(join(project, 'a.txt'));
+        write({
+          path: 'a.txt/b.txt',
+          text: 'one\n',
+        });
+      },
+      condition: 'a folder takes the place of a committed file',
+    },
+    {
+      change: (): void => {
+        rmSync(join(project, 'link'));
+        symlinkSync('b.txt', join(project, 'link'));
+      },
+      condition: 'a committed link points elsewhere',
+    },
+    {
+      change: (): void => {
+        chmodSync(join(project, 'a.txt'), 0o000);
+        utimesSync(join(project, 'a.txt'), 1_000_000, 1_000_000);
+      },
+      condition: 'a file that cannot be read is touched',
+    },
+  ])('should give a new fingerprint when $condition', ({ change }) => {
+    // Arrange
+    committedRepository({
+      'a.txt': 'one\n',
+    });
+    symlinkSync('a.txt', join(project, 'link'));
+    git([
+      'add',
+      'link',
+    ]);
+    git([
+      'commit',
+      '--quiet',
+      '--message',
+      'link',
+    ]);
+
+    const tree = realTree();
+    const before = tree.stateOf(projectPath());
+
+    change();
+
+    // Act
+    const after = tree.stateOf(projectPath());
+
+    // Assert
+    expect(
+      fingerprintsOf([
+        before,
+        after,
+      ]),
+    ).toBe(2);
+  });
 
   it('should give a new fingerprint when an untracked file is rewritten', () => {
     // Arrange
@@ -783,8 +901,8 @@ describe('createGitWorkingTree', () => {
         tree.stateOf(folderPath),
     },
     {
-      condition: 'the state is read and its diff fails',
-      failing: 'diff-files',
+      condition: 'the state is read and its listing of the index fails',
+      failing: 'ls-files',
       read: (tree: WorkingTree, folderPath: AbsolutePath): TreeSnapshot | TreeState =>
         tree.stateOf(folderPath),
     },
@@ -805,7 +923,7 @@ describe('createGitWorkingTree', () => {
     ({ failing, read }) => {
       // Arrange
       const tree = treeWithGitIn(
-        `[ "$2" = ${failing} ] && { echo '  fatal: broken  ' >&2; exit 128; }; echo '${project}'`,
+        `[ "$2" = ${failing} ] && { echo '  fatal: broken  ' >&2; exit 128; }; echo '${project}'; echo sha1`,
       );
 
       // Act
@@ -816,6 +934,102 @@ describe('createGitWorkingTree', () => {
         reason: 'fatal: broken',
         status: TreeStateStatus.Failed,
       });
+    },
+  );
+
+  it('should keep the fingerprint when the changes are committed in a repository that names its objects by SHA-256', () => {
+    // Arrange
+    git([
+      'init',
+      '--quiet',
+      '--object-format=sha256',
+    ]);
+    write({
+      path: 'a.txt',
+      text: 'one\n',
+    });
+
+    const tree = realTree();
+    const before = tree.stateOf(projectPath());
+
+    git([
+      'add',
+      '--all',
+    ]);
+    git([
+      'commit',
+      '--quiet',
+      '--message',
+      'init',
+    ]);
+
+    // Act
+    const after = tree.stateOf(projectPath());
+
+    // Assert
+    expect({
+      fingerprints: fingerprintsOf([
+        before,
+        after,
+      ]),
+      status: after.status,
+    }).toStrictEqual({
+      fingerprints: 1,
+      status: TreeStateStatus.Read,
+    });
+  });
+
+  it('should give the state as failed, naming the format, when git names an object format it does not know', () => {
+    // Arrange
+    const tree = treeWithGitIn(`echo '${project}'; echo sha999`);
+
+    // Act
+    const state = tree.stateOf(projectPath());
+
+    // Assert
+    expect(state).toStrictEqual({
+      reason: 'git names an object format the hooks do not know: sha999',
+      status: TreeStateStatus.Failed,
+    });
+  });
+
+  it.each([
+    {
+      condition: 'its size is the most the tree reads whole',
+      fingerprints: 2,
+      size: 8_388_608,
+    },
+    {
+      condition: 'its size is past the most the tree reads whole',
+      fingerprints: 1,
+      size: 8_388_609,
+    },
+  ])(
+    'should give $fingerprints fingerprints for a rewrite that keeps the size and the time of a file when $condition',
+    ({ fingerprints, size }) => {
+      // Arrange
+      committedRepository({
+        'a.txt': 'one\n',
+      });
+      writeFileSync(join(project, 'large.bin'), Buffer.alloc(size, 'a'));
+      utimesSync(join(project, 'large.bin'), 1_000_000, 1_000_000);
+
+      const tree = realTree();
+      const before = tree.stateOf(projectPath());
+
+      writeFileSync(join(project, 'large.bin'), Buffer.alloc(size, 'b'));
+      utimesSync(join(project, 'large.bin'), 1_000_000, 1_000_000);
+
+      // Act
+      const after = tree.stateOf(projectPath());
+
+      // Assert
+      expect(
+        fingerprintsOf([
+          before,
+          after,
+        ]),
+      ).toBe(fingerprints);
     },
   );
 

@@ -14,7 +14,15 @@ interface KeepSessionInput {
 }
 
 const keepSession = (input: KeepSessionInput): void => {
-  if (input.state === undefined || !SessionStart.keepsState(input.event)) {
+  if (!SessionStart.keepsState(input.event)) {
+    return;
+  }
+
+  // Why: a start whose digest keeps no state, as one of a project with no release, is still
+  // recorded, so a prompt does not start the session again and repeat what it said.
+  if (input.state === undefined) {
+    input.sessionRepository.recordStarted(input.session);
+
     return;
   }
 

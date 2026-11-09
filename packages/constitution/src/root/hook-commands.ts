@@ -22,6 +22,7 @@ import {
   gateAction,
   handOverChanges,
   holdHandBack,
+  isSessionStarted,
   judgeStop,
   keepSession,
   markShell,
@@ -206,6 +207,27 @@ const hookCommandsOf = (registration: Registration): Command => {
       }),
       createUserPromptSubmitCommand({
         ...context,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
+        digestSession: (start: SessionStart): SessionDigest | undefined =>
+          digestSession({
+            ...start,
+            source: ports.rules,
+            workingTree: ports.workingTree,
+          }),
+        isSessionStarted: (session: SessionId): boolean =>
+          isSessionStarted({
+            session,
+            sessionQueries: ports.sessionQueries,
+          }),
+        keepSession: (kept): void => {
+          keepSession({
+            ...kept,
+            sessionRepository: ports.sessionRepository,
+          });
+        },
         markTurn: (session: SessionId): void => {
           markTurn({
             session,

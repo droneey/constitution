@@ -46,6 +46,7 @@ type NamedHookEvent = Exclude<HookEventName, HookEventName.Unknown>;
 const HOOK_EVENT_TEXTS = {
   [HookEventName.SessionStart]: 'SessionStart',
   [HookEventName.SubagentStart]: 'SubagentStart',
+  [HookEventName.UserPromptSubmit]: 'UserPromptSubmit',
   [HookEventName.PreToolUse]: 'PreToolUse',
   [HookEventName.PostToolUse]: 'PostToolUse',
   [HookEventName.PostToolUseFailure]: 'PostToolUseFailure',
@@ -106,6 +107,10 @@ interface SessionStartHookEvent extends HookEvent {
   readonly [HookField.Source]: SessionOrigin;
 }
 
+interface PromptHookEvent extends HookEvent {
+  readonly [HookField.Cwd]?: string | undefined;
+}
+
 interface StopHookEvent extends HookEvent {
   readonly [HookField.AgentId]?: string | undefined;
   readonly [HookField.AgentName]?: string | undefined;
@@ -152,6 +157,11 @@ const sessionEventSchema: z.ZodType<HookEvent> = z.object({
   [HookField.SessionId]: sessionIdField,
 });
 
+const promptEventSchema: z.ZodType<PromptHookEvent> = z.object({
+  [HookField.Cwd]: textField,
+  [HookField.SessionId]: sessionIdField,
+});
+
 const stopEventSchema: z.ZodType<StopHookEvent> = z.object({
   [HookField.AgentId]: textField,
   [HookField.AgentName]: textField,
@@ -191,6 +201,7 @@ export type { HookEventText, NamedHookEvent };
 export {
   HOOK_EVENT_TEXTS,
   HookField,
+  promptEventSchema,
   recordCheckEventSchema,
   sessionEventSchema,
   sessionStartEventSchema,

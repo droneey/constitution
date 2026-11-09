@@ -30,6 +30,7 @@ export { settleShell } from './application/use-cases/commands/settle-shell';
 export { sweepStaleSessions } from './application/use-cases/commands/sweep-stale-sessions';
 export { tellPasses } from './application/use-cases/commands/tell-passes';
 export { digestSession } from './application/use-cases/queries/digest-session';
+export { isSessionStarted } from './application/use-cases/queries/is-session-started';
 export { judgeStop } from './application/use-cases/queries/judge-stop';
 export type { GoverningRules } from './application/use-cases/queries/read-rules';
 export { readRules } from './application/use-cases/queries/read-rules';

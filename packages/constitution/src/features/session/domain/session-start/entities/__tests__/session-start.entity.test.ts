@@ -10,6 +10,10 @@ describe('SessionStart', () => {
       keeps: true,
     },
     {
+      event: HookEventName.UserPromptSubmit,
+      keeps: true,
+    },
+    {
       event: HookEventName.SubagentStart,
       keeps: false,
     },

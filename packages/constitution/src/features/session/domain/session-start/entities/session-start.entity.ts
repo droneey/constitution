@@ -16,7 +16,10 @@ interface SessionStart {
   readonly searchFrom: AbsolutePath;
 }
 
-const keepsState = (event: HookEventName): boolean => event === HookEventName.SessionStart;
+// Why: a session that had no start, as one whose plugin is turned on while it runs, is started by
+// the user's next prompt.
+const keepsState = (event: HookEventName): boolean =>
+  event === HookEventName.SessionStart || event === HookEventName.UserPromptSubmit;
 
 /** A resumed session keeps the reminders it was given. */
 const keepsReminders = (origin: SessionOrigin): boolean => origin === SessionOrigin.Resume;

@@ -15,6 +15,8 @@ const createFakeSessionQueries = (sessions: HeldSessions = heldSessionsOf()): Se
 
     return TreeFingerprint.is(text) ? text : undefined;
   },
+  isStarted: (session: SessionId): boolean =>
+    sessions.get(session)?.marks.has(SessionMark.Started) === true,
   ownChanges: (asked): readonly AbsolutePath[] => ownChangesIn(sessions, asked),
   reviewDebt: (session: SessionId): readonly ReviewDebt[] => reviewDebtIn(sessions, session),
   reminded: (asked): ReadonlySet<BlockId> =>

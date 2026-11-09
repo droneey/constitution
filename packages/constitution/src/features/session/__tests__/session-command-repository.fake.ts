@@ -71,6 +71,9 @@ const createFakeSessionRepository = (
   recordFingerprint: (recorded): void => {
     sessions.get(recorded.session)?.marks.set(recorded.mark, recorded.fingerprint);
   },
+  recordStarted: (session: SessionId): void => {
+    keptIn(sessions, session).marks.set(SessionMark.Started, '');
+  },
   recordUnjudged: (recorded): void => {
     sessions.get(recorded.session)?.marks.set(SessionMark.Unjudged, recorded.reason);
   },

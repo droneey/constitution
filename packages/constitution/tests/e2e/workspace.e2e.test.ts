@@ -1,37 +1,30 @@
 import { symlinkSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { afterEach, describe, expect, it } from 'bun:test';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { isFoundIn } from './python-template.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
   commitBase,
-  createWorkspace,
+  createWorkspaces,
   manifestOf,
   PYTHON_PACKAGES,
-  removeWorkspace,
   repository,
   runTool,
   UNITS,
   write,
 } from './workspace.fixtures';
 
-const workspaces: string[] = [];
+const BASE_MS = 120_000;
 
-const workspace = (changes?: Parameters<typeof createWorkspace>[0]): string => {
-  const folder = createWorkspace(changes);
+const { buildBase, removeBase, removeCases, workspaceOf: workspace } = createWorkspaces();
 
-  workspaces.push(folder);
+beforeAll(buildBase, BASE_MS);
 
-  return folder;
-};
+afterEach(removeCases);
 
-afterEach(() => {
-  for (const folder of workspaces.splice(0)) {
-    removeWorkspace(folder);
-  }
-});
+afterAll(removeBase);
 
 const CRUISER = '.dependency-cruiser.jsonc';
 

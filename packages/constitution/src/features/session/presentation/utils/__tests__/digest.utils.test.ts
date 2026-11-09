@@ -19,7 +19,7 @@ import type {
   DigestUnit,
 } from '../../../domain/session-digest/entities';
 import { DigestKind } from '../../../domain/session-digest/entities';
-import { digestOf } from '../digest.utils';
+import { digestTextOf } from '../digest.utils';
 
 const release = {
   folderPath: AbsolutePath.create('/work/project/.droneey/constitution'),
@@ -165,23 +165,15 @@ const variants: Readonly<Record<string, DigestContents>> = {
   },
 };
 
-describe('digestOf', () => {
+describe('digestTextOf', () => {
   it('should word and lay out the digest of each kind as the golden file shows it', async () => {
     // Act
     const golden = goldenOf(
       Object.fromEntries(
-        Object.entries(variants).map(([name, contents]) => {
-          const digest = digestOf(contents);
-
-          return [
-            name,
-            [
-              ...digest.head,
-              '',
-              ...digest.body,
-            ].join('\n'),
-          ];
-        }),
+        Object.entries(variants).map(([name, contents]) => [
+          name,
+          digestTextOf(contents),
+        ]),
       ),
     );
 
