@@ -117,3 +117,11 @@ js-runtime/bun:
           check@tests:
             - test
           test: bun run --parallel 'test:*'
+task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check
+        test:
+          - bun run test

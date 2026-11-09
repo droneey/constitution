@@ -277,6 +277,71 @@ describe('constitution run', () => {
 
   it.each([
     {
+      condition: 'they pass',
+      exitCode: 0,
+      reported: '(pass) should hold when run',
+      spec: "test('should hold when run', () => {\n  expect(true).toBeTrue();\n});",
+    },
+    {
+      condition: 'one fails',
+      exitCode: 1,
+      reported: '(fail) should fail when run',
+      spec: "test('should fail when run', () => {\n  expect(false).toBeTrue();\n});",
+    },
+  ])(
+    "should run a Bun unit's specs for its test when $condition",
+    ({ exitCode, reported, spec }) => {
+      // Arrange
+      const unit = installedIn(
+        appliedUnit({
+          implementations: [
+            'js-runtime/bun',
+            'task-runner',
+            'bun-test',
+          ],
+          languages: [
+            'typescript',
+          ],
+        }),
+      );
+
+      writeFiles({
+        files: {
+          'src/__tests__/hold.test.ts': `import { expect, test } from 'bun:test';\n\n${spec}\n`,
+        },
+        folder: unit,
+      });
+
+      // Act
+      const ran = spawnSync(
+        cliPath,
+        [
+          'run',
+          'test',
+          '--plain',
+        ],
+        {
+          cwd: unit,
+          encoding: 'utf8',
+          env: toolEnvironment(),
+        },
+      );
+
+      // Assert
+      expect({
+        exitCode: ran.status,
+        ran: ran.stdout.split('\n')[0],
+        reported: ran.stderr.includes(reported),
+      }).toStrictEqual({
+        exitCode,
+        ran: '$ bun run test',
+        reported: true,
+      });
+    },
+  );
+
+  it.each([
+    {
       args: [],
       condition: 'alone',
       whys: [],

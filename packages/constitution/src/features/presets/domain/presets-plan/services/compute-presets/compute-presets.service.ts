@@ -107,6 +107,7 @@ const presetsPlanOf = (input: PresetsPlanInput): PresetsPlan => {
     candidates,
     entries,
     merged: merged.candidates,
+    model,
     units,
   });
 

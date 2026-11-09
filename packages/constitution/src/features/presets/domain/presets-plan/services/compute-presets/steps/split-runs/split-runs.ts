@@ -1,4 +1,5 @@
 import type { ProjectUnit } from '#/kernel/entities';
+import { BlockModel } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { configFilePath, UnitPath } from '#/kernel/value-objects';
 
@@ -17,6 +18,7 @@ interface SplitRunsInput {
   readonly candidates: readonly Candidate[];
   readonly entries: readonly PresetEntry[];
   readonly merged: readonly MergedCandidate[];
+  readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
 }
 
@@ -141,12 +143,31 @@ const isRun = (placed: Placed): placed is UnitRun => 'commands' in placed;
 
 const isFinding = (placed: Placed): placed is PresetsFinding => 'code' in placed;
 
-const runnersOf = (entries: readonly PresetEntry[]): ReadonlySet<BlockId> =>
-  new Set(
-    entries
+// Why: a tool that gives its own run entry, as a test runner gives the unit's test, reaches the
+// runner that runs it; its entry joins that runner's run, and its partners are what it configures,
+// not tools it runs.
+const runnersOf = (input: {
+  entries: readonly PresetEntry[];
+  model: BlockModel;
+}): ReadonlySet<BlockId> => {
+  const givers = new Set(
+    input.entries
       .filter((entry) => entry.kind === TargetKind.Run)
       .map((entry) => entry.set.placeInPresets.reader),
   );
+
+  return new Set(
+    [
+      ...givers,
+    ].filter((giver) => {
+      const reach = BlockModel.reachOf(input.model, giver);
+
+      return [
+        ...givers,
+      ].every((other) => other === giver || !reach.has(other));
+    }),
+  );
+};
 
 const toolsOf = (input: {
   entries: readonly PresetEntry[];
@@ -159,7 +180,7 @@ const toolsOf = (input: {
   );
 
 const unrunFindings = (input: SplitRunsInput): readonly PresetsFinding[] => {
-  const runners = runnersOf(input.entries);
+  const runners = runnersOf(input);
   const runnable = toolsOf({
     entries: input.entries,
     runners,

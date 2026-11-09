@@ -100,6 +100,13 @@ const blockFixtures: readonly BlockFixture[] = [
     ],
   },
   {
+    id: 'bun-test',
+    layer: Layer.Implementation,
+    requires: [
+      'bun',
+    ],
+  },
+  {
     governs: [
       '.gitignore',
       '.git/**',

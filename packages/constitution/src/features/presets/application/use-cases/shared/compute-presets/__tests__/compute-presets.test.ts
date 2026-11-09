@@ -1693,6 +1693,82 @@ describe('computePresets', () => {
     expect(plan.findings).toStrictEqual(findings);
   });
 
+  it('should run through its runner a tool that gives its own run entry, and none of its partners', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'bun/@foundation.yaml': [
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        check:',
+          '          - bun run check',
+        ].join('\n'),
+        'bun-test/@foundation.yaml': [
+          'bun-test:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        test:',
+          '          - bun run test',
+        ].join('\n'),
+        'bun-test/@foundation/with/workspace.yaml': [
+          'bun-test:',
+          "  '*':",
+          "    '*':",
+          '      bunfig.toml:',
+          '        test:',
+          '          root: .',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'workspace',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'bun',
+            'bun-test',
+            'workspace',
+          ],
+          path: 'packages/kit',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect({
+      findings: plan.findings,
+      runs: plan.runs.map(({ commands, unitPath }) => ({
+        commands: Object.fromEntries(commands),
+        unit: String(unitPath),
+      })),
+    }).toStrictEqual({
+      findings: [],
+      runs: [
+        {
+          commands: {
+            check: [
+              'bun run check',
+            ],
+            test: [
+              'bun run test',
+            ],
+          },
+          unit: 'packages/kit',
+        },
+      ],
+    });
+  });
+
   it.each([
     {
       condition: 'an entry point is a command, not a list, beside one that is a list',
