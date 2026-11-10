@@ -15,7 +15,7 @@
         "source": "git-subdir",
         "url": "droneey/constitution",
         "path": "packages/constitution",
-        "ref": "v0.89.2"
+        "ref": "v0.90.0"
       },
       "description": "Rules written in blood. For every project."
     }
