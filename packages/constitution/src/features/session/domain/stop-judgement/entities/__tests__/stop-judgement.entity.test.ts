@@ -6,9 +6,9 @@ import { keptBlockOf, keptSession, sessionStateOf } from '../../../../__tests__/
 import { SessionAgent, SessionMark } from '../../../session/entities';
 import { AgentId } from '../../../session/value-objects';
 import { HookEventName } from '../../../shared/entities';
-import type { TreeState } from '../../../tree-state/entities';
+import type { MainLine, TreeSnapshot, TreeState } from '../../../tree-state/entities';
 import { TreeStateStatus } from '../../../tree-state/entities';
-import { TreeFingerprint } from '../../../tree-state/value-objects';
+import { FileSignature, TreeFingerprint } from '../../../tree-state/value-objects';
 import type { ReviewDebt } from '../review-debt.entity';
 import type { StopEvent } from '../stop-event.entity';
 import type { StopMarks } from '../stop-judgement.entity';
@@ -20,8 +20,17 @@ const readTree: TreeState = {
   fingerprint: treeNow,
   status: TreeStateStatus.Read,
 };
+const unchangedTree: TreeSnapshot = {
+  fileSignatures: new Map(),
+  status: TreeStateStatus.Read,
+};
+const headHeld: MainLine = {
+  isHeadHeld: true,
+  status: TreeStateStatus.Read,
+};
 const noMarks: StopMarks = {
   [SessionMark.Checked]: undefined,
+  [SessionMark.ReviewStarted]: undefined,
   [SessionMark.Reviewed]: undefined,
   [SessionMark.Turn]: treeBefore,
 };
@@ -66,9 +75,11 @@ describe('StopJudgement.judge', () => {
     condition: string;
     event?: StopEvent;
     expected: ReturnType<typeof StopJudgement.judge>;
+    mainLine?: MainLine;
     marks?: Partial<StopMarks>;
     own?: readonly AbsolutePath[];
     reviewOwed?: readonly ReviewDebt[];
+    snapshot?: TreeSnapshot;
     tree?: TreeState;
     unjudged?: string;
   }>([
@@ -133,6 +144,197 @@ describe('StopJudgement.judge', () => {
       expected: undefined,
       marks: {
         [SessionMark.Turn]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'the remote main line holds its HEAD, though the tree holds a change',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      mainLine: headHeld,
+      own: [
+        ownFile,
+      ],
+      snapshot: {
+        fileSignatures: new Map([
+          [
+            ownFile,
+            FileSignature.create('changed'),
+          ],
+        ]),
+        status: TreeStateStatus.Read,
+      },
+    },
+    {
+      condition: 'git cannot tell whether the remote main line holds its HEAD',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      mainLine: {
+        reason: 'fatal: bad object HEAD',
+        status: TreeStateStatus.Failed,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'the tree holds no change and the remote main line holds its HEAD',
+      expected: undefined,
+      mainLine: headHeld,
+      own: [
+        ownFile,
+      ],
+      reviewOwed: [
+        owedReview,
+      ],
+    },
+    {
+      condition: 'the reviewer it dispatched still reviews this tree, which the check passed on',
+      expected: undefined,
+      marks: {
+        [SessionMark.Checked]: treeNow,
+        [SessionMark.ReviewStarted]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition:
+        'the reviewer it dispatched still reviews this tree, which the check never passed on',
+      expected: {
+        blocks: [],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.ReviewStarted]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition:
+        'the reviewer it dispatched has reviewed this tree, which the check never passed on',
+      expected: {
+        blocks: [],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.ReviewStarted]: treeNow,
+        [SessionMark.Reviewed]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'the reviewer it dispatched has reviewed this tree, which the check passed on',
+      expected: {
+        subagentChanges: [],
+        verdict: StopVerdict.Covered,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+        [SessionMark.ReviewStarted]: treeNow,
+        [SessionMark.Reviewed]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition:
+        'the remote main line holds its HEAD, though git cannot list the changes of the tree',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      mainLine: headHeld,
+      own: [
+        ownFile,
+      ],
+      snapshot: {
+        reason: 'fatal: index file corrupt',
+        status: TreeStateStatus.Failed,
+      },
+    },
+    {
+      condition: 'the agent changed the tree since it dispatched its reviewer',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.ReviewStarted]: treeBefore,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition:
+        'a subagent stops on changes it did not check while the reviewer reviews this tree',
+      event: subagentStop,
+      expected: {
+        blocks: [],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.ReviewStarted]: treeNow,
       },
       own: [
         ownFile,
@@ -231,12 +433,17 @@ describe('StopJudgement.judge', () => {
     const input = {
       event,
       isMainThread: event.agent === SessionAgent.main,
+      mainLine: given.mainLine ?? {
+        isHeadHeld: false,
+        status: TreeStateStatus.Read,
+      },
       marks: {
         ...noMarks,
         ...given.marks,
       },
       own: given.own ?? [],
       reviewOwed: given.reviewOwed ?? [],
+      snapshot: given.snapshot ?? unchangedTree,
       state,
       tree: given.tree ?? readTree,
       unjudged: given.unjudged,

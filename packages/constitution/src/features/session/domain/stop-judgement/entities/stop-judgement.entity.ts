@@ -3,14 +3,13 @@ import { RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { FingerprintMark, ParsedState } from '../../session/entities';
 import { ActiveBlocks, SessionMark } from '../../session/entities';
+import { AgentKind } from '../../session/value-objects';
 import { HookEventName } from '../../shared/entities';
-import type { TreeState } from '../../tree-state/entities';
+import type { MainLine, TreeSnapshot, TreeState } from '../../tree-state/entities';
 import { TreeStateStatus } from '../../tree-state/entities';
 import type { TreeFingerprint } from '../../tree-state/value-objects';
 import type { ReviewDebt } from './review-debt.entity';
 import type { StopEvent } from './stop-event.entity';
-
-const REVIEWER = 'constitution:reviewer';
 
 enum StopVerdict {
   Reviewed = 'reviewed',
@@ -54,10 +53,19 @@ interface OwnChanges {
   readonly state: ParsedState;
 }
 
+// Why: a tree with no change whose HEAD the remote's main line holds hands back nothing the main
+// line lacks, as a switch to the main line after a merge leaves it.
+const isAcceptedTree = (input: { mainLine: MainLine; snapshot: TreeSnapshot }): boolean =>
+  input.snapshot.status === TreeStateStatus.Read &&
+  input.snapshot.fileSignatures.size === 0 &&
+  // Stryker disable next-line ConditionalExpression: the test only narrows the type; an unread main line holds no isHeadHeld
+  input.mainLine.status === TreeStateStatus.Read &&
+  input.mainLine.isHeadHeld;
+
 const isReviewerStop = (event: StopEvent): boolean =>
   // Stryker disable next-line ConditionalExpression: the test only narrows the type; no other event names an agent
   event.event === HookEventName.SubagentStop &&
-  (event.agentType === REVIEWER || event.agentName === REVIEWER);
+  (AgentKind.isReviewer(event.agentType) || AgentKind.isReviewer(event.agentName));
 
 const governingBlocksOf = (input: {
   paths: readonly AbsolutePath[];
@@ -106,8 +114,14 @@ const judgementOfOwnChanges = (
     return undefined;
   }
 
+  // Why: the reviewer the agent dispatched runs on in the background until it reviewed the tree,
+  // and its stop wakes the agent with what it found, so the agent waiting on it owes the check alone.
+  const isReviewRunning =
+    input.isMainThread &&
+    now === marks[SessionMark.ReviewStarted] &&
+    now !== marks[SessionMark.Reviewed];
   const blocksToReview =
-    !input.isMainThread || now === marks[SessionMark.Reviewed]
+    !input.isMainThread || isReviewRunning || now === marks[SessionMark.Reviewed]
       ? []
       : governingBlocksOf({
           paths: [
@@ -132,6 +146,10 @@ const judgementOfOwnChanges = (
     };
   }
 
+  if (isReviewRunning) {
+    return;
+  }
+
   return input.isMainThread
     ? {
         subagentChanges: reviewOwed,
@@ -145,7 +163,9 @@ const judge = (
   input: OwnChanges & {
     event: StopEvent;
     isMainThread: boolean;
+    mainLine: MainLine;
     marks: StopMarks;
+    snapshot: TreeSnapshot;
     tree: TreeState;
     unjudged: string | undefined;
   },
@@ -176,10 +196,12 @@ const judge = (
             verdict: StopVerdict.Unjudged,
           };
     case TreeStateStatus.Read:
-      return judgementOfOwnChanges({
-        ...input,
-        now: tree.fingerprint,
-      });
+      return isAcceptedTree(input)
+        ? undefined
+        : judgementOfOwnChanges({
+            ...input,
+            now: tree.fingerprint,
+          });
   }
 };
 

@@ -30,13 +30,16 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   return StopJudgement.judge({
     event: input,
     isMainThread: input.agent === SessionAgent.main,
+    mainLine: input.workingTree.mainLineOf(state.repositoryFolderPath),
     marks: {
       [SessionMark.Checked]: markOf(SessionMark.Checked),
+      [SessionMark.ReviewStarted]: markOf(SessionMark.ReviewStarted),
       [SessionMark.Reviewed]: markOf(SessionMark.Reviewed),
       [SessionMark.Turn]: markOf(SessionMark.Turn),
     },
     own: sessionQueries.ownChanges(input),
     reviewOwed: sessionQueries.reviewDebt(session),
+    snapshot: input.workingTree.snapshotOf(state.repositoryFolderPath),
     state,
     tree: input.workingTree.stateOf(state.repositoryFolderPath),
     unjudged: sessionQueries.unjudged(session),

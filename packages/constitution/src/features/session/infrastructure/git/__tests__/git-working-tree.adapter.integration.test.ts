@@ -18,7 +18,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { runWorkingTreeSuite, snapshotFilesOf } from '../../../__tests__/working-tree.suite';
+import {
+  RemoteMainLine,
+  runWorkingTreeSuite,
+  snapshotFilesOf,
+} from '../../../__tests__/working-tree.suite';
 import type { WorkingTree } from '../../../application/contracts';
 import { IgnoreStatus } from '../../../application/contracts';
 import type { TreeSnapshot, TreeState } from '../../../domain/tree-state/entities';
@@ -1049,6 +1053,34 @@ describe('createGitWorkingTree', () => {
       status: TreeStateStatus.Failed,
     });
   });
+
+  it.each([
+    {
+      condition: 'git fails to look the main line up',
+      script: "echo 'fatal: bad config' >&2; exit 128",
+      said: 'fatal: bad config',
+    },
+    {
+      condition: 'git finds the main line and fails to compare it with the HEAD',
+      script: `case "$2" in rev-parse) exit 0;; esac; echo 'fatal: bad object HEAD' >&2; exit 128`,
+      said: 'fatal: bad object HEAD',
+    },
+  ])(
+    'should give the main line as failed, naming what git said, when $condition',
+    ({ said, script }) => {
+      // Arrange
+      const tree = treeWithGitIn(script);
+
+      // Act
+      const mainLine = tree.mainLineOf(projectPath());
+
+      // Assert
+      expect(mainLine).toStrictEqual({
+        reason: said,
+        status: TreeStateStatus.Failed,
+      });
+    },
+  );
 });
 
 runWorkingTreeSuite({
@@ -1084,6 +1116,29 @@ runWorkingTreeSuite({
       '--message',
       'init',
     ]);
+
+    if (world.mainLine !== RemoteMainLine.Absent) {
+      git([
+        'update-ref',
+        'refs/remotes/origin/main',
+        'HEAD',
+      ]);
+      git([
+        'symbolic-ref',
+        'refs/remotes/origin/HEAD',
+        'refs/remotes/origin/main',
+      ]);
+    }
+
+    if (world.mainLine === RemoteMainLine.BehindHead) {
+      git([
+        'commit',
+        '--quiet',
+        '--allow-empty',
+        '--message',
+        'ahead',
+      ]);
+    }
 
     for (const path of world.untracked) {
       write({

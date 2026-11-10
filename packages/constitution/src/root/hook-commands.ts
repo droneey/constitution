@@ -25,6 +25,7 @@ import {
   isSessionStarted,
   judgeStop,
   keepSession,
+  markReviewStart,
   markShell,
   markTurn,
   recordCheck,
@@ -169,6 +170,13 @@ const hookCommandsOf = (registration: Registration): Command => {
           keepSession({
             ...kept,
             sessionRepository: ports.sessionRepository,
+          });
+        },
+        markReviewStart: (started): void => {
+          markReviewStart({
+            ...started,
+            sessionRepository: ports.sessionRepository,
+            workingTree: ports.workingTree,
           });
         },
         resetReading: (reset): void => {

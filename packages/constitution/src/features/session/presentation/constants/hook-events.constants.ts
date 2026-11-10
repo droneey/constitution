@@ -102,6 +102,7 @@ interface HookEvent {
 }
 
 interface SessionStartHookEvent extends HookEvent {
+  readonly [HookField.AgentType]?: string | undefined;
   readonly [HookField.Cwd]?: string | undefined;
   readonly [HookField.HookEventName]: HookEventName;
   readonly [HookField.Source]: SessionOrigin;
@@ -140,6 +141,7 @@ interface ToolHookEvent extends HookEvent {
 }
 
 const sessionStartEventSchema: z.ZodType<SessionStartHookEvent> = z.object({
+  [HookField.AgentType]: textField,
   [HookField.Cwd]: textField,
   [HookField.HookEventName]: z
     .string()

@@ -24,7 +24,7 @@ src/features/orders/domain/order/entities/order.aggregate.ts:42 — fact-has-one
 
 | When | The hook |
 |---|---|
-| A session starts, is resumed, cleared or compacted, or a sub-agent starts | gives the digest; a clear or a compaction also forgets the rules the session's agent has read; and the session's start, never a sub-agent's, removes from the project the folders of other sessions [untouched for a day](#what-the-hooks-keep) |
+| A session starts, is resumed, cleared or compacted, or a sub-agent starts | gives the digest; a clear or a compaction also forgets the rules the session's agent has read; the session's start, never a sub-agent's, removes from the project the folders of other sessions [untouched for a day](#what-the-hooks-keep); and the start of a `constitution:reviewer` records the tree it reviews for [the hand-back](#the-hand-back) |
 | Before the agent edits a file or runs a command | [the rule gate](#the-rule-gate) refuses the action until the agent has read the rules that govern it; before an MCP call, a hook keeps the tree to find what the call changed |
 | The agent reads or edits a file git does not ignore | names the blocks that govern it, their files and their `MUST` rules, once per block |
 | The agent reads a file | records the rules it read whole, or the [debt](#debts) of the rules that govern the file |
@@ -64,7 +64,7 @@ A path is followed through its links, so a file reached through a link is govern
 
 ### Debts
 
-Reading a file of the project that git does not ignore leaves a debt: the rules that govern it are owed before the agent's next action, and once they are read the debt is settled; a stop is never held for a debt. A command or an MCP call is bracketed by the tree before and after it, and each file it changed becomes a debt too, whatever the command was and whether or not it failed; the command itself is never read. A debt on a file of a project whose rules cannot be read never holds an action on another project's files.
+Reading a file of the project that git does not ignore leaves a debt: the rules that govern it are owed before the agent's next action, and once they are read the debt is settled; a stop is never held for a debt. A command or an MCP call is bracketed by the tree before and after it, and each file it left changed or added becomes a debt too, never one it brought back to what `HEAD` holds, whatever the command was and whether or not it failed; the command itself is never read. A debt on a file of a project whose rules cannot be read never holds an action on another project's files.
 
 ### The notes on a file
 
@@ -76,6 +76,12 @@ A stop is held for what the agent itself changed:
 
 - the session's agent, until the project's check passed on the tree and, where blocks govern the files it changed, a `constitution:reviewer` review was recorded for the tree;
 - a sub-agent, until the check passed on the tree; the files it changed become a review the session's agent owes, as a sub-agent cannot start the reviewer.
+
+A stop is held for nothing on accepted code: a tree with no change whose `HEAD` the remote's main line, `origin/HEAD`, holds, as a switch to the main line after a merge leaves it.
+
+While the `constitution:reviewer` the session's agent started still reviews the tree it started on, a stop is held for the check alone, until a review of that tree is recorded; the reviewer's stop wakes the agent with what it found, and a change to the tree meanwhile holds the stop for the review again.
+
+A file a command brought back to what `HEAD` holds, as a switch, a pull or a checkout does, is no change of the agent's: only a file the command left changed or added is.
 
 The reason a stop is held names what is missing: the blocks within 1,500 bytes, and each sub-agent whose work is owed with its files within 1,000, the sub-agents within 3,000, each list with a count of the rest. Three holds in a row for the same tree and the same steps missing let the stop through and tell you so. No review is asked for files no block governs. A sub-agent's stop is known by the `agent_id` Claude Code gives it; a stop whose agent does not match its event — a sub-agent's that names no agent, or the session's that names one — goes through, held for nothing.
 

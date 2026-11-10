@@ -72,7 +72,7 @@ const settleOf = (input: {
 };
 
 describe('settleShell', () => {
-  it('should owe the rules of each file the command changed, added or removed', () => {
+  it('should owe the rules of each file the command left changed or added, and none it brought back to HEAD', () => {
     // Act
     const { debts } = settleOf({
       after: {
@@ -88,10 +88,6 @@ describe('settleShell', () => {
       {
         kind: DebtKind.Changed,
         path: AbsolutePath.create('/work/project/src/a.ts'),
-      },
-      {
-        kind: DebtKind.Changed,
-        path: AbsolutePath.create('/work/project/src/b.ts'),
       },
       {
         kind: DebtKind.Changed,

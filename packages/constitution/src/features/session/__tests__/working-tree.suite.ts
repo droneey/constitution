@@ -9,10 +9,17 @@ import { IgnoreStatus } from '../application/contracts';
 import type { TreeSnapshot } from '../domain/tree-state/entities';
 import { TreeStateStatus } from '../domain/tree-state/entities';
 
+enum RemoteMainLine {
+  Absent = 'absent',
+  BehindHead = 'behind-head',
+  HoldsHead = 'holds-head',
+}
+
 interface WorkingTreeWorld {
   readonly committed: readonly string[];
   readonly ignored: readonly string[];
   readonly isWorktree: boolean;
+  readonly mainLine: RemoteMainLine;
   readonly untracked: readonly string[];
 }
 
@@ -32,6 +39,7 @@ const worldOf = (overrides: Partial<WorkingTreeWorld> = {}): WorkingTreeWorld =>
   ],
   ignored: [],
   isWorktree: false,
+  mainLine: RemoteMainLine.Absent,
   untracked: [
     'b.txt',
   ],
@@ -224,6 +232,64 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
       expect(mainCheckout).toBe(mainCheckoutFolderPath);
     });
 
+    it.each<{
+      condition: string;
+      isHeadHeld: boolean;
+      mainLine: RemoteMainLine;
+    }>([
+      {
+        condition: 'the remote main line holds its HEAD',
+        isHeadHeld: true,
+        mainLine: RemoteMainLine.HoldsHead,
+      },
+      {
+        condition: 'the remote main line lags behind its HEAD',
+        isHeadHeld: false,
+        mainLine: RemoteMainLine.BehindHead,
+      },
+      {
+        condition: 'the remote names no main line',
+        isHeadHeld: false,
+        mainLine: RemoteMainLine.Absent,
+      },
+    ])(
+      'should tell whether the main line holds the HEAD when $condition',
+      ({ isHeadHeld, mainLine }) => {
+        // Arrange
+        const { repositoryFolderPath, tree } = input.treeOf(
+          worldOf({
+            mainLine,
+          }),
+        );
+
+        // Act
+        const found = tree.mainLineOf(repositoryFolderPath);
+
+        // Assert
+        expect(found).toStrictEqual({
+          isHeadHeld,
+          status: TreeStateStatus.Read,
+        });
+      },
+    );
+
+    it('should give the main line as no repository for a folder of no repository', () => {
+      // Arrange
+      const { elsewhere, tree } = input.treeOf(
+        worldOf({
+          mainLine: RemoteMainLine.HoldsHead,
+        }),
+      );
+
+      // Act
+      const found = tree.mainLineOf(elsewhere);
+
+      // Assert
+      expect(found).toStrictEqual({
+        status: TreeStateStatus.NoRepository,
+      });
+    });
+
     it('should give no main checkout for a folder of no repository', () => {
       // Arrange
       const { elsewhere, tree } = input.treeOf(worldOf());
@@ -237,4 +303,4 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
   });
 };
 
-export { runWorkingTreeSuite, snapshotFilesOf };
+export { RemoteMainLine, runWorkingTreeSuite, snapshotFilesOf };
