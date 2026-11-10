@@ -164,6 +164,16 @@ afterEach(() => {
   });
 });
 
+const PART_LIST =
+  '{"definitions":["00000000000000a1"],"rules":[{"hash":"0000000000000001","slug":"rule-1"}]}\n';
+
+const partWithListOf =
+  (list: string) =>
+  (path: string): void => {
+    writeFileSync(path, 'text\n');
+    writeFileSync(`${path.replace(/\.md$/u, '')}.json`, list);
+  };
+
 describe('createXdgSessionRepository', () => {
   it.each([
     {
@@ -1323,9 +1333,11 @@ describe("createXdgSessionRepository: the gate's files", () => {
 
   it.each([
     {
-      condition: 'it names a part numbered past nine',
+      condition: 'it names a part numbered past nine and its list lies beside it',
       expected: {
-        definitions: [],
+        definitions: [
+          RuleHash.create('00000000000000a1'),
+        ],
         lineCount: 2,
         rules: [
           {
@@ -1334,25 +1346,70 @@ describe("createXdgSessionRepository: the gate's files", () => {
           },
         ],
       },
-      make: (path: string): void => {
-        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
-      },
+      make: partWithListOf(PART_LIST),
       name: `${set}.12.md`,
+    },
+    {
+      condition: 'its list holds a field another version wrote',
+      expected: {
+        definitions: [],
+        lineCount: 2,
+        rules: [],
+      },
+      make: partWithListOf('{"definitions":[],"rules":[],"version":2}\n'),
+      name: `${set}.1.md`,
+    },
+    {
+      condition: 'no list lies beside it',
+      expected: undefined,
+      make: (path: string): void => {
+        writeFileSync(path, 'text\n');
+      },
+      name: `${set}.1.md`,
+    },
+    {
+      condition: 'its list is no JSON',
+      expected: undefined,
+      make: partWithListOf('rule-1\n'),
+      name: `${set}.1.md`,
+    },
+    {
+      condition: 'its list has another shape',
+      expected: undefined,
+      make: partWithListOf('{"rules":[{"slug":"rule-1"}]}\n'),
+      name: `${set}.1.md`,
+    },
+    {
+      condition: 'a rule of its list has no hash',
+      expected: undefined,
+      make: partWithListOf('{"definitions":[],"rules":[{"slug":"rule-1"}]}\n'),
+      name: `${set}.1.md`,
+    },
+    {
+      condition: 'its number is followed by more than its extension',
+      expected: undefined,
+      make: partWithListOf(PART_LIST),
+      name: `${set}.1x.md`,
+    },
+    {
+      condition: 'it is a folder named as a part, with a list beside it',
+      expected: undefined,
+      make: (path: string): void => {
+        mkdirSync(path);
+        writeFileSync(`${path.replace(/\.md$/u, '')}.json`, PART_LIST);
+      },
+      name: `${set}.1.md`,
     },
     {
       condition: 'its name holds more before the set',
       expected: undefined,
-      make: (path: string): void => {
-        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
-      },
+      make: partWithListOf(PART_LIST),
       name: `x${set}.1.md`,
     },
     {
       condition: 'its name holds more after the extension',
       expected: undefined,
-      make: (path: string): void => {
-        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
-      },
+      make: partWithListOf(PART_LIST),
       name: `${set}.1.md.bak`,
     },
     {
@@ -1398,18 +1455,27 @@ describe("createXdgSessionRepository: the gate's files", () => {
     expect(inodesOf(parts)).toStrictEqual(before);
   });
 
-  it('should write the parts of a set again when one of them is gone', () => {
+  it.each([
+    {
+      condition: 'one of its parts is gone',
+      gone: (part: string): string => part,
+    },
+    {
+      condition: 'the list beside one of its parts is gone',
+      gone: (part: string): string => part.replace(/\.md$/u, '.json'),
+    },
+  ])('should write the parts of a set again when $condition', ({ gone }) => {
     // Arrange
     const sessions = repositoryOf();
     const [, second = ''] = writePartsOfManyRules(sessions);
 
-    rmSync(second);
+    rmSync(gone(second));
 
     // Act
     writePartsOfManyRules(sessions);
 
     // Assert
-    expect(existsSync(second)).toBe(true);
+    expect(existsSync(gone(second))).toBe(true);
   });
 });
 

@@ -2,54 +2,46 @@
 
 Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names, and `constitution rules --for <file> --why` prints it. Read the whole file.
 
-## Vocabulary of /work/blocks/core/@foundation/names.md
+## Vocabulary of blocks/core/@foundation/names.md
 
-<!-- definition a000000000000001 -->
 A **name** is what a thing is called.
 
-<!-- definition a000000000000002 -->
 The tree:
 ```text
 src/
   names/
 ```
 
-## Vocabulary of /work/blocks/core/@foundation/functions.md
+## Vocabulary of blocks/core/@foundation/functions.md
 
-<!-- definition a000000000000003 -->
 A **function** is code a caller runs by its name.
 
-## MUST rules of /work/blocks/core/@foundation/names.md
+## MUST rules of blocks/core/@foundation/names.md
 
-<!-- rule rule-2 0000000000000002 -->
 ### rule-2 → rule-1 · MUST
 
 A name reveals intent.
 
-## MUST rules of /work/blocks/core/@foundation/functions.md
+## MUST rules of blocks/core/@foundation/functions.md
 
-<!-- rule rule-5 0000000000000005 -->
 ### rule-5 · MUST
 
 A function does one thing.
 
-## SHOULD rules of /work/blocks/core/@foundation/names.md
+## SHOULD rules of blocks/core/@foundation/names.md
 
-<!-- rule rule-1 0000000000000001 -->
 ### rule-1 · SHOULD
 
 A name reveals intent.
 
-<!-- rule rule-4 0000000000000004 -->
 ### rule-4 · SHOULD
 
 Lowered here to SHOULD through generated-code: generated names
 
 A name reveals intent.
 
-## MAY rules of /work/blocks/core/@foundation/names.md
+## MAY rules of blocks/core/@foundation/names.md
 
-<!-- rule rule-3 0000000000000003 -->
 ### rule-3 · MAY
 
 Lowered here to MAY: generated names
