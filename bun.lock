@@ -191,7 +191,7 @@
     },
     "packages/constitution": {
       "name": "@droneey/constitution",
-      "version": "0.89.1",
+      "version": "0.89.2",
       "bin": {
         "constitution": "./src/main.ts",
       },
