@@ -25,6 +25,11 @@ interface Kept {
 
 type Reset = Omit<Kept, 'state'>;
 
+interface Started {
+  agentType?: string;
+  session: SessionId;
+}
+
 interface Swept {
   searchFrom: AbsolutePath;
   session: SessionId;
@@ -91,11 +96,13 @@ const runOf = async (input: {
   asked: SessionStart[];
   kept: KeptAfter[];
   reset: Reset[];
+  started: Started[];
   stdout: string;
   swept: Swept[];
 }> => {
   const asked: SessionStart[] = [];
   const kept: KeptAfter[] = [];
+  const started: Started[] = [];
   const reset: Reset[] = [];
   const swept: Swept[] = [];
   const { context, record } = createFakeContext({
@@ -122,6 +129,9 @@ const runOf = async (input: {
           askedBefore: asked.length,
         });
       },
+      markReviewStart: (start: Started): void => {
+        started.push(start);
+      },
       resetReading: (start: Reset): void => {
         reset.push(start);
       },
@@ -136,6 +146,7 @@ const runOf = async (input: {
     asked,
     kept,
     reset,
+    started,
     stdout: record().stdout,
     swept,
   };
@@ -196,11 +207,57 @@ describe('createSessionStartCommand', () => {
             session: SessionId.create('session-1'),
           },
         ],
+        started: [
+          {
+            session: SessionId.create('session-1'),
+          },
+        ],
         stdout: '',
         swept: [],
       });
     },
   );
+
+  it.each<{
+    condition: string;
+    started: Started[];
+    stdin: string;
+  }>([
+    {
+      condition: 'a subagent starts, with the type it names',
+      started: [
+        {
+          agentType: 'constitution:reviewer',
+          session: SessionId.create('session-1'),
+        },
+      ],
+      stdin:
+        '{"session_id":"session-1","hook_event_name":"SubagentStart","agent_type":"constitution:reviewer"}',
+    },
+    {
+      condition: 'the session itself starts',
+      started: [],
+      stdin:
+        '{"session_id":"session-1","hook_event_name":"SessionStart","agent_type":"constitution:reviewer"}',
+    },
+    {
+      condition: 'a subagent starts in no session',
+      started: [],
+      stdin: '{"hook_event_name":"SubagentStart","agent_type":"constitution:reviewer"}',
+    },
+  ])('should mark the start of a review only when $condition', async ({ started, stdin }) => {
+    // Arrange
+    const asked = {
+      digest: undefined,
+      stdin,
+    };
+
+    // Act
+    const run = await runOf(asked);
+
+    // Assert
+    expect(run.started).toStrictEqual(started);
+  });
 
   it.each<{
     condition: string;
@@ -409,6 +466,7 @@ describe('createSessionStartCommand', () => {
       asked: [],
       kept: [],
       reset: [],
+      started: [],
       stdout: '',
       swept: [],
     });

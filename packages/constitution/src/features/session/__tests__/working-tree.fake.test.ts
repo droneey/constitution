@@ -1,7 +1,7 @@
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createFakeWorkingTree } from './working-tree.fake';
-import { runWorkingTreeSuite } from './working-tree.suite';
+import { RemoteMainLine, runWorkingTreeSuite } from './working-tree.suite';
 
 const REPOSITORY_FOLDER_PATH = '/work/project';
 const MAIN_CHECKOUT_FOLDER_PATH = '/work/main';
@@ -17,6 +17,7 @@ runWorkingTreeSuite({
     tree: createFakeWorkingTree({
       changed: world.untracked,
       ignored: world.ignored,
+      isHeadOnMainLine: world.mainLine === RemoteMainLine.HoldsHead,
       ...(world.isWorktree
         ? {
             mainCheckout: MAIN_CHECKOUT_FOLDER_PATH,

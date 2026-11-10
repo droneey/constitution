@@ -11,6 +11,7 @@ import type { StartSessionContext } from '../shared/session-start';
 import { sessionStartOf, startSession } from '../shared/session-start';
 
 interface SessionStartContext extends StartSessionContext {
+  readonly markReviewStart: (started: { agentType?: string; session: SessionId }) => void;
   readonly resetReading: (reset: {
     event: HookEventName;
     origin: SessionOrigin;
@@ -69,6 +70,19 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
         session,
         start,
       });
+
+      const agentType = event[HookField.AgentType];
+
+      if (session !== undefined && name === HookEventName.SubagentStart) {
+        context.markReviewStart({
+          ...(agentType === undefined
+            ? {}
+            : {
+                agentType,
+              }),
+          session,
+        });
+      }
     });
 
 export { createSessionStartCommand };

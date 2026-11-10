@@ -1,4 +1,3 @@
-import { spawnSync } from 'node:child_process';
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 
@@ -10,10 +9,17 @@ import { isSystemError } from '#/libs/system-error';
 
 import type { IgnoredAmongInput, IgnoredPaths, WorkingTree } from '../../application/contracts';
 import { IgnoreStatus } from '../../application/contracts';
-import type { TreeSnapshot, TreeState, UnreadTree } from '../../domain/tree-state/entities';
+import type {
+  MainLine,
+  TreeSnapshot,
+  TreeState,
+  UnreadTree,
+} from '../../domain/tree-state/entities';
 import { TreeStateStatus } from '../../domain/tree-state/entities';
 import { FileSignature, TreeFingerprint } from '../../domain/tree-state/value-objects';
-import { gitEndedMessage, unknownObjectFormatMessage } from './git-working-tree.messages';
+import { unknownObjectFormatMessage } from './git-working-tree.messages';
+import type { GitRunInput } from './run-git';
+import { GitRunStatus, runGit } from './run-git';
 import type { WorkContent } from './tree-content.utils';
 import {
   GitFileMode,
@@ -21,9 +27,6 @@ import {
   treeContentFingerprintOf,
   WorkContentKind,
 } from './tree-content.utils';
-
-// Why: the index's listing of a large tree runs past the 1 MiB that spawnSync keeps by default.
-const OUTPUT_LIMIT_BYTES = 268_435_456;
 
 // Why: the files the hooks write for their sessions are never a change, or what the gate writes
 // would hold the hand-back it guards.
@@ -36,80 +39,16 @@ const GIT_FOLDER_NAME = '.git';
 
 // Why: git words what it finds in no repository so, in the C locale it is run in.
 const NO_REPOSITORY = 'fatal: not a git repository';
-const cLocale: Readonly<Record<string, string>> = Object.fromEntries([
-  [
-    'LC_ALL',
-    'C',
-  ],
-]);
-// Why: a status refreshes the index under its lock, which fails the user's own git commands that
-// write the index meanwhile, unless optional locks are off.
-const NO_OPTIONAL_LOCKS = '--no-optional-locks';
+// Why: a clone names the remote's main line by this ref, whatever the line is called.
+const REMOTE_MAIN_LINE = 'refs/remotes/origin/HEAD';
 
+// Why: rev-parse --verify --quiet ends with 1 when the ref is missing, and merge-base --is-ancestor
+// with 1 when HEAD is not an ancestor of it; any other status but 0 is a failure.
+const HEAD_NOT_HELD_EXIT_CODE = 1;
 // Why: check-ignore answers that git ignores none of the paths by ending with 1, and fails by any
 // other status but 0.
 const NONE_IGNORED_EXIT_CODE = 1;
 const PATH_SEPARATOR = '\0';
-
-enum GitRunStatus {
-  Ran = 'ran',
-  Failed = 'failed',
-}
-
-type GitRun =
-  | {
-      readonly output: Uint8Array;
-      readonly status: GitRunStatus.Ran;
-    }
-  | {
-      readonly exitCode: number | undefined;
-      readonly failure: string;
-      readonly status: GitRunStatus.Failed;
-    };
-
-type GitRunInput = ChildProcessSettings & {
-  readonly repositoryFolderPath: AbsolutePath;
-};
-
-interface GitArguments {
-  readonly args: readonly string[];
-  readonly stdin?: string;
-}
-
-const runGit = (input: GitRunInput & GitArguments): GitRun => {
-  const run = spawnSync(
-    'git',
-    [
-      NO_OPTIONAL_LOCKS,
-      ...input.args,
-    ],
-    {
-      cwd: input.repositoryFolderPath,
-      env: {
-        ...input.env,
-        ...cLocale,
-      },
-      input: input.stdin,
-      maxBuffer: OUTPUT_LIMIT_BYTES,
-      timeout: input.timeoutMs,
-    },
-  );
-
-  if (run.status === 0) {
-    return {
-      output: run.stdout,
-      status: GitRunStatus.Ran,
-    };
-  }
-
-  const said = run.error?.message ?? new TextDecoder().decode(run.stderr).trim();
-
-  return {
-    exitCode: run.status ?? undefined,
-    failure: said === '' ? gitEndedMessage(String(run.status ?? run.signal)) : said,
-    status: GitRunStatus.Failed,
-  };
-};
 
 const unreadTreeOf = (failure: string): UnreadTree =>
   failure.startsWith(NO_REPOSITORY)
@@ -279,6 +218,39 @@ const listingOf = (input: GitRunInput): Listing => {
   };
 };
 
+const mainLineOf = (input: GitRunInput): MainLine => {
+  const ref = runGit({
+    ...input,
+    args: [
+      'rev-parse',
+      '--verify',
+      '--quiet',
+      REMOTE_MAIN_LINE,
+    ],
+  });
+  const ancestry =
+    ref.status === GitRunStatus.Ran
+      ? runGit({
+          ...input,
+          args: [
+            'merge-base',
+            '--is-ancestor',
+            'HEAD',
+            REMOTE_MAIN_LINE,
+          ],
+        })
+      : ref;
+
+  if (ancestry.status === GitRunStatus.Ran || ancestry.exitCode === HEAD_NOT_HELD_EXIT_CODE) {
+    return {
+      isHeadHeld: ancestry.status === GitRunStatus.Ran,
+      status: TreeStateStatus.Read,
+    };
+  }
+
+  return unreadTreeOf(ancestry.failure);
+};
+
 const snapshotOf = (input: GitRunInput): TreeSnapshot => {
   const listing = listingOf(input);
 
@@ -442,6 +414,11 @@ const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
     // Why: a main checkout's git folder is the .git inside it, and a bare repository has no checkout.
     return basename(common) === GIT_FOLDER_NAME ? AbsolutePath.create(dirname(common)) : undefined;
   },
+  mainLineOf: (repositoryFolderPath: AbsolutePath): MainLine =>
+    mainLineOf({
+      ...input,
+      repositoryFolderPath,
+    }),
   snapshotOf: (repositoryFolderPath: AbsolutePath): TreeSnapshot =>
     snapshotOf({
       ...input,

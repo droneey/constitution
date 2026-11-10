@@ -37,10 +37,8 @@ describe('ShellTree.changedBetween', () => {
       after: signaturesOf({
         '/work/a.ts': '1',
       }),
-      changed: [
-        '/work/b.ts',
-      ],
-      condition: 'a file was reverted to HEAD',
+      changed: [],
+      condition: 'a file was brought back to what HEAD holds, as a switch to another branch does',
     },
     {
       after: signaturesOf({
@@ -50,11 +48,14 @@ describe('ShellTree.changedBetween', () => {
       changed: [],
       condition: 'every file kept its signature',
     },
-  ])('should name the files whose signature differs when $condition', ({ after, changed }) => {
-    // Act
-    const named = ShellTree.changedBetween(before, after);
+  ])(
+    'should name the files left changed whose signature differs when $condition',
+    ({ after, changed }) => {
+      // Act
+      const named = ShellTree.changedBetween(before, after);
 
-    // Assert
-    expect<readonly string[]>(named).toStrictEqual(changed);
-  });
+      // Assert
+      expect<readonly string[]>(named).toStrictEqual(changed);
+    },
+  );
 });

@@ -18,6 +18,7 @@ export { gateAction } from './application/use-cases/commands/gate-action';
 export { handOverChanges } from './application/use-cases/commands/hand-over-changes';
 export { holdHandBack } from './application/use-cases/commands/hold-hand-back';
 export { keepSession } from './application/use-cases/commands/keep-session';
+export { markReviewStart } from './application/use-cases/commands/mark-review-start';
 export { markShell } from './application/use-cases/commands/mark-shell';
 export { markTurn } from './application/use-cases/commands/mark-turn';
 export { recordCheck } from './application/use-cases/commands/record-check';

@@ -90,10 +90,12 @@ const judgeOf = (input: {
   agent?: AgentId;
   debt?: readonly string[];
   event: HookEventName;
+  isAccepted?: boolean;
   isHookActive?: boolean;
   marks: readonly Mark[];
   own: OwnFixture;
 }) => {
+  const isAccepted = input.isAccepted ?? false;
   const held = heldSessionsOf({
     marks: input.marks,
     own: [
@@ -119,7 +121,8 @@ const judgeOf = (input: {
     }),
     sessionQueries: createFakeSessionQueries(held),
     workingTree: createFakeWorkingTree({
-      changed: changedFiles,
+      changed: isAccepted ? [] : changedFiles,
+      isHeadOnMainLine: isAccepted,
       state: treeNow,
     }),
   });
@@ -456,6 +459,7 @@ describe('judgeStop', () => {
     agent?: AgentId;
     condition: string;
     event: HookEventName;
+    isAccepted?: boolean;
     isHookActive?: boolean;
     marks: readonly Mark[];
     own: OwnFixture;
@@ -510,6 +514,36 @@ describe('judgeStop', () => {
       },
     },
     {
+      condition:
+        'the tree holds no change and the remote main line holds its HEAD, as after a merge',
+      event: HookEventName.Stop,
+      isAccepted: true,
+      marks: [],
+      own: {
+        agent: SessionAgent.main,
+        paths: changedFiles,
+      },
+    },
+    {
+      condition:
+        'the reviewer the main session dispatched still reviews the tree the check passed on',
+      event: HookEventName.Stop,
+      marks: [
+        {
+          mark: SessionMark.Checked,
+          value: treeNow,
+        },
+        {
+          mark: SessionMark.ReviewStarted,
+          value: treeNow,
+        },
+      ],
+      own: {
+        agent: SessionAgent.main,
+        paths: changedFiles,
+      },
+    },
+    {
       agent: subagent,
       condition: 'a subagent changed nothing itself and the main session did',
       event: HookEventName.SubagentStop,
@@ -519,23 +553,27 @@ describe('judgeStop', () => {
         paths: changedFiles,
       },
     },
-  ])('should let the agent stop when $condition', ({ agent, event, isHookActive, marks, own }) => {
-    // Act
-    const judgement = judgeOf({
-      ...(agent === undefined
-        ? {}
-        : {
-            agent,
-          }),
-      event,
-      isHookActive: isHookActive ?? false,
-      marks,
-      own,
-    });
+  ])(
+    'should let the agent stop when $condition',
+    ({ agent, event, isAccepted, isHookActive, marks, own }) => {
+      // Act
+      const judgement = judgeOf({
+        ...(agent === undefined
+          ? {}
+          : {
+              agent,
+            }),
+        event,
+        isAccepted: isAccepted ?? false,
+        isHookActive: isHookActive ?? false,
+        marks,
+        own,
+      });
 
-    // Assert
-    expect(judgement).toBeUndefined();
-  });
+      // Assert
+      expect(judgement).toBeUndefined();
+    },
+  );
 
   it('should tell the gate cannot judge the tree when git fails for a reason not yet told', () => {
     // Arrange

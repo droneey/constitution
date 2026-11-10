@@ -9,12 +9,12 @@ interface ShellTree {
   readonly repositoryFolderPath: AbsolutePath;
 }
 
+// Why: the tree after the command names only the files that differ from HEAD, so a file it no
+// longer names was brought back to what HEAD holds, as a switch, a pull or a checkout does, and is
+// no change the command left.
 const changedBetween = (before: FileSignatures, after: FileSignatures): readonly AbsolutePath[] =>
   [
-    ...new Set([
-      ...before.keys(),
-      ...after.keys(),
-    ]),
+    ...after.keys(),
   ].filter((path) => before.get(path) !== after.get(path));
 
 const ShellTree = {

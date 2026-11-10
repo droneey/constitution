@@ -23,6 +23,13 @@ type TreeState =
     }
   | UnreadTree;
 
+type MainLine =
+  | {
+      readonly isHeadHeld: boolean;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
 type TreeSnapshot =
   | {
       readonly fileSignatures: FileSignatures;
@@ -30,5 +37,5 @@ type TreeSnapshot =
     }
   | UnreadTree;
 
-export type { TreeSnapshot, TreeState, UnreadTree };
+export type { MainLine, TreeSnapshot, TreeState, UnreadTree };
 export { TreeStateStatus };
