@@ -4,7 +4,12 @@ import { goldenFileText } from '#/__tests__/golden.fixtures';
 import { Level } from '#/kernel/constants';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
-import type { GatedDefinition, GatedRule, OwedReading } from '../../../domain/gate/entities';
+import type {
+  GatedDefinition,
+  GatedRule,
+  MarkedReading,
+  OwedReading,
+} from '../../../domain/gate/entities';
 import { RuleHash } from '../../../domain/gate/value-objects';
 import {
   partIntroMessage,
@@ -13,9 +18,11 @@ import {
   vocabularyHeadingMessage,
   whyMessage,
 } from '../rules-part.messages';
-import { partRulesOf, partTextsOf, readingTextOf } from '../rules-part.utils';
+import { partsOf, readingTextOf } from '../rules-part.utils';
 
+const projectFolderPath = AbsolutePath.create('/work');
 const namesFile = AbsolutePath.create('/work/blocks/core/@foundation/names.md');
+const SHOWN_NAMES_FILE = 'blocks/core/@foundation/names.md';
 const functionsFile = AbsolutePath.create('/work/blocks/core/@foundation/functions.md');
 
 const ruleOf = (
@@ -32,13 +39,16 @@ const ruleOf = (
   ...input,
 });
 
+const definitionHashOf = (index: number): RuleHash =>
+  RuleHash.create(`a${index.toString(16).padStart(15, '0')}`);
+
 const definitionOf = (
   input: Partial<GatedDefinition> & {
     index: number;
   },
 ): GatedDefinition => ({
   file: namesFile,
-  hash: RuleHash.create(`a${input.index.toString(16).padStart(15, '0')}`),
+  hash: definitionHashOf(input.index),
   text: 'A **name** is what a thing is called.',
   ...input,
 });
@@ -60,15 +70,40 @@ const mustHeading = `## ${rulesHeadingMessage({
   level: Level.Must,
 })}`;
 
+const shownMustHeading = `## ${rulesHeadingMessage({
+  file: SHOWN_NAMES_FILE,
+  level: Level.Must,
+})}`;
+
+const SHOWN_RULE = /^### (rule-\d+) /gmu;
+const SHOWN_DEFINITION = /^definition-(\d+) /gmu;
+
+const listedOf = (list: MarkedReading) => ({
+  definitions: list.definitions,
+  rules: list.rules.map((rule) => rule.slug),
+});
+
+const shownIn = (text: string) => ({
+  definitions: Array.from(text.matchAll(SHOWN_DEFINITION), (shown) =>
+    definitionHashOf(Number(shown[1])),
+  ),
+  rules: Array.from(text.matchAll(SHOWN_RULE), (shown) => RuleSlug.create(shown[1] ?? '')),
+});
+
+const textsOf = (reading: OwedReading): readonly string[] =>
+  partsOf({
+    projectFolderPath,
+    reading,
+  }).map((part) => part.text);
+
 const soleRulePartOf = (statementLines: readonly string[]): string =>
   [
     ...headOf({
       count: 1,
       number: 1,
     }),
-    mustHeading,
+    shownMustHeading,
     '',
-    '<!-- rule rule-1 0000000000000001 -->',
     '### rule-1 · MUST',
     '',
     ...statementLines,
@@ -123,10 +158,10 @@ const goldenReading: OwedReading = {
   ],
 };
 
-describe('partTextsOf', () => {
+describe('partsOf', () => {
   it('should give the vocabularies first, then the statements at the level that binds here, MUST first and with no Why, as the golden file shows', async () => {
     // Act
-    const [text = ''] = partTextsOf(goldenReading);
+    const [text = ''] = textsOf(goldenReading);
 
     // Assert
     expect(text).toBe(
@@ -163,7 +198,7 @@ describe('partTextsOf', () => {
       ]);
 
       // Act
-      const texts = partTextsOf(reading);
+      const texts = textsOf(reading);
 
       // Assert
       expect(texts).toStrictEqual([
@@ -204,7 +239,7 @@ describe('partTextsOf', () => {
       };
 
       // Act
-      const texts = partTextsOf(reading);
+      const texts = textsOf(reading);
 
       // Assert
       expect(texts).toStrictEqual([
@@ -213,9 +248,8 @@ describe('partTextsOf', () => {
             count: 1,
             number: 1,
           }),
-          `## ${vocabularyHeadingMessage(namesFile)}`,
+          `## ${vocabularyHeadingMessage(SHOWN_NAMES_FILE)}`,
           '',
-          '<!-- definition a000000000000001 -->',
           ...expected,
           '',
         ].join('\n'),
@@ -225,7 +259,7 @@ describe('partTextsOf', () => {
 
   it('should give no part when nothing is to be read', () => {
     // Act
-    const texts = partTextsOf(rulesOnly([]));
+    const texts = textsOf(rulesOnly([]));
 
     // Assert
     expect(texts).toStrictEqual([]);
@@ -241,7 +275,7 @@ describe('partTextsOf', () => {
     ]);
 
     // Act
-    const texts = partTextsOf(reading);
+    const texts = textsOf(reading);
 
     // Assert
     expect(texts).toStrictEqual([
@@ -264,7 +298,7 @@ describe('partTextsOf', () => {
     ]);
 
     // Act
-    const [, second] = partTextsOf(reading);
+    const [, second] = textsOf(reading);
 
     // Assert
     expect(second).toBe(
@@ -273,9 +307,8 @@ describe('partTextsOf', () => {
           count: 2,
           number: 2,
         }),
-        mustHeading,
+        shownMustHeading,
         '',
-        '<!-- rule rule-2 0000000000000002 -->',
         '### rule-2 · MUST',
         '',
         'A name reveals intent.',
@@ -284,7 +317,7 @@ describe('partTextsOf', () => {
     );
   });
 
-  it("should keep each rule's and each definition's mark in order, none lost or repeated, when they are split into parts past one Read", () => {
+  it('should list with each part the rules and definitions its own text shows, in order, none lost or repeated, when they are split into parts past one Read', () => {
     // Arrange
     const reading: OwedReading = {
       definitions: Array.from(
@@ -294,7 +327,7 @@ describe('partTextsOf', () => {
         (_, index) =>
           definitionOf({
             index: index + 1,
-            text: 'word '.repeat(60).trim(),
+            text: `definition-${index + 1} ${'word '.repeat(60).trim()}`,
           }),
       ),
       rules: Array.from(
@@ -310,57 +343,48 @@ describe('partTextsOf', () => {
     };
 
     // Act
-    const parts = partTextsOf(reading).map(partRulesOf);
+    const parts = partsOf({
+      projectFolderPath,
+      reading,
+    });
 
     // Assert
     expect({
-      definitions: parts.flatMap((part) => part.definitions),
-      rules: parts.flatMap((part) => part.rules),
+      definitions: parts.flatMap((part) => part.list.definitions),
+      eachPart: parts.map((part) => listedOf(part.list)),
+      isSplit: parts.length > 1,
+      rules: parts.flatMap((part) => part.list.rules),
     }).toStrictEqual({
       definitions: reading.definitions.map((definition) => definition.hash),
+      eachPart: parts.map((part) => shownIn(part.text)),
+      isSplit: true,
       rules: reading.rules.map((rule) => ({
         hash: rule.hash,
         slug: rule.slug,
       })),
     });
   });
-});
 
-describe('partRulesOf', () => {
-  it('should read the rules and the definitions a part marks, and leave out a mark of another form or one inside a line', () => {
+  it("should name a chapter by its whole path when it lies outside the project's folder", () => {
     // Arrange
-    const text = [
-      '<!-- rule rule-1 0000000000000001 -->',
-      '<!-- rule Rule-2 0000000000000002 -->',
-      '<!-- rule rule-3 xyz -->',
-      '<!-- rule rule-4 abc -->',
-      '<!-- rule -rule-5- 0000000000000005 -->',
-      'x<!-- rule rule-6 0000000000000006 -->',
-      '<!-- rule rule-7 0000000000000007 -->x',
-      '<!-- definition 00000000000000a1 -->',
-      '<!-- definition xyz -->',
-      '<!-- definition abc -->',
-      'x<!-- definition 00000000000000a2 -->',
-      '<!-- definition 00000000000000a3 -->x',
-      'text',
-    ].join('\n');
+    const outsideFile = AbsolutePath.create('/main/blocks/core/@foundation/names.md');
+    const reading = rulesOnly([
+      ruleOf({
+        file: outsideFile,
+        index: 1,
+      }),
+    ]);
 
     // Act
-    const part = partRulesOf(text);
+    const [text = ''] = textsOf(reading);
 
     // Assert
-    expect(part).toStrictEqual({
-      definitions: [
-        RuleHash.create('00000000000000a1'),
-      ],
-      lineCount: 13,
-      rules: [
-        {
-          hash: RuleHash.create('0000000000000001'),
-          slug: RuleSlug.create('rule-1'),
-        },
-      ],
-    });
+    expect(text.split('\n')).toContain(
+      `## ${rulesHeadingMessage({
+        file: outsideFile,
+        level: Level.Must,
+      })}`,
+    );
   });
 });
 

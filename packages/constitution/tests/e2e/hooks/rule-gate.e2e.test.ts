@@ -151,7 +151,7 @@ const placedPartsOf = (
   },
 ): readonly unknown[] =>
   input.parts.map((part) => ({
-    holdsRules: existsSync(part) && readFileSync(part, 'utf8').includes('<!-- rule '),
+    holdsRules: existsSync(part) && readFileSync(part, 'utf8').includes('\n### '),
     isUnderSessions: part.startsWith(join(input.project, '.droneey', 'constitution-sessions')),
   }));
 
@@ -306,7 +306,7 @@ describe('the rule gate', () => {
     // Assert
     expect({
       holdsExample: handed.includes(EXAMPLE_LINE),
-      holdsRule: handed.includes('<!-- rule names-reveal-intent '),
+      holdsRule: handed.includes('### names-reveal-intent '),
       holdsWhy: handed.includes('it keeps the fixture honest.'),
       retried,
     }).toStrictEqual({

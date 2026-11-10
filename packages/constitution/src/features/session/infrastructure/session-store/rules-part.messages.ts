@@ -1,5 +1,5 @@
 import type { Level, LoweredLevel } from '#/kernel/constants';
-import type { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
+import type { RuleSlug } from '#/kernel/value-objects';
 
 interface PartTitleInput {
   readonly count: number;
@@ -16,7 +16,7 @@ interface LoweredThroughInput extends LoweredInput {
 }
 
 interface RulesHeadingInput {
-  readonly file: AbsolutePath;
+  readonly file: string;
   readonly level: Level;
 }
 
@@ -26,7 +26,7 @@ const partTitleMessage = (input: PartTitleInput): string =>
 const partIntroMessage = (): string =>
   "Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names, and `constitution rules --for <file> --why` prints it. Read the whole file.";
 
-const vocabularyHeadingMessage = (file: AbsolutePath): string => `Vocabulary of ${file}`;
+const vocabularyHeadingMessage = (file: string): string => `Vocabulary of ${file}`;
 
 const rulesHeadingMessage = (input: RulesHeadingInput): string =>
   `${input.level} rules of ${input.file}`;

@@ -30,7 +30,10 @@ const markLineModel: z.ZodType<MarkLine> = z.strictObject({
   mark: z.enum(LineMark),
 });
 
-const ruleHashModel = z.string().refine(RuleHash.is).transform(RuleHash.create);
+const ruleHashModel: z.ZodType<RuleHash, string> = z
+  .string()
+  .refine(RuleHash.is)
+  .transform(RuleHash.create);
 
 const ruleReadModel: z.ZodType<RuleRead> = z.strictObject({
   hash: ruleHashModel,
@@ -204,6 +207,7 @@ export {
   pathsAfterMarkOf,
   pathsOfLines,
   reviewDebtsOfLines,
+  ruleHashModel,
   ruleReadLineOf,
   rulesReadOfLines,
   settledLineOf,

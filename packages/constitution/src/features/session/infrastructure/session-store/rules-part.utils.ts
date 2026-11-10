@@ -1,10 +1,10 @@
-import { LEVELS } from '#/kernel/constants';
-import { RuleSlug } from '#/kernel/value-objects';
+import { relative } from 'node:path';
 
-import type { RulesPart } from '../../application/contracts/repositories/commands';
-import type { GatedDefinition, OwedReading } from '../../domain/gate/entities';
+import { LEVELS } from '#/kernel/constants';
+import type { AbsolutePath } from '#/kernel/value-objects';
+
+import type { GatedDefinition, MarkedReading, OwedReading } from '../../domain/gate/entities';
 import { GatedRule } from '../../domain/gate/entities';
-import { RuleHash } from '../../domain/gate/value-objects';
 import { isPastPartBudget, PART_LINE_WIDTH } from './part-budget.utils';
 import {
   loweredMessage,
@@ -19,11 +19,27 @@ import {
 interface PartEntry {
   readonly heading: string;
   readonly lines: readonly string[];
+  readonly list: MarkedReading;
+}
+
+interface PartBody {
+  readonly lines: readonly string[];
+  readonly list: MarkedReading;
 }
 
 interface EntryForm {
-  readonly isMarked: boolean;
+  readonly projectFolderPath?: AbsolutePath;
   readonly withWhy: boolean;
+}
+
+interface WrittenPart {
+  readonly list: MarkedReading;
+  readonly text: string;
+}
+
+interface PartsInput {
+  readonly projectFolderPath: AbsolutePath;
+  readonly reading: OwedReading;
 }
 
 interface ReadingTextInput {
@@ -31,13 +47,12 @@ interface ReadingTextInput {
   readonly withWhy: boolean;
 }
 
-const partForm: EntryForm = {
-  isMarked: true,
-  withWhy: false,
-};
+const OUTSIDE = '..';
 
-const RULE_MARK = /^<!-- rule ([a-z0-9-]+) ([0-9a-f]+) -->$/u;
-const DEFINITION_MARK = /^<!-- definition ([0-9a-f]+) -->$/u;
+const emptyList: MarkedReading = {
+  definitions: [],
+  rules: [],
+};
 
 const wrappedAtSpaces = (text: string): readonly string[] => {
   const lines: string[] = [];
@@ -69,6 +84,18 @@ const definitionLinesOf = (text: string): readonly string[] =>
         ],
   );
 
+// Why: a chapter is named from the project's folder, where the agent works, as a path it can open;
+// a chapter outside it, as a worktree's release in its main checkout, keeps its whole path.
+const shownPathOf = (input: { file: AbsolutePath; form: EntryForm }): string => {
+  if (input.form.projectFolderPath === undefined) {
+    return input.file;
+  }
+
+  const shown = relative(input.form.projectFolderPath, input.file);
+
+  return shown.startsWith(OUTSIDE) ? input.file : shown;
+};
+
 const headingOf = (rule: GatedRule): string =>
   `### ${rule.slug}${rule.tightens === undefined ? '' : ` → ${rule.tightens}`} · ${GatedRule.appliedLevelOf(rule)}`;
 
@@ -85,13 +112,6 @@ const loweredLines = ({ lowered }: GatedRule): readonly string[] =>
         '',
       ];
 
-const markLines = (input: { form: EntryForm; mark: string }): readonly string[] =>
-  input.form.isMarked
-    ? [
-        input.mark,
-      ]
-    : [];
-
 const whyLines = (input: { form: EntryForm; rule: GatedRule }): readonly string[] =>
   input.form.withWhy
     ? [
@@ -103,29 +123,35 @@ const whyLines = (input: { form: EntryForm; rule: GatedRule }): readonly string[
 const definitionEntryOf =
   (form: EntryForm) =>
   (definition: GatedDefinition): PartEntry => ({
-    heading: `## ${vocabularyHeadingMessage(definition.file)}`,
-    lines: [
-      ...markLines({
+    heading: `## ${vocabularyHeadingMessage(
+      shownPathOf({
+        file: definition.file,
         form,
-        mark: `<!-- definition ${definition.hash} -->`,
       }),
+    )}`,
+    lines: [
       ...definitionLinesOf(definition.text),
       '',
     ],
+    list: {
+      definitions: [
+        definition.hash,
+      ],
+      rules: [],
+    },
   });
 
 const ruleEntryOf =
   (form: EntryForm) =>
   (rule: GatedRule): PartEntry => ({
     heading: `## ${rulesHeadingMessage({
-      file: rule.file,
+      file: shownPathOf({
+        file: rule.file,
+        form,
+      }),
       level: GatedRule.appliedLevelOf(rule),
     })}`,
     lines: [
-      ...markLines({
-        form,
-        mark: `<!-- rule ${rule.slug} ${rule.hash} -->`,
-      }),
       headingOf(rule),
       '',
       ...loweredLines(rule),
@@ -136,6 +162,15 @@ const ruleEntryOf =
         rule,
       }),
     ],
+    list: {
+      definitions: [],
+      rules: [
+        {
+          hash: rule.hash,
+          slug: rule.slug,
+        },
+      ],
+    },
   });
 
 const byLevel = (rules: readonly GatedRule[]): readonly GatedRule[] =>
@@ -160,12 +195,26 @@ const headLines = (input: { count: number; index: number }): readonly string[] =
   '',
 ];
 
+const joinedLists = (held: MarkedReading, added: MarkedReading): MarkedReading => ({
+  definitions: [
+    ...held.definitions,
+    ...added.definitions,
+  ],
+  rules: [
+    ...held.rules,
+    ...added.rules,
+  ],
+});
+
 const bodiesOf = (input: {
   entries: readonly PartEntry[];
   isSplit: boolean;
-}): readonly (readonly string[])[] => {
-  const bodies: string[][] = [];
-  let body: string[] = [];
+}): readonly PartBody[] => {
+  const bodies: PartBody[] = [];
+  let body: PartBody = {
+    lines: [],
+    list: emptyList,
+  };
   let heading: string | undefined;
 
   for (const entry of input.entries) {
@@ -177,23 +226,32 @@ const bodiesOf = (input: {
     const lines = entry.heading === heading ? entry.lines : opened;
 
     if (
-      body.length > 0 &&
+      body.lines.length > 0 &&
       input.isSplit &&
       isPastPartBudget({
         added: lines,
-        held: body,
+        held: body.lines,
       })
     ) {
       bodies.push(body);
-      body = opened;
+      body = {
+        lines: opened,
+        list: entry.list,
+      };
     } else {
-      body.push(...lines);
+      body = {
+        lines: [
+          ...body.lines,
+          ...lines,
+        ],
+        list: joinedLists(body.list, entry.list),
+      };
     }
 
     heading = entry.heading;
   }
 
-  return body.length === 0
+  return body.lines.length === 0
     ? bodies
     : [
         ...bodies,
@@ -201,70 +259,42 @@ const bodiesOf = (input: {
       ];
 };
 
-const partTextsOf = (reading: OwedReading): readonly string[] => {
+const partsOf = (input: PartsInput): readonly WrittenPart[] => {
   const bodies = bodiesOf({
     entries: entriesOf({
-      form: partForm,
-      reading,
+      form: {
+        projectFolderPath: input.projectFolderPath,
+        withWhy: false,
+      },
+      reading: input.reading,
     }),
     isSplit: true,
   });
 
-  return bodies.map((body, index) =>
-    [
+  return bodies.map((body, index) => ({
+    list: body.list,
+    text: [
       ...headLines({
         count: bodies.length,
         index,
       }),
-      ...body,
+      ...body.lines,
     ].join('\n'),
-  );
-};
-
-const partRulesOf = (text: string): RulesPart => {
-  const lines = text.split('\n');
-
-  return {
-    definitions: lines.flatMap((line) => {
-      const hash = DEFINITION_MARK.exec(line)?.[1];
-
-      return RuleHash.is(hash)
-        ? [
-            hash,
-          ]
-        : [];
-    }),
-    lineCount: lines.length,
-    rules: lines.flatMap((line) => {
-      const mark = RULE_MARK.exec(line);
-      const slug = mark?.[1];
-      const hash = mark?.[2];
-
-      return RuleSlug.is(slug) && RuleHash.is(hash)
-        ? [
-            {
-              hash,
-              slug,
-            },
-          ]
-        : [];
-    }),
-  };
+  }));
 };
 
 const readingTextOf = (input: ReadingTextInput): string =>
   bodiesOf({
     entries: entriesOf({
       form: {
-        isMarked: false,
         withWhy: input.withWhy,
       },
       reading: input.reading,
     }),
     isSplit: false,
   })
-    .flat()
+    .flatMap((body) => body.lines)
     .join('\n')
     .trimEnd();
 
-export { partRulesOf, partTextsOf, readingTextOf };
+export { partsOf, readingTextOf };

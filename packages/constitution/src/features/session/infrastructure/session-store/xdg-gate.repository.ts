@@ -18,6 +18,8 @@ import {
   entriesOfLines,
   LineMark,
   markLineOf,
+  partListModel,
+  partListText,
   pathsOfLines,
   ruleReadLineOf,
   rulesReadOfLines,
@@ -26,7 +28,7 @@ import {
   shellTreeText,
 } from './models';
 import { readUnfollowed, writeOrDrop, writeWhole } from './private-file.utils';
-import { partRulesOf, partTextsOf } from './rules-part.utils';
+import { partsOf } from './rules-part.utils';
 import type { LinesFile, SessionLines } from './session-lines.utils';
 import { PRIVATE_FOLDER_MODE, sweepStale } from './state-folder.utils';
 
@@ -35,7 +37,9 @@ const DEBT_FILE_NAME = 'debt';
 const GATE_FILE_NAME = 'gate';
 const PROJECTS_FILE_NAME = 'projects';
 const PARTS_FOLDER_NAME = 'parts';
-const PART_FILE_NAME = /^([0-9a-f]+)\.(\d+)\.md$/u;
+const PART_EXTENSION = '.md';
+const LIST_EXTENSION = '.json';
+const PART_FILE_NAME = /^[0-9a-f]+\.\d+$/u;
 // Why: a session that ends by a crash leaves no SessionEnd; a day outlasts a pause of one still at
 // work, which writes its parts again when it needs them.
 const partsKeptFor = Temporal.Duration.from({
@@ -43,6 +47,8 @@ const partsKeptFor = Temporal.Duration.from({
 });
 
 interface PartFile {
+  readonly listPath: string;
+  readonly listText: string;
   readonly path: AbsolutePath;
   readonly text: string;
 }
@@ -74,15 +80,27 @@ const projectsFileOf = (session: SessionId): LinesFile => ({
 const partsFolderOf = (input: { projectFolderPath: string; session: SessionId }): string =>
   join(sessionsFolderIn(input.projectFolderPath), input.session, PARTS_FOLDER_NAME);
 
+const listPathOf = (partPath: string): string =>
+  join(dirname(partPath), `${basename(partPath, PART_EXTENSION)}${LIST_EXTENSION}`);
+
 const partFilesOf = (input: {
   partsFolder: string;
+  projectFolderPath: AbsolutePath;
   reading: OwedReading;
   set: string;
 }): readonly PartFile[] =>
-  partTextsOf(input.reading).map((text, index) => ({
-    path: AbsolutePath.create(join(input.partsFolder, `${input.set}.${index + 1}.md`)),
-    text,
-  }));
+  partsOf(input).map((part, index) => {
+    const path = AbsolutePath.create(
+      join(input.partsFolder, `${input.set}.${index + 1}${PART_EXTENSION}`),
+    );
+
+    return {
+      listPath: listPathOf(path),
+      listText: partListText(part.list),
+      path,
+      text: part.text,
+    };
+  });
 
 // Why: a set's parts are named by the hash of its rules and never change, so parts already written
 // are kept.
@@ -94,7 +112,9 @@ const arePartsKept = (input: { parts: readonly PartFile[]; partsFolder: string }
     }),
   );
 
-  return input.parts.every((part) => kept.has(basename(part.path)));
+  return input.parts.every(
+    (part) => kept.has(basename(part.path)) && kept.has(basename(part.listPath)),
+  );
 };
 
 const arePartsWritten = (input: { parts: readonly PartFile[]; partsFolder: string }): boolean =>
@@ -106,6 +126,10 @@ const arePartsWritten = (input: { parts: readonly PartFile[]; partsFolder: strin
       });
 
       for (const part of input.parts) {
+        writeWhole({
+          path: part.listPath,
+          text: part.listText,
+        });
         writeWhole(part);
       }
 
@@ -117,7 +141,9 @@ const arePartsWritten = (input: { parts: readonly PartFile[]; partsFolder: strin
 const isPartOfSession = (input: { realPath: string; session: SessionId }): boolean =>
   dirname(input.realPath).endsWith(
     `/${join(sessionsFolderInProject, input.session, PARTS_FOLDER_NAME)}`,
-  ) && PART_FILE_NAME.test(basename(input.realPath));
+  ) &&
+  input.realPath.endsWith(PART_EXTENSION) &&
+  PART_FILE_NAME.test(basename(input.realPath, PART_EXTENSION));
 
 const partOfIn = (input: { path: string; session: SessionId }): RulesPart | undefined => {
   const realPath = realPathOf(input.path);
@@ -133,8 +159,23 @@ const partOfIn = (input: { path: string; session: SessionId }): RulesPart | unde
   }
 
   const text = readUnfollowed(realPath);
+  const list = readUnfollowed(listPathOf(realPath));
+  const parsed = partListModel.safeParse(
+    // Stryker disable next-line ConditionalExpression: no text parses to no list either way
+    list === undefined
+      ? undefined
+      : attempted<unknown>({
+          effect: () => JSON.parse(list),
+          isRecognised: isSyntaxError,
+        }),
+  );
 
-  return text === undefined ? undefined : partRulesOf(text);
+  return text === undefined || !parsed.success
+    ? undefined
+    : {
+        ...parsed.data,
+        lineCount: text.split('\n').length,
+      };
 };
 
 const shellTreeIn = (path: string): ShellTree | undefined => {
@@ -285,6 +326,7 @@ const gatePartsOf = (
     const partsFolder = partsFolderOf(written);
     const parts = partFilesOf({
       partsFolder,
+      projectFolderPath: written.projectFolderPath,
       reading: written,
       set: written.set,
     });
