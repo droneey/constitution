@@ -1,0 +1,72 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: service-image-checked-against-its-digest@yaml
+language: Yaml
+severity: error
+message: 'Name the image by its version and its digest, as <image>:x.y.z@sha256:<digest>'
+files:
+  - '**/compose.yaml'
+  - '**/compose.yml'
+  - '**/compose.*.yaml'
+  - '**/compose.*.yml'
+  - '**/docker-compose.yaml'
+  - '**/docker-compose.yml'
+  - '**/docker-compose.*.yaml'
+  - '**/docker-compose.*.yml'
+utils:
+  keyed-image:
+    has:
+      field: key
+      regex: '^image$'
+  # Why: a service is a key of the top-level `services` mapping.
+  in-a-service:
+    inside:
+      kind: block_mapping
+      inside:
+        kind: block_node
+        inside:
+          kind: block_mapping_pair
+          inside:
+            kind: block_mapping
+            inside:
+              kind: block_node
+              inside:
+                kind: block_mapping_pair
+                has:
+                  field: key
+                  regex: '^services$'
+                inside:
+                  kind: block_mapping
+                  inside:
+                    kind: block_node
+                    inside:
+                      kind: document
+  # Why: an image a service's build tags under `pull_policy: build` is never pulled.
+  built-by-its-service:
+    inside:
+      kind: block_mapping
+      all:
+        - has:
+            kind: block_mapping_pair
+            has:
+              field: key
+              regex: '^build$'
+        - has:
+            kind: block_mapping_pair
+            all:
+              - has:
+                  field: key
+                  regex: '^pull_policy$'
+              - has:
+                  field: value
+                  regex: '^["'']?build["'']?$'
+rule:
+  kind: block_mapping_pair
+  matches: keyed-image
+  all:
+    - matches: in-a-service
+    - not:
+        matches: built-by-its-service
+    - not:
+        has:
+          field: value
+          regex: '^["'']?(?:[^\s@"'']+/)?[^\s@/:"'']+:[^\s@/:"'']+@sha256:[0-9a-f]{64}["'']?$'

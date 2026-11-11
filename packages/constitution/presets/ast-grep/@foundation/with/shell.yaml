@@ -1,0 +1,33 @@
+shell:
+  temporary-file-removed-by-an-exit-trap:
+    shell:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/temporary-file-removed-by-an-exit-trap.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/shell/temporary-file-removed-by-an-exit-trap.yaml
+  unset-variable-fails-the-script:
+    shell:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/unset-variable-fails-the-script.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/shell/unset-variable-fails-the-script.yaml
+  script-logic-in-a-main-function:
+    shell:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/script-logic-in-a-main-function.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/shell/script-logic-in-a-main-function.yaml
+  xtrace-never-ships:
+    shell:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/xtrace-never-ships.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/shell/xtrace-never-ships.yaml

@@ -1,0 +1,13 @@
+json:
+  utc-instant-ends-in-z:
+    json:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+        # Why: JSON with comments is JSON too, and ast-grep reads only .json as JSON unless told.
+        languageGlobs:
+          json:
+            - '*.jsonc'
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/utc-instant-ends-in-z.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/json/utc-instant-ends-in-z.yaml

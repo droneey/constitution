@@ -1,0 +1,29 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: xtrace-never-ships@shell
+language: Bash
+severity: error
+message: 'Remove the trace: it prints every command with its expanded arguments, secrets included'
+files:
+  - '**/*.sh'
+  - '**/*.bash'
+rule:
+  any:
+    # Why: `x` turns the trace on wherever it stands among the flags, and `--` ends them, so
+    # `set -- -x` only sets the arguments.
+    - kind: command
+      has:
+        field: name
+        regex: '^set$'
+      regex: '^set(?:\s+[-+][a-zA-Z]+|\s+[-+]o\s+[a-z]+)*\s+(?:-[a-zA-Z]*x[a-zA-Z]*|-o\s+xtrace)(?:\s|$)'
+    - kind: command
+      has:
+        field: name
+        regex: '^shopt$'
+      all:
+        - regex: '\s-[a-z]*s'
+        - regex: '\s-[a-z]*o'
+        - regex: '\sxtrace(?:\s|$)'
+    # Why: a flag on the interpreter line traces the whole script as `set -x` would.
+    - kind: comment
+      nthChild: 1
+      regex: '^#!\S*(?:\s+\S+)*\s+-[a-zA-Z]*x'

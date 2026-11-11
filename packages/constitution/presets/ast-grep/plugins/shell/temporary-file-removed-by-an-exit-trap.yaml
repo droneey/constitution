@@ -1,0 +1,131 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: temporary-file-removed-by-an-exit-trap@shell
+language: Bash
+severity: error
+message: >-
+  Set a trap on EXIT that removes the temporary file right after mktemp makes it, and in POSIX sh
+  one on HUP, INT and TERM too
+files:
+  - '**/*.sh'
+  - '**/*.bash'
+utils:
+  # Why: a sourced file runs only inside the shell that reads it, and only a script run on its own
+  # names its shell on its first line.
+  in-a-script:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: comment
+        nthChild: 1
+        regex: '^#!'
+  in-a-posix-script:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: comment
+        nthChild: 1
+        regex: '^#!\s*(?:/usr)?/bin/(?:env\s+)?(?:sh|dash|ash)(?:\s|$)'
+  # Why: `-u` only prints a name and makes no file.
+  makes-a-file:
+    kind: command
+    has:
+      field: name
+      regex: '^mktemp$'
+    not:
+      regex: '\s(?:-[a-zA-Z]*u|--dry-run)(?:\s|$)'
+  traps-on:
+    kind: command
+    has:
+      field: name
+      regex: '^trap$'
+  traps-on-exit:
+    matches: traps-on
+    has:
+      kind: word
+      regex: '^(?:EXIT|SIGEXIT|0)$'
+  # Why: a statement is a direct child of what runs statements in order, the file or a body.
+  in-a-body:
+    inside:
+      any:
+        - kind: program
+        - kind: compound_statement
+        - kind: do_group
+        - kind: if_statement
+        - kind: elif_clause
+        - kind: else_clause
+        - kind: case_item
+        - kind: subshell
+  statement-that-makes-a-file:
+    matches: in-a-body
+    has:
+      stopBy: end
+      matches: makes-a-file
+    not:
+      any:
+        - kind: comment
+        - kind: function_definition
+        - kind: if_statement
+        - kind: case_statement
+        - kind: for_statement
+        - kind: c_style_for_statement
+        - kind: while_statement
+        - kind: compound_statement
+        - kind: subshell
+  # Why: the trap stands right after the statement that makes the file, comments between them
+  # aside, or in that statement itself.
+  trapped-at-once:
+    any:
+      - has:
+          stopBy: end
+          matches: traps-on-exit
+      - precedes:
+          stopBy:
+            not:
+              kind: comment
+          matches: traps-on-exit
+  trapped-on-the-signals:
+    inside:
+      stopBy: end
+      kind: program
+      all:
+        - has:
+            stopBy: end
+            matches: traps-on
+            has:
+              kind: word
+              regex: '^(?:SIG)?HUP$|^1$'
+        - has:
+            stopBy: end
+            matches: traps-on
+            has:
+              kind: word
+              regex: '^(?:SIG)?INT$|^2$'
+        - has:
+            stopBy: end
+            matches: traps-on
+            has:
+              kind: word
+              regex: '^(?:SIG)?TERM$|^15$'
+rule:
+  any:
+    - kind: command
+    - kind: pipeline
+    - kind: list
+    - kind: variable_assignment
+    - kind: variable_assignments
+    - kind: declaration_command
+    - kind: test_command
+    - kind: negated_command
+    - kind: redirected_statement
+  all:
+    - matches: statement-that-makes-a-file
+    - matches: in-a-script
+    - any:
+        - not:
+            matches: trapped-at-once
+        - all:
+            - matches: in-a-posix-script
+            - not:
+                matches: trapped-on-the-signals
