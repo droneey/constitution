@@ -2,6 +2,7 @@ import type { SettingsRecord } from '../../../../../../../lock/entities';
 import { Lock } from '../../../../../../../lock/entities';
 import type { Setting } from '../../../../../../../setting/entities';
 import { Leaf } from '../../../../../../../setting/entities';
+import type { FileFormat } from '../../../../../../../shared/value-objects';
 
 interface RemoveStaleInput {
   readonly fields: readonly string[];
@@ -40,6 +41,7 @@ const removeStale = (input: RemoveStaleInput): StaleRemoved => {
 interface RecordInput {
   readonly everMetDefaults: readonly string[];
   readonly fields: readonly string[];
+  readonly format: FileFormat | undefined;
   readonly heldBefore: ReadonlySet<string>;
   readonly isCreatedByApply: boolean;
   readonly lock: SettingsRecord;
@@ -56,6 +58,13 @@ const recordOf = (input: RecordInput): SettingsRecord => {
     ...Lock.emptyRecord,
     addresses: leaves.length === 0 ? [] : input.fields,
     everMetDefaults: input.everMetDefaults,
+    // Why: the format a file was written in reads it again once no entry writes it, and only a
+    // file that holds what an apply wrote needs reading again.
+    ...(leaves.length === 0 || input.format === undefined
+      ? {}
+      : {
+          format: input.format,
+        }),
     isCreatedByApply: input.isCreatedByApply,
     leaves,
   };

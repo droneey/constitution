@@ -1,5 +1,6 @@
-# a lock of three files
+# a lock of four files
 {
+  "ast-grep.gen/no-data.yaml": {"leaves":["ghi"],"created":true,"format":"text"},
   "biome.json": {"leaves":["abc"],"addresses":["name"],"defaults":["def"],"created":true},
   "src/sandbox.ts": {"whole":true},
   "tsconfig.json": {"created":true}

@@ -14,6 +14,11 @@ const recordOfWire = (wire: LockRecordWire): LockRecord =>
     : {
         addresses: wire.addresses ?? [],
         everMetDefaults: wire.defaults ?? [],
+        ...(wire.format === undefined
+          ? {}
+          : {
+              format: wire.format,
+            }),
         isCreatedByApply: wire.created === true,
         kind: RecordKind.Settings,
         leaves: wire.leaves ?? [],
@@ -61,6 +66,12 @@ const wireOfRecord = (record: LockRecord): LockRecordWire => {
           created: true,
         }
       : {}),
+    // Stryker disable next-line ConditionalExpression: JSON writes no undefined format either
+    ...(record.format === undefined
+      ? {}
+      : {
+          format: record.format,
+        }),
   };
 };
 
