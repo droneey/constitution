@@ -67,7 +67,7 @@ def _run(command: Sequence[str], *, settings: ProcessSettings) -> CommandResult:
     CommandUnfinishedError: the command does not start or runs past its time.
   """
   try:
-    completed = subprocess.run(  # noqa: S603 -- the commands are git's and mutmut's, built by the gate
+    completed = subprocess.run(  # noqa: S603  # Why: the commands are git's and mutmut's, built by the gate
       command,
       capture_output=True,
       check=True,
@@ -134,8 +134,8 @@ def _mutmut_globs(targets: MutationTargets) -> tuple[MutantGlob, ...]:
       return ()
     case Functions(globs=globs):
       return globs
-    case _:  # pragma: no mutate -- no targets reach it
-      assert_never(targets)  # pragma: no mutate -- no targets reach it
+    case _:  # pragma: no mutate  # Why: no targets reach it
+      assert_never(targets)  # pragma: no mutate  # Why: no targets reach it
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -146,7 +146,7 @@ class WorkspaceAdapter:
   def read_text(self, path: UnitRelativePath) -> str:
     file_path = self.process.folder_path / path.path
 
-    return file_path.read_text(encoding=UTF_8)  # pragma: no mutate -- the specs' locale is UTF-8
+    return file_path.read_text(encoding=UTF_8)  # pragma: no mutate  # Why: specs run in UTF-8
 
   def _python_source_paths(self) -> tuple[UnitRelativePath, ...]:
     unit_path = self.process.folder_path
@@ -186,7 +186,7 @@ class WorkspaceAdapter:
       with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(self.process.folder_path / MUTANTS_FOLDER_NAME)
     except OSError as error:
-      raise MutantsKeptError(reason=str(error)) from error  # pragma: no mutate -- a person's text
+      raise MutantsKeptError(reason=str(error)) from error  # pragma: no mutate  # Why: for a reader
 
   def mutate(self, targets: MutationTargets) -> MutationRun:
     mutmut_command = (self.python_path, *MUTMUT_ARGUMENTS)

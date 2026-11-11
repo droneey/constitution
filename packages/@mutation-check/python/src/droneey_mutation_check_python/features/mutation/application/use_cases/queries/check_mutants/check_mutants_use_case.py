@@ -16,8 +16,8 @@ def _targets(scope: Scope, *, workspace: Workspace) -> MutationTargets:
       return EveryFunction()
     case Scope.CHANGED:
       return Functions(globs=find_targets(workspace.read_changes(), read_text=workspace.read_text))
-    case _:  # pragma: no mutate -- no scope reaches it
-      assert_never(scope)  # pragma: no mutate -- no scope reaches it
+    case _:  # pragma: no mutate  # Why: no scope reaches it
+      assert_never(scope)  # pragma: no mutate  # Why: no scope reaches it
 
 
 def check_mutants(scope: Scope, *, workspace: Workspace) -> Outcome:

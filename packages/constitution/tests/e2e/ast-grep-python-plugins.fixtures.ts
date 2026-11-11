@@ -721,27 +721,82 @@ const pythonPluginRows: readonly PluginRow[] = [
             'import vat_tables  # ty: ignore[unresolved-import] the wheel ships none\n',
         },
       },
-    ],
-    allowed: [
       {
-        condition: 'a type ignore gives its reason in a second comment',
+        condition: 'a second comment gives a reason the reason marker does not open',
         files: {
           'src/shop/vat.py':
             'import vat_tables  # type: ignore[import-untyped]  # the wheel ships no py.typed\n',
         },
       },
       {
-        condition: "ty's ignore gives its reason in a second comment",
-        files: {
-          'src/shop/vat.py':
-            'import vat_tables  # ty: ignore[unresolved-import]  # the wheel ships no stubs\n',
-        },
-      },
-      {
-        condition: "Ruff's noqa gives its reason after its code",
+        condition: "Ruff's noqa gives its reason after its code in the same comment",
         files: {
           'src/shop/report.py':
             'def write(report: str) -> None:\n    print(report)  # noqa: T201 Why: the report is the output.\n',
+        },
+      },
+      {
+        condition: "Ruff's noqa gives no reason",
+        files: {
+          'src/shop/report.py':
+            'def write(report: str) -> None:\n    print(report)  # noqa: T201\n',
+        },
+      },
+      {
+        condition: "mutmut's pragma gives its reason after a dash",
+        files: {
+          'src/shop/labels.py': "LABEL = 'Order'  # pragma: no mutate -- a name no spec reads\n",
+        },
+      },
+      {
+        condition: "Ruff's ignore gives its reason after its code in the same comment",
+        files: {
+          'src/shop/report.py':
+            'def write(report: str) -> None:\n    # ruff: ignore[T201] Why: the report is the output.\n    print(report)\n',
+        },
+      },
+    ],
+    allowed: [
+      {
+        condition: 'a type ignore gives its reason in a second comment',
+        files: {
+          'src/shop/vat.py':
+            'import vat_tables  # type: ignore[import-untyped]  # Why: the wheel ships no py.typed\n',
+        },
+      },
+      {
+        condition: "ty's ignore gives its reason in a second comment",
+        files: {
+          'src/shop/vat.py':
+            'import vat_tables  # ty: ignore[unresolved-import]  # Why: the wheel ships no stubs\n',
+        },
+      },
+      {
+        condition: "Ruff's noqa gives its reason in a second comment",
+        files: {
+          'src/shop/report.py':
+            'def write(report: str) -> None:\n    print(report)  # noqa: T201  # Why: the report is the output.\n',
+        },
+      },
+      {
+        condition: "mutmut's pragma gives its reason in a second comment",
+        files: {
+          'src/shop/labels.py':
+            "LABEL = 'Order'  # pragma: no mutate  # Why: a name no spec reads\n",
+        },
+      },
+      {
+        condition: 'an ast-grep suppression gives its reason on the line above, as its block asks',
+        files: {
+          'src/shop/labels.py':
+            '# Why: the body is one table it returns.\n# ast-grep-ignore: function-within-its-limits@python\ndef labels() -> dict[str, str]:\n    return {}\n',
+        },
+      },
+      {
+        condition: "Ruff's ignore gives its reason in a second comment",
+        files: {
+          'src/shop/report.py':
+            'def write(report: str) -> None:\n    # ruff: ignore[T201]  # Why: the report is the output.\n    print(report)\n',
         },
       },
     ],
@@ -1402,7 +1457,7 @@ const pythonPluginRows: readonly PluginRow[] = [
         condition: 'a noqa names two codes',
         files: {
           'src/shop/report.py':
-            'def write(report: str) -> None:\n    print(report)  # noqa: T201, E501 Why: the output.\n',
+            'def write(report: str) -> None:\n    print(report)  # noqa: T201, E501  # Why: the output.\n',
         },
       },
       {
@@ -1416,7 +1471,7 @@ const pythonPluginRows: readonly PluginRow[] = [
         condition: 'a file-level noqa names a code',
         files: {
           'src/shop/report.py':
-            '# ruff: noqa: T201 Why: the report is the output.\ndef write(report: str) -> None:\n    print(report)\n',
+            '# ruff: noqa: T201  # Why: the report is the output.\ndef write(report: str) -> None:\n    print(report)\n',
         },
       },
       {
@@ -1437,14 +1492,14 @@ const pythonPluginRows: readonly PluginRow[] = [
         condition: 'a noqa names one code on its line',
         files: {
           'src/shop/report.py':
-            'def write(report: str) -> None:\n    print(report)  # noqa: T201 Why: the report is the output.\n',
+            'def write(report: str) -> None:\n    print(report)  # noqa: T201  # Why: the report is the output.\n',
         },
       },
       {
         condition: "Ruff's ignore names one code on the line above",
         files: {
           'src/shop/report.py':
-            'def write(report: str) -> None:\n    # ruff: ignore[T201] Why: the report is the output.\n    print(report)\n',
+            'def write(report: str) -> None:\n    # ruff: ignore[T201]  # Why: the report is the output.\n    print(report)\n',
         },
       },
       {

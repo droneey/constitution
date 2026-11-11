@@ -3,12 +3,15 @@ id: suppression-reason-in-a-second-comment@python
 language: Python
 severity: error
 message: >-
-  Give the type checker's suppression its reason in a second comment after its codes, as
-  `# type: ignore[code]  # <reason>`
-# Why: a type checker refuses other text after its codes, while Ruff's block writes a noqa's reason
-# after its code in the same comment, so only the type checkers' suppressions are read here.
+  Give the suppression its reason in a second comment after its codes, opened by the reason
+  marker, as `# noqa: <code>  # Why: <reason>`
+# Why: every tool's codes end at a second `#`, so the codes of each form are skipped up to it.
 rule:
   kind: comment
-  regex: ^#\s*(?:type|ty|pyright)\s*:\s*ignore\b
+  any:
+    - regex: '^#\s*(?:type|ty|pyright)\s*:\s*ignore\b'
+    - regex: '(?i)^#\s*noqa\s*:'
+    - regex: '(?i)^#\s*ruff\s*:\s*ignore\b'
+    - regex: '^#\s*pragma\s*:'
   not:
-    regex: ^#\s*(?:type|ty|pyright)\s*:\s*ignore(?:\[[^\]]*\])?\s*#\s*\S
+    regex: '(?i:^#\s*(?:(?:type|ty|pyright|ruff)\s*:\s*ignore(?:\[[^\]]*\])?|(?:noqa|pragma)\s*:[^#]*))\s*#\s*Why:\s*\S'

@@ -124,7 +124,7 @@ _FIXTURES: Final = _find_up("fixtures") / "invoices"
 
 ### equivalent-mutant-marked-by-pragma → suppression-silences-one-finding · MUST
 
-Every mutant the code keeps is marked on its line by `# pragma: no mutate -- <reason>`. Such a mutant is an equivalent one, or one in text only a person reads where the configuration does not leave that text out, an error's message included; none is marked by the pragma's `block`, `start` and `end`, `function` or `class` forms, nor by `do_not_mutate` over a file of logic.
+Every mutant the code keeps is marked on its line by `# pragma: no mutate`. Such a mutant is an equivalent one, or one in text only a person reads where the configuration does not leave that text out, an error's message included; none is marked by the pragma's `block`, `start` and `end`, `function` or `class` forms, nor by `do_not_mutate` over a file of logic.
 
 #### Why
 
@@ -134,8 +134,7 @@ The pragma names no mutator, so its line is the narrowest mark mutmut has, and i
 
 ```py title="Avoid"
 def export_invoices(invoices: Iterable[Invoice], sink: InvoiceSink) -> None:
-    # Why: the batch size changes no result
-    # pragma: no mutate start
+    # pragma: no mutate start  # Why: the batch size changes no result
     for batch in itertools.batched(invoices, 500):
         sink.write(batch)
     # pragma: no mutate end
@@ -143,6 +142,6 @@ def export_invoices(invoices: Iterable[Invoice], sink: InvoiceSink) -> None:
 
 ```py title="Prefer"
 def export_invoices(invoices: Iterable[Invoice], sink: InvoiceSink) -> None:
-    for batch in itertools.batched(invoices, 500):  # pragma: no mutate -- the batch size changes no result
+    for batch in itertools.batched(invoices, 500):  # pragma: no mutate  # Why: the batch size changes no result
         sink.write(batch)
 ```

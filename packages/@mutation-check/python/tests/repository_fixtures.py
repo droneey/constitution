@@ -18,8 +18,8 @@ def write_files(folder_path: Path, texts: Mapping[str, str]) -> None:
 
 
 def git(repository_path: Path, *arguments: str) -> None:
-  subprocess.run(  # noqa: S603 -- git with the spec's own arguments
-    ['git', '-c', 'user.name=Spec', '-c', 'user.email=spec@example.com', *arguments],  # noqa: S607 -- git from PATH, as the gate runs it
+  subprocess.run(  # noqa: S603  # Why: git with the spec's own arguments
+    ['git', '-c', 'user.name=Spec', '-c', 'user.email=spec@example.com', *arguments],  # noqa: S607  # Why: git from PATH, as the gate runs it
     check=True,
     capture_output=True,
     cwd=repository_path,

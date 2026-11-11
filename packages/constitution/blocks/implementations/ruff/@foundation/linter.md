@@ -38,12 +38,12 @@ Ruff 0.17 also reads a bare `# noqa`, which silences every rule on its line, a r
 #### Examples
 
 ```py title="Avoid"
-# ruff: noqa: T201 Why: the report is the command's output, written to stdout.
+# ruff: noqa: T201  # Why: the report is the command's output, written to stdout.
 def write_report(report: str) -> None:
     print(report)
 ```
 
 ```py title="Prefer"
 def write_report(report: str) -> None:
-    print(report)  # noqa: T201 Why: the report is the command's output, written to stdout.
+    print(report)  # noqa: T201  # Why: the report is the command's output, written to stdout.
 ```
