@@ -72,24 +72,24 @@ describe("the configuration Bun's test runner's presets write", () => {
     },
   );
 
-  it.each([
-    BunConfig.Unit,
-    BunConfig.Integration,
-  ])('should leave the environment file unread when the specs run by %s', async (config) => {
-    // Act
-    const run = await bunTestRun({
-      config,
-      files: {
-        '.env': 'ORDER_TOKEN=loaded\n',
-        'src/__tests__/env.test.ts': specOf(
-          "test('should find no variable of the environment file when it runs', () => {\n  expect(process.env['ORDER_TOKEN']).toBeUndefined();\n});",
-        ),
-      },
-    });
+  it.each(Object.values(BunConfig))(
+    'should leave the environment file unread when the specs run by %s',
+    async (config) => {
+      // Act
+      const run = await bunTestRun({
+        config,
+        files: {
+          '.env': 'ORDER_TOKEN=loaded\n',
+          'src/__tests__/env.test.ts': specOf(
+            "test('should find no variable of the environment file when it runs', () => {\n  expect(process.env['ORDER_TOKEN']).toBeUndefined();\n});",
+          ),
+        },
+      });
 
-    // Assert
-    expect(run.status).toBe(0);
-  });
+      // Assert
+      expect(run.status).toBe(0);
+    },
+  );
 
   it('should run the specs in an order drawn from a seed when they run as units', async () => {
     // Act
