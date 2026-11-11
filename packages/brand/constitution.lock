@@ -33,7 +33,7 @@
   "ast-grep.gen/outside-value-unknown-until-parsed.yaml": {"leaves":["14rm39kg32q"],"created":true},
   "ast-grep.gen/parameter-object-has-a-named-type.yaml": {"leaves":["eq80ckpwc"],"created":true},
   "ast-grep.gen/source-file-is-a-typescript-file.yaml": {"leaves":["5l9vaxuldb"],"created":true},
-  "ast-grep.gen/spawn-given-an-env-built-for-it.yaml": {"leaves":["1f5oul0etoo"],"created":true},
+  "ast-grep.gen/spawn-given-an-env-built-for-it.yaml": {"leaves":["1ogr2q1gj6h"],"created":true},
   "ast-grep.gen/string-holding-a-backslash-written-literally.yaml": {"leaves":["1qzmewd2spa"],"created":true},
   "ast-grep.gen/tsx-only-where-markup-is-written.yaml": {"leaves":["413oaa7whz"],"created":true},
   "ast-grep.gen/type-error-suppression-gives-its-reason-on-its-line.yaml": {"leaves":["22zr8evu80h"],"created":true},
