@@ -1,7 +1,0 @@
-react/react-dom:
-  '*':
-    typescript:
-      ${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts: !default |
-        import { GlobalRegistrator } from '@happy-dom/global-registrator';
-
-        GlobalRegistrator.register();

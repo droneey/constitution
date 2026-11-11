@@ -1,5 +1,9 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { describe, expect, it } from 'bun:test';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { BunConfig, bunTestRun, specOf } from './bun-test-preset.fixtures';
 
 const passing = specOf("test('should hold when run', () => {\n  expect(true).toBeTrue();\n});");
@@ -71,6 +75,20 @@ describe("the configuration Bun's test runner's presets write", () => {
       expect(run.status).toBe(0);
     },
   );
+
+  it("should write the DOM preload when a unit runs browser code without React's DOM renderer", () => {
+    // Act
+    const folder = appliedUnit({
+      blocks: [
+        'bun-test',
+        'client/browser',
+        'typescript',
+      ],
+    });
+
+    // Assert
+    expect(existsSync(join(folder, 'src/__tests__/dom.fixtures.ts'))).toBe(true);
+  });
 
   it.each(Object.values(BunConfig))(
     'should leave the environment file unread when the specs run by %s',
