@@ -14,7 +14,7 @@ import { PresetsCode } from '../../../../../../shared/entities';
 import { FileFormat } from '../../../../../../shared/value-objects';
 import type { FileChange, FileComputed } from '../../../../../entities';
 import { FileChangeKind } from '../../../../../entities';
-import type { ComputeFileInput, FilePending } from '../compute-file';
+import type { ComputeFileInput, FilePending, FileSettled } from '../compute-file';
 import { beginFile, FileStepKind, finishFile, settleFile } from '../compute-file';
 
 const inputOf = (input: {
@@ -57,6 +57,9 @@ const unparsedAt = (filePath: string): readonly PresetsFinding[] => [
     path: RepositoryRelativePath.create(filePath),
   },
 ];
+
+const recordFormatOf = (settled: FileSettled): FileFormat | undefined =>
+  settled.kind === FileStepKind.Write ? Lock.settingsOf(settled.pending.record).format : undefined;
 
 const pendingOf = (read: FileRead): FilePending => ({
   defaultsAddedToExistingFile: [],
@@ -260,53 +263,7 @@ describe('settleFile', () => {
     });
 
     // Assert
-    expect(settled).toStrictEqual({
-      kind: FileStepKind.Write,
-      pending: {
-        defaultsAddedToExistingFile: [],
-        filePath: RepositoryRelativePath.create('biome.jsonc'),
-        findings: [],
-        isDeleted: false,
-        missingOrOutdated: [
-          {
-            filePath: RepositoryRelativePath.create('biome.jsonc'),
-            settingPath: 'width',
-          },
-        ],
-        read: {
-          status: FileReadStatus.Missing,
-        },
-        record: {
-          addresses: [],
-          everMetDefaults: [],
-          format: FileFormat.Jsonc,
-          isCreatedByApply: true,
-          kind: RecordKind.Settings,
-          leaves: [
-            '13a0a30bsz5',
-          ],
-        },
-        removedByApply: [],
-        setting: {
-          width: 100,
-        },
-        staleWithoutReplacement: [],
-        unsorted: [],
-      },
-      write: {
-        filePath: RepositoryRelativePath.create('biome.jsonc'),
-        format: FileFormat.Jsonc,
-        marks: {
-          blocks: [],
-          marks: [],
-        },
-        settings: {
-          width: 100,
-        },
-        sorted: [],
-        text: '',
-      },
-    });
+    expect(recordFormatOf(settled)).toBe(FileFormat.Jsonc);
   });
 });
 

@@ -22,6 +22,7 @@ describe('recordOf', () => {
       fields: [
         'name',
       ],
+      file: {},
       heldBefore: new Set(Leaf.leavesOf(ours).map(Leaf.keyOf)),
       isCreatedByApply: false,
       lock: Lock.emptyRecord,
@@ -37,7 +38,9 @@ describe('recordOf', () => {
     const record = recordOf({
       everMetDefaults: [],
       fields: [],
-      format: FileFormat.Text,
+      file: {
+        format: FileFormat.Text,
+      },
       heldBefore: new Set(Leaf.leavesOf(COPIED_TEXT).map(Leaf.keyOf)),
       isCreatedByApply: true,
       lock: Lock.emptyRecord,

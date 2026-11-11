@@ -362,11 +362,9 @@ const settleFile = (input: SettleFileInput): FileSettled => {
       ),
       read,
       record: recordOf({
-        // Why: of the file, the record reads only its format, which the file leaves out where it
-        // has none.
-        ...file,
         everMetDefaults: defaults.everMet,
         fields,
+        file,
         heldBefore,
         isCreatedByApply,
         lock: record,
