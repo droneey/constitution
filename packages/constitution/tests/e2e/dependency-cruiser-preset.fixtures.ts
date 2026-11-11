@@ -29,6 +29,7 @@ interface Project {
   readonly blocks?: readonly string[];
   readonly files: Readonly<Record<string, string>>;
   readonly links?: Readonly<Record<string, string>>;
+  readonly lowered?: readonly string[];
   readonly own?: string;
   readonly roots?: readonly string[];
   readonly unit?: string;
@@ -74,6 +75,9 @@ const installedPackages: Readonly<Record<string, Installed>> = {
   },
   ghost: {
     declaration: Declaration.None,
+  },
+  ink: {
+    declaration: Declaration.Production,
   },
   inversify: {
     declaration: Declaration.Production,
@@ -150,6 +154,11 @@ const unitOf = (project: Project): UnitFixture => ({
         axes: project.axes,
       }),
   blocks: project.blocks ?? [],
+  ...(project.lowered === undefined
+    ? {}
+    : {
+        lowered: project.lowered,
+      }),
   implementations: [
     'dependency-cruiser',
   ],

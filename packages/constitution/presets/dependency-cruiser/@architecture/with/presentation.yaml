@@ -49,3 +49,19 @@ presentation:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/${role.binding}/
           to:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
+  feature-ui-imports-only-ui-shared-layers:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=feature-ui-imports-only-ui-shared-layers]:
+          severity: error
+          from:
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.presentation-layer}/(?:${role.widget}|${role.component})/
+            pathNot:
+              - (^|/)${role.colocated-specs}/
+          to:
+            # Why: the program's code is its script files; an asset or a stylesheet is no code.
+            path: ^${role.source}/.+\.[cm]?[jt]sx?$
+            pathNot:
+              - ^${role.source}/${role.bounded-context}/$1/
+              - ^${role.source}/(?:${role.generic-library}|${role.shared-code})/${role.ui-kit}/
+              - ^${role.source}/${role.shared-kernel}/(?!${role.port}/)

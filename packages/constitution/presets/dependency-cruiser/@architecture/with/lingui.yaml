@@ -3,3 +3,18 @@ lingui:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
+localization:
+  catalogue-library-never-imported-by-the-domain:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=catalogue-library-never-imported-by-the-domain-lingui]:
+          severity: error
+          from:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.domain-layer}/
+              - ^${role.source}/${role.shared-kernel}/
+            pathNot:
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@lingui/

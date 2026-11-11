@@ -22,10 +22,16 @@
 [commit-header-within-100-characters] Header must be 100 characters or less (got 101)
 
 # commit-msg "feat: Add a preset\n\nBecause the kit needs one"
-[commit-body-left-empty] Body must be empty; a footer holds only trailers
+[commit-body-left-empty] Body must be empty; only a footer of trailers follows the header
+
+# commit-msg "feat: Add a preset\n\nBecause the kit needs one\n\nSigned-off-by: A Person <a@example.com>"
+[commit-body-left-empty] Body must be empty; only a footer of trailers follows the header
 
 # commit-msg "feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note"
-[commit-body-left-empty] Body must be empty; a footer holds only trailers
+[commit-footer-holds-only-trailers] Footer must hold only trailers, each Key: value
+
+# commit-msg "feat: Add a preset\n\nThanks to Ann for spotting it!\nReported-by: Ann Lee <ann@example.com>"
+[commit-footer-holds-only-trailers] Footer must hold only trailers, each Key: value
 
 # pre-commit "main"
 [branch-named-type-issue-name] Branch must match: (feature|fix|hotfix)/{id}-{name}

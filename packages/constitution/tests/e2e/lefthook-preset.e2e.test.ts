@@ -8,6 +8,7 @@ import {
   checkDetachedHead,
   commitMessageJobs,
   hookTexts,
+  restagedJobs,
   shellCheckRun,
   unitJobs,
   validation,
@@ -62,9 +63,21 @@ const messageRejections = [
     rule: 'commit-body-left-empty',
   },
   {
-    commit: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
-    condition: 'its footer holds prose beside a trailer',
+    commit:
+      'feat: Add a preset\n\nBecause the kit needs one\n\nSigned-off-by: A Person <a@example.com>',
+    condition: 'it carries a body above a footer of trailers',
     rule: 'commit-body-left-empty',
+  },
+  {
+    commit: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
+    condition: 'its footer holds prose after a trailer',
+    rule: 'commit-footer-holds-only-trailers',
+  },
+  {
+    commit:
+      'feat: Add a preset\n\nThanks to Ann for spotting it!\nReported-by: Ann Lee <ann@example.com>',
+    condition: 'its footer holds prose before a trailer',
+    rule: 'commit-footer-holds-only-trailers',
   },
 ];
 
@@ -94,6 +107,8 @@ describe('the commit message hook', () => {
     'chore: Update dependencies',
     'feat!: Split the NestJS settings out of the node preset',
     'fix: Keep the trailers of a signed commit\n\nSigned-off-by: Dmytro Kurovskyi <me@kurovskyi.dev>',
+    'fix: Keep the trailers of a reported bug\n\nReported-by: Ann Lee <ann@example.com>\nSigned-off-by: Dan Roe <dan@example.com>',
+    'fix: Keep a folded trailer\n\nCo-authored-by: Ann Lee\n  <ann@example.com>',
   ])(
     'should accept "%s" when it follows the four types and its footer holds only trailers',
     (message) => {
@@ -176,6 +191,44 @@ describe('the commit message hook', () => {
     },
   );
 
+  it('should accept prose beside a trailer when an override lowers the footer rule', () => {
+    // Act
+    const check = checkCommitMessage(
+      'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note\n',
+      {
+        lowered: [
+          'commit-footer-holds-only-trailers',
+        ],
+      },
+    );
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 0,
+      rules: [],
+    });
+  });
+
+  it('should reject prose beside a trailer by the footer rule when an override lowers the body rule', () => {
+    // Act
+    const check = checkCommitMessage(
+      'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note\n',
+      {
+        lowered: [
+          'commit-body-left-empty',
+        ],
+      },
+    );
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 1,
+      rules: [
+        'commit-footer-holds-only-trailers',
+      ],
+    });
+  });
+
   it('should reject a header that is only a placeholder by its own rule beside the header rule', () => {
     // Act
     const check = checkCommitMessage('wip\n');
@@ -195,6 +248,7 @@ describe('the jobs of the commit message hook', () => {
   it.each([
     {
       jobs: [
+        'commit-footer',
         'commit-header-length',
         'commit-header-format',
         'commit-subject-capital',
@@ -205,6 +259,17 @@ describe('the jobs of the commit message hook', () => {
     {
       jobs: [
         'commit-body',
+        'commit-header-length',
+        'commit-header-format',
+        'commit-subject-capital',
+        'commit-placeholder',
+      ],
+      rule: 'commit-footer-holds-only-trailers',
+    },
+    {
+      jobs: [
+        'commit-body',
+        'commit-footer',
         'commit-header-format',
         'commit-subject-capital',
         'commit-placeholder',
@@ -214,6 +279,7 @@ describe('the jobs of the commit message hook', () => {
     {
       jobs: [
         'commit-body',
+        'commit-footer',
         'commit-header-length',
         'commit-subject-capital',
         'commit-placeholder',
@@ -223,6 +289,7 @@ describe('the jobs of the commit message hook', () => {
     {
       jobs: [
         'commit-body',
+        'commit-footer',
         'commit-header-length',
         'commit-header-format',
         'commit-placeholder',
@@ -232,6 +299,7 @@ describe('the jobs of the commit message hook', () => {
     {
       jobs: [
         'commit-body',
+        'commit-footer',
         'commit-header-length',
         'commit-header-format',
         'commit-subject-capital',
@@ -246,6 +314,46 @@ describe('the jobs of the commit message hook', () => {
 
     // Assert
     expect(kept).toStrictEqual(jobs);
+  });
+});
+
+describe('the pre-commit jobs that rewrite the staged files', () => {
+  it.each([
+    {
+      condition: 'the rule that limits the rewrite to the staged files is lowered',
+      lowered: [
+        'hook-rewrites-only-staged-files',
+      ],
+    },
+    {
+      condition: 'the rule that restages the rewrite is lowered',
+      lowered: [
+        'hook-restages-what-it-rewrote',
+      ],
+    },
+  ])('should stage again each file a job rewrote when $condition alone', ({ lowered }) => {
+    // Act
+    const restaged = restagedJobs(lowered);
+
+    // Assert
+    expect(restaged).toStrictEqual([
+      'biome',
+      'ruff',
+      'rumdl',
+      'shfmt',
+      'tombi',
+    ]);
+  });
+
+  it('should stage nothing again when an override lowers both rules of a rewrite', () => {
+    // Act
+    const restaged = restagedJobs([
+      'hook-rewrites-only-staged-files',
+      'hook-restages-what-it-rewrote',
+    ]);
+
+    // Assert
+    expect(restaged).toStrictEqual([]);
   });
 });
 

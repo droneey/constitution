@@ -8,3 +8,13 @@ react/react-native/expo:
             path: /${role.presentation-layer}/
           to:
             path: node_modules/expo-router/
+presentation:
+  ui-never-touches-navigation:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=ui-imports-no-expo-router]:
+          severity: error
+          from:
+            path: /${role.presentation-layer}/
+          to:
+            path: node_modules/expo-router/
