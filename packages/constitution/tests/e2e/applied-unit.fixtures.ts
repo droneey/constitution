@@ -143,7 +143,7 @@ const appliedUnit = (unit: UnitFixture): string => {
   return copyOf(folder);
 };
 
-const appliedOnce = async (unit: UnitFixture): Promise<string> => {
+const applyPresetsTo = async (unit: UnitFixture): Promise<string> => {
   const folder = unitFolderOf(unit);
   const applying = Bun.spawn(
     [
@@ -170,10 +170,8 @@ const appliedOnce = async (unit: UnitFixture): Promise<string> => {
   return folder;
 };
 
-/**
- * The folder of a unit the presets were applied to, applied once for every caller that takes the
- * same unit and runs at once with the others; a caller only reads it, never writes it.
- */
+// Why: every caller that takes the same unit, at once with the others, shares the one folder the
+// presets were applied to, so a caller only reads it, never writes it.
 const readOnlyAppliedUnit = async (unit: UnitFixture): Promise<string> => {
   const key = JSON.stringify(unit);
   const known = readOnly.get(key);
@@ -182,7 +180,7 @@ const readOnlyAppliedUnit = async (unit: UnitFixture): Promise<string> => {
     return await known;
   }
 
-  const applying = appliedOnce(unit);
+  const applying = applyPresetsTo(unit);
 
   readOnly.set(key, applying);
 

@@ -186,7 +186,8 @@ class WorkspaceAdapter:
       with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(self.process.folder_path / MUTANTS_FOLDER_NAME)
     except OSError as error:
-      raise MutantsKeptError(reason=str(error)) from error  # pragma: no mutate  # Why: for a reader
+      reason = str(error)  # pragma: no mutate  # Why: the error's reason is text a person reads
+      raise MutantsKeptError(reason=reason) from error
 
   def mutate(self, targets: MutationTargets) -> MutationRun:
     mutmut_command = (self.python_path, *MUTMUT_ARGUMENTS)
