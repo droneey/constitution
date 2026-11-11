@@ -1287,6 +1287,13 @@ const typescriptPluginRows: readonly PluginRow[] = [
           [MANIFEST]: '{\n  "name": "@acme/shop",\n  "type": "module",\n  "engines": {}\n}\n',
         },
       },
+      {
+        condition: 'a runtime in engines takes a version that is no >= floor',
+        files: {
+          [MANIFEST]:
+            '{\n  "name": "@acme/shop",\n  "type": "module",\n  "engines": {\n    "bun": ">=1.2.0",\n    "node": "20"\n  }\n}\n',
+        },
+      },
     ],
     allowed: [
       {
@@ -1297,9 +1304,23 @@ const typescriptPluginRows: readonly PluginRow[] = [
         },
       },
       {
+        condition: 'every runtime in engines takes a >= floor',
+        files: {
+          [MANIFEST]:
+            '{\n  "name": "@acme/shop",\n  "type": "module",\n  "engines": {\n    "bun": ">=1.2.0",\n    "node": ">=20.11.0"\n  }\n}\n',
+        },
+      },
+      {
         condition: 'the package is private',
         files: {
           [MANIFEST]: '{\n  "name": "@acme/shop",\n  "type": "module",\n  "private": true\n}\n',
+        },
+      },
+      {
+        condition: 'the package is private though a runtime in engines takes no >= floor',
+        files: {
+          [MANIFEST]:
+            '{\n  "name": "@acme/shop",\n  "type": "module",\n  "private": true,\n  "engines": {\n    "node": "20"\n  }\n}\n',
         },
       },
     ],
