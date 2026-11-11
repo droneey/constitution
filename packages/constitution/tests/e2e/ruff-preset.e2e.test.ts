@@ -53,4 +53,29 @@ describe("the configuration ruff's presets write", () => {
       'TID251',
     ]);
   });
+
+  it('should report TID251 when a module calls typing_extensions.cast', async () => {
+    // Act
+    const load = await loadOf('ruff', {
+      command: [
+        uvBinary('ruff'),
+        'check',
+        '--quiet',
+        '--no-cache',
+        '--output-format',
+        'concise',
+        'src',
+      ],
+      files: {
+        ...pythonPackage,
+        'src/unit/order.py':
+          '"""Order."""\n\nimport typing_extensions\n\nORDER_TOTAL = typing_extensions.cast(\'int\', 1)\n',
+      },
+    });
+
+    // Assert
+    expect(ruleCodesOf(load.output)).toStrictEqual([
+      'TID251',
+    ]);
+  });
 });

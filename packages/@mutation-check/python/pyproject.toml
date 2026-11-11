@@ -214,6 +214,9 @@ msg = "a module is imported as a member of an installed package"
 [tool.ruff.lint.flake8-tidy-imports.banned-api."typing.cast"]
 msg = "a type is proven by a check, never claimed by a cast"
 
+[tool.ruff.lint.flake8-tidy-imports.banned-api."typing_extensions.cast"]
+msg = "a type is proven by a check, never claimed by a cast"
+
 # ruff
 [tool.ruff.lint.pydocstyle]
 convention = "google"

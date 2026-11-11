@@ -413,7 +413,7 @@ core:
                 style:
                   noMagicNumbers: 'off'
   function-complexity-within-15:
-    typescript:
+    typescript: !whole
       biome.jsonc:
         linter:
           rules:

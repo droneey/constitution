@@ -1,6 +1,6 @@
 knip:
   knip-root-ignores-the-workspaces:
-    typescript:
+    typescript: !whole
       knip.jsonc ? ${workspace.isRoot}:
         ignoreWorkspaces:
           - ${workspace.members}

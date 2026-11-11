@@ -38,7 +38,7 @@ tsc:
           - ${role.package-suites}/**/*.ts
           - ${role.package-suites}/**/*.tsx
   compiler-strict-options-set:
-    typescript:
+    typescript: !whole
       tsconfig.json !jsonc:
         compilerOptions:
           strict: true
