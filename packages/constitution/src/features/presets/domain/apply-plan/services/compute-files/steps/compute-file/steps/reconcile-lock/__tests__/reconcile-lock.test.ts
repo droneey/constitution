@@ -22,7 +22,6 @@ describe('recordOf', () => {
       fields: [
         'name',
       ],
-      format: undefined,
       heldBefore: new Set(Leaf.leavesOf(ours).map(Leaf.keyOf)),
       isCreatedByApply: false,
       lock: Lock.emptyRecord,

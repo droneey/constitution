@@ -91,10 +91,6 @@ describe('createFileLockQueries', () => {
       text: '{\n<<<<<<< ours\n}\n',
     },
     {
-      condition: 'it holds a field no lock writes',
-      text: '{"biome.json": {"hashes": []}}\n',
-    },
-    {
       condition: 'it names a file by an absolute path',
       text: '{"/biome.json": {}}\n',
     },
@@ -108,6 +104,30 @@ describe('createFileLockQueries', () => {
     // Assert
     expect(read).toStrictEqual({
       status: LockReadStatus.Unparsed,
+    });
+  });
+
+  it('should ignore a field no lock writes when a later release wrote it', () => {
+    // Arrange
+    writeFileSync(at(LOCK_FILE), '{"biome.json": {"hashes": [], "leaves": ["abc"]}}\n');
+
+    // Act
+    const read = createFileLockQueries().read(at(''));
+
+    // Assert
+    expect(read).toStrictEqual({
+      lock: lockOf({
+        'biome.json': {
+          addresses: [],
+          everMetDefaults: [],
+          isCreatedByApply: false,
+          kind: RecordKind.Settings,
+          leaves: [
+            'abc',
+          ],
+        },
+      }),
+      status: LockReadStatus.Read,
     });
   });
 

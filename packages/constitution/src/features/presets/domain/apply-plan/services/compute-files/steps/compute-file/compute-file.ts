@@ -364,7 +364,12 @@ const settleFile = (input: SettleFileInput): FileSettled => {
       record: recordOf({
         everMetDefaults: defaults.everMet,
         fields,
-        format: file.format,
+        // Stryker disable next-line ConditionalExpression: a format given as undefined is left out of the record alike
+        ...(file.format === undefined
+          ? {}
+          : {
+              format: file.format,
+            }),
         heldBefore,
         isCreatedByApply,
         lock: record,

@@ -5,10 +5,10 @@ import { UnitRelativePath } from '#/kernel/value-objects';
 import { FileFormat } from '../../../domain/shared/value-objects';
 
 const lockRecordModel = z.union([
-  z.strictObject({
+  z.looseObject({
     whole: z.literal(true),
   }),
-  z.strictObject({
+  z.looseObject({
     addresses: z.array(z.string()).optional(),
     created: z.literal(true).optional(),
     defaults: z.array(z.string()).optional(),

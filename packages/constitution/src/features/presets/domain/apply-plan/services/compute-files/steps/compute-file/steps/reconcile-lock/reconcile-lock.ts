@@ -41,7 +41,7 @@ const removeStale = (input: RemoveStaleInput): StaleRemoved => {
 interface RecordInput {
   readonly everMetDefaults: readonly string[];
   readonly fields: readonly string[];
-  readonly format: FileFormat | undefined;
+  readonly format?: FileFormat;
   readonly heldBefore: ReadonlySet<string>;
   readonly isCreatedByApply: boolean;
   readonly lock: SettingsRecord;
