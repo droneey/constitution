@@ -66,6 +66,12 @@ run: >-
   word word word word word word word word word word word
 
 
+# a folded text one column past the width breaks before its last word
+run: >-
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  {1}
+
+
 # a long text of lines stays a literal block
 run: |-
   word word word word word word word word word word word word word word word word word word word

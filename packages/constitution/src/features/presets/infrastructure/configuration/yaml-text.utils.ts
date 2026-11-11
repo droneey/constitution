@@ -23,6 +23,8 @@ const MAX_ALIASES = 1000;
 // too.
 const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
 const LONG_TEXT = 80;
+// Why: the parser's writer folds a line only once it runs one column past the width it is given.
+const FOLD_OVERRUN = 1;
 const INDENT_AND_DASHES = /^\s*(?:- )*$/;
 
 const documentOf = (text: string): Document | undefined => {
@@ -307,7 +309,7 @@ const writeSettings = (input: ConfigurationWrite): string => {
   }
 
   return document.toString({
-    lineWidth: LINE_WIDTH,
+    lineWidth: LINE_WIDTH - FOLD_OVERRUN,
     singleQuote: true,
   });
 };
