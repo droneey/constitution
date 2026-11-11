@@ -1,0 +1,18 @@
+# typescript
+id: surface-only-re-exports@typescript
+language: Tsx
+severity: error
+message: 'A surface only re-exports by name: move this into a file of its own'
+files:
+  - '**/index.ts'
+  - '**/index.tsx'
+ignores:
+  # typescript
+  - '**/src/root/**/index.tsx'
+
+  # tanstack-router
+  - '**/src/root/routes/**/index.ts'
+
+# typescript
+rule:
+  matches: surface-only-re-exports@typescript

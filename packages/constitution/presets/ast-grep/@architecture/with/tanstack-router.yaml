@@ -1,0 +1,6 @@
+core:
+  surface-only-re-exports:
+    typescript:
+      ast-grep.${role.generated-file}/surface-only-re-exports.yaml:
+        ignores@left-out:
+          - '**/${role.source}/${role.composition-root}/${role.file-routes}/**/${role.surface}.ts'

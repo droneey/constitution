@@ -32,7 +32,7 @@ const pluginFiles = (): Files => ({
     '',
   ].join('\n'),
   'README.md': '# constitution\n\nStart with [core](blocks/core/core.md).\n',
-  'hooks/hooks.json': JSON.stringify({
+  'ai/hooks/hooks.json': JSON.stringify({
     hooks: {},
   }),
   'templates/PROJECT.md': '# Project Context\n',

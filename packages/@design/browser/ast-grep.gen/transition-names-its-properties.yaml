@@ -1,0 +1,20 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: transition-names-its-properties@css
+language: Css
+severity: error
+message: >-
+  Name the properties a transition animates: all also moves layout, every colour of a theme switch
+  and any property added later
+files:
+  - '**/*.css'
+utils:
+  moves-all:
+    regex: '(?i)^(?:-(?:webkit|moz|ms|o)-)?transition(?:-property)?\s*:(?:[^;]*?[\s,])?all(?:[\s,;!]|$)'
+  # Why: a shorthand item of only times, easings and behaviours names no property, so it moves all.
+  item-names-no-property:
+    regex: '(?i)^(?:-(?:webkit|moz|ms|o)-)?transition\s*:\s*(?:[^;]*?,\s*)?(?:(?:[+-]?(?:\d*\.)?\d+m?s|ease(?:-in-out|-in|-out)?|linear|step-start|step-end|allow-discrete|normal|(?:cubic-bezier|steps|linear)\([^)]*\))\s*)+(?:[,;!]|$)'
+rule:
+  kind: declaration
+  any:
+    - matches: moves-all
+    - matches: item-names-no-property

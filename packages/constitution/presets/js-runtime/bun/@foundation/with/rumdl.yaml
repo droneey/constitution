@@ -3,8 +3,14 @@ rumdl:
     markdown:
       package.json:
         scripts:
-          check:markdown: rumdl check . && rumdl fmt --check .
-          fix:markdown: rumdl check --fix
+          check:lint: !commands
+            - rumdl check .
+          check:format: !commands
+            - rumdl fmt --check .
+          fix:lint: !commands
+            - rumdl check --fix .
+          fix:format: !commands
+            - rumdl fmt .
 js-runtime/bun:
   '*':
     markdown:

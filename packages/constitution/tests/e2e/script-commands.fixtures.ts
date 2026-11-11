@@ -6,6 +6,8 @@ import { dirname, join } from 'node:path';
 
 import { z } from 'zod';
 
+import { compareText } from '#/kernel/utils';
+
 import { miseBinary } from './mise.fixtures';
 import {
   gitIn,
@@ -166,11 +168,22 @@ const unitTasks = (): readonly UnitTask[] => [
   ...Object.entries(unitShellTasks()).map(([task, run]) => shellScriptOf(`poe ${task}`, run)),
 ];
 
-const exitCodeBesideDeletedFile = (task: string): number | undefined => {
-  const script = unitScripts()[task];
+interface ToolCommand {
+  readonly task: string;
+  readonly tool: string;
+}
+
+// Why: a task of one kind runs every tool of that kind, one command after another, so the case
+// runs the one command of the tool it is about.
+const COMMAND_SEPARATOR = ' && ';
+
+const exitCodeBesideDeletedFile = ({ task, tool }: ToolCommand): number | undefined => {
+  const script = unitScripts()
+    [task]?.split(COMMAND_SEPARATOR)
+    .find((command) => command.includes(` ${tool} `));
 
   if (script === undefined) {
-    throw new Error(`the package.json the presets give a unit holds no script ${task}`);
+    throw new Error(`the package.json the presets give a unit holds no ${tool} in script ${task}`);
   }
 
   const folder = mkdtempSync(join(tmpdir(), 'constitution-deleted-shell-'));
@@ -225,20 +238,52 @@ const exitCodeBesideDeletedFile = (task: string): number | undefined => {
   }
 };
 
-const SHELL_FILES_RUNNER = '.droneey/constitution/presets/plugins/shell/run-on-shell-scripts.sh';
+interface FileKind {
+  readonly extension: string;
+  readonly otherExtension: string;
+  readonly patterns: readonly string[];
+}
 
-const filesHandedBesideMember = (member: string): readonly string[] => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-member-shell-'));
-  const shellFile = '#!/bin/sh\n';
+const FILES_RUNNER = '.droneey/constitution/presets/plugins/shell/run-on-files.sh';
+
+const FILE_KINDS = {
+  shell: {
+    extension: '.sh',
+    otherExtension: '.bash',
+    patterns: [
+      '*.sh',
+      '*.bash',
+    ],
+  },
+  yaml: {
+    extension: '.yaml',
+    otherExtension: '.yml',
+    patterns: [
+      '*.yaml',
+      '*.yml',
+    ],
+  },
+} as const satisfies Readonly<Record<string, FileKind>>;
+
+interface MemberFiles {
+  readonly kind: keyof typeof FILE_KINDS;
+  readonly member: string;
+}
+
+const filesHandedBesideMember = (input: MemberFiles): readonly string[] => {
+  const { extension, otherExtension, patterns } = FILE_KINDS[input.kind];
+  const { member } = input;
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-member-files-'));
+  const text = '#!/bin/sh\n';
 
   try {
     writeFiles({
       files: {
-        '.gitignore': 'ignored.sh\n',
-        'ignored.sh': shellFile,
-        'kept.sh': shellFile,
-        [`${member}/skipped.sh`]: shellFile,
-        'untracked.bash': shellFile,
+        '.gitignore': `ignored${extension}\n`,
+        [`ignored${extension}`]: text,
+        [`kept${extension}`]: text,
+        [`${member}/skipped${extension}`]: text,
+        [`untracked${otherExtension}`]: text,
       },
       folder,
     });
@@ -249,14 +294,16 @@ const filesHandedBesideMember = (member: string): readonly string[] => {
     gitIn(folder, [
       'add',
       '.gitignore',
-      'kept.sh',
+      `kept${extension}`,
       member,
     ]);
     linkRelease(folder);
 
     return spawnSync(
-      SHELL_FILES_RUNNER,
+      FILES_RUNNER,
       [
+        ...patterns,
+        '--',
         'printf',
         String.raw`%s\n`,
         '--',
@@ -270,7 +317,7 @@ const filesHandedBesideMember = (member: string): readonly string[] => {
     )
       .stdout.split('\n')
       .filter((line) => line !== '')
-      .toSorted((left, right) => left.localeCompare(right));
+      .toSorted(compareText);
   } finally {
     rmSync(folder, {
       force: true,
@@ -281,6 +328,7 @@ const filesHandedBesideMember = (member: string): readonly string[] => {
 
 export {
   analyseScript,
+  COMMAND_SEPARATOR,
   exitCodeBesideDeletedFile,
   filesHandedBesideMember,
   formatCheckOf,

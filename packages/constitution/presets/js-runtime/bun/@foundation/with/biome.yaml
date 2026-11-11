@@ -3,8 +3,14 @@ biome:
     typescript:
       package.json:
         scripts:
-          check:lint: biome check --error-on-warnings
-          fix:lint: biome check --write
+          check:lint: !commands
+            - biome check --formatter-enabled=false --error-on-warnings
+          check:format: !commands
+            - biome format
+          fix:lint: !commands
+            - biome check --write
+          fix:format: !commands
+            - biome format --write
 js-runtime/bun:
   '*':
     typescript:

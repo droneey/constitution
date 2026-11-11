@@ -8,7 +8,7 @@ import type { UnitFixture } from './applied-unit.fixtures';
 import { appliedUnit } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
 import type { BiomeDiagnostic } from './biome-preset.fixtures';
-import { biomeDiagnostics, copyWrittenPlugins } from './biome-preset.fixtures';
+import { biomeDiagnostics } from './biome-preset.fixtures';
 import { linkRelease, release, writeFiles } from './package.fixtures';
 
 interface BiomeUnit {
@@ -142,13 +142,9 @@ type Entry = readonly [
 ];
 
 // Why: plugin paths resolve from the configuration's folder, so the presets are linked into each
-// group, beside the plugins the apply wrote.
+// group.
 const writeConfiguration = (folder: string, project: Project): void => {
   linkRelease(folder, PRESETS);
-  copyWrittenPlugins({
-    from: appliedUnit(unitFixtureOf(project.unit)),
-    to: folder,
-  });
   writeFiles({
     files: {
       [CONFIG]: JSON.stringify({

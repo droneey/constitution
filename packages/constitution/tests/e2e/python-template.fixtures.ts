@@ -1,12 +1,13 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { delimiter, dirname, join } from 'node:path';
 
 import { stringify } from 'smol-toml';
 import { z } from 'zod';
 
 import { appliedUnit } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
+import { miseBinary } from './mise.fixtures';
 import { searchPathWith, toolEnvironment } from './package.fixtures';
 import type { BuiltTool, Files } from './python-project.fixtures';
 import { buildTools, inPythonProjectAsync, python, writeFiles } from './python-project.fixtures';
@@ -33,11 +34,15 @@ const NAME = 'shop';
 const APPLIED_FILES = [
   '.gitignore',
   'pyproject.toml',
+  'sgconfig.yaml',
   'tests/conftest.py',
 ] as const;
+// Why: the presets copy the plugins their tools load into folders marked generated.
+const GENERATED_FOLDER = /gen$/;
 
 const unit = appliedUnit({
   blocks: [
+    'ast-grep',
     'complexipy',
     'deptry',
     'fastapi',
@@ -50,7 +55,6 @@ const unit = appliedUnit({
     'task-runner/poe',
     'schema/pydantic',
     'pytest',
-    'python-check',
     'ruff',
     'structlog',
     'ty',
@@ -87,9 +91,22 @@ const pyproject = stringify({
   },
 });
 
+const generatedPaths = readdirSync(unit)
+  .filter((entry) => GENERATED_FOLDER.test(entry) && statSync(join(unit, entry)).isDirectory())
+  .flatMap((folder) =>
+    readdirSync(join(unit, folder), {
+      recursive: true,
+    })
+      .map((path) => join(folder, String(path)))
+      .filter((path) => statSync(join(unit, path)).isFile()),
+  );
+
 const appliedFiles: Files = {
   ...Object.fromEntries(
-    APPLIED_FILES.map((path) => [
+    [
+      ...APPLIED_FILES,
+      ...generatedPaths,
+    ].map((path) => [
       path,
       appliedText(path),
     ]),
@@ -210,7 +227,7 @@ const runInTemplate = (input: {
             new Map([
               [
                 'PATH',
-                searchPathWith(join(uvEnvironment, 'bin')),
+                searchPathWith(join(uvEnvironment, 'bin'), dirname(miseBinary('ast-grep'))),
               ],
               [
                 'PYTHONPATH',
@@ -244,17 +261,55 @@ const poeTasksSchema = z.object({
   }),
 });
 
+const shellTaskSchema = z.object({
+  shell: z.string(),
+});
+const envTaskSchema = z.object({
+  cmd: z.string(),
+  env: z.record(z.string(), z.string()),
+});
+
+const commandLineOf = (command: unknown): readonly string[] => {
+  if (typeof command === 'string') {
+    return [
+      command,
+    ];
+  }
+
+  const shell = shellTaskSchema.safeParse(command);
+
+  if (shell.success) {
+    return [
+      shell.data.shell,
+    ];
+  }
+
+  const withEnv = envTaskSchema.safeParse(command);
+
+  return withEnv.success
+    ? [
+        [
+          // Why: the template runs its package from src/ by PYTHONPATH, where a project
+          // installs it, so a task's own value is joined to the one the run holds.
+          ...Object.entries(withEnv.data.env).map(
+            ([name, setting]) => `${name}=${setting}${delimiter}"$${name}"`,
+          ),
+          withEnv.data.cmd,
+        ].join(' '),
+      ]
+    : [];
+};
+
 const tasks: ReadonlyMap<string, string> = new Map(
   Object.entries(poeTasksSchema.parse(Bun.TOML.parse(pyproject)).tool.poe.tasks).flatMap(
     ([task, command]) =>
-      typeof command === 'string'
-        ? [
-            [
-              task,
-              command,
-            ] as const,
-          ]
-        : [],
+      commandLineOf(command).map(
+        (line) =>
+          [
+            task,
+            line,
+          ] as const,
+      ),
   ),
 );
 

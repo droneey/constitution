@@ -1,0 +1,24 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: module-level-variable-declared-const@typescript
+language: Tsx
+severity: error
+message: Declare a module-level variable as const.
+ignores:
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  reassignable:
+    any:
+      - kind: lexical_declaration
+        regex: ^let\s
+      - kind: variable_declaration
+rule:
+  matches: reassignable
+  not:
+    inside:
+      stopBy: end
+      any:
+        - kind: statement_block
+        - kind: class_static_block
+        - kind: for_statement
+        - kind: for_in_statement

@@ -1,0 +1,45 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: compound-part-keyed-in-pascal-case@typescript
+language: Tsx
+severity: error
+message: >-
+  Only a compound's part, attached to its root by Object.assign, is a PascalCase key: name this one
+  in camelCase
+files:
+  - '**/*.tsx'
+utils:
+  pascal-case:
+    regex: ^[_$]*[A-Z][A-Za-z0-9]*[_$]*$
+  compound-assembly:
+    kind: call_expression
+    pattern: Object.assign($ROOT, $PARTS)
+  object-key:
+    any:
+      - kind: property_identifier
+        inside:
+          kind: pair
+          field: key
+          inside:
+            kind: object
+      - kind: shorthand_property_identifier
+  type-key:
+    kind: property_identifier
+    inside:
+      kind: property_signature
+      field: name
+rule:
+  matches: pascal-case
+  any:
+    - matches: object-key
+      not:
+        inside:
+          stopBy: end
+          matches: compound-assembly
+    - matches: type-key
+      not:
+        inside:
+          stopBy: end
+          kind: variable_declarator
+          has:
+            field: value
+            matches: compound-assembly

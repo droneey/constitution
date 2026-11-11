@@ -1,0 +1,27 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: line-height-set-as-a-number@css
+language: Css
+severity: error
+message: 'Set line-height as a unitless number: a length is inherited as that length'
+files:
+  - '**/*.css'
+utils:
+  # Why: a custom property that holds a line height is named for one, as Tailwind's --leading-* are.
+  line-height-declaration:
+    kind: declaration
+    has:
+      kind: property_name
+      regex: '(?i)^(?:line-height|--.*line-height.*|--leading(?:-.*)?)$'
+  # Why: the grammar splits `1rem/24px` into a bare number and plain text, so the font shorthand's
+  # line height, what follows its slash, is read from the declaration's text.
+  font-shorthand-line-height-with-a-unit:
+    kind: declaration
+    regex: '(?i)^font\s*:[^;]*/\s*(?:[+-]?(?:\d*\.)?\d+(?:e[+-]?\d+)?[a-z%]|(?:calc|min|max|clamp)\([^;)]*?\d[a-z%])'
+rule:
+  any:
+    - all:
+        - matches: line-height-declaration
+        - has:
+            stopBy: end
+            kind: unit
+    - matches: font-shorthand-line-height-with-a-unit

@@ -7,7 +7,11 @@
     "url": "https://kurovskyi.dev"
   },
   "repository": "https://github.com/droneey/constitution",
+  "agents": [
+    "./ai/agents/reviewer.md"
+  ],
+  "hooks": "./ai/hooks/hooks.json",
   "skills": [
-    "./skills/"
+    "./ai/skills/"
   ]
 }

@@ -1,6 +1,6 @@
 # Placement
 
-> Governs where a rule goes — its rank, its axis, its file and its section — how it is worded, which level it takes, what it may refer to, which role words it may name, and where the settings and plugins that hold it go.
+> Governs where a rule goes — its rank, its axis, its file and its section — how it is worded, which level it takes, what it may refer to, which role words it may name, where the settings and plugins that hold it go, and which of them hold their rule whole.
 
 ## Vocabulary
 
@@ -1062,7 +1062,7 @@ A plugin filed under another tool is missed by whoever changes the tool whose wo
 ```text title="Avoid"
 presets/
 ├── shell/
-│   └── run-on-shell-scripts.sh                       read as the shell block's preset
+│   └── run-on-files.sh                               read as the shell block's preset
 └── js-runtime/bun/plugins/shell/
     └── built-image-scanned-at-its-base-stage.sh
 ```
@@ -1070,7 +1070,7 @@ presets/
 ```text title="Prefer"
 presets/
 ├── plugins/shell/
-│   └── run-on-shell-scripts.sh
+│   └── run-on-files.sh
 └── osv-scanner/plugins/shell/
     └── built-image-scanned-at-its-base-stage.sh
 ```
@@ -1127,6 +1127,47 @@ css:
           rules:
             complexity:
               noImportantStyles: error
+```
+
+### setting-marked-whole-only-where-it-holds-its-rule-whole · MUST
+
+Every setting marked `!whole` holds its rule whole in the language it is keyed by. A setting whose language key is `*` holds it in every language. Its tool fails on every breach of the rule there and on nothing the rule allows, its exemptions included; a setting that holds only part of its rule, or holds it by a proxy such as a heuristic, carries no mark.
+
+#### Why
+
+An agent is given a rule a setting marks whole as its heading alone, and trusts the check to name each breach of it. A mark on a setting that holds only part of its rule hides the rest from the agent, so a breach the tool misses passes both the agent and the check; a mark on a setting that also fails on what the rule allows sets the agent against a check whose rule it was never shown.
+
+#### Examples
+
+```yaml title="Avoid"
+# presets/biome/@foundation/with/typescript.yaml
+typescript:
+  any-never-written:
+    typescript: !whole # the lint fails on `any` written, never on a parameter left untyped
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noExplicitAny: error
+```
+
+```yaml title="Prefer"
+# presets/biome/@foundation/with/typescript.yaml
+typescript:
+  any-never-written:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noExplicitAny: error
+# presets/yamllint/@foundation.yaml
+core:
+  mapping-key-unique:
+    yaml: !whole
+      .yamllint.yaml:
+        rules:
+          key-duplicates: enable
 ```
 
 ### setting-path-names-the-blocks-it-needs · MUST

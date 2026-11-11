@@ -1,0 +1,357 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: spawn-given-an-env-built-for-it@typescript
+language: Tsx
+severity: error
+message: >-
+  Build the child's env for it: left out, passed or copied, process.env hands it every secret
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  child-process-module:
+    kind: string
+    regex: ^["'](?:node:)?child_process["']$
+  bun-module:
+    kind: string
+    regex: ^["']bun["']$
+  value-import-of-child-process:
+    kind: import_statement
+    not:
+      regex: ^import\s+type\b
+    has:
+      field: source
+      matches: child-process-module
+  value-import-of-bun:
+    kind: import_statement
+    not:
+      regex: ^import\s+type\b
+    has:
+      field: source
+      matches: bun-module
+  child-process-start-name:
+    regex: ^(?:spawn|spawnSync|execFile|execFileSync|exec|execSync|fork)$
+  bun-start-name:
+    regex: ^spawn(?:Sync)?$
+  bun-shell-name:
+    regex: ^\$$
+  child-process-start-imported:
+    kind: import_specifier
+    not:
+      regex: ^type\s
+    all:
+      - inside:
+          stopBy: end
+          matches: value-import-of-child-process
+      - has:
+          field: name
+          matches: child-process-start-name
+      - any:
+          - has:
+              field: alias
+              pattern: $START
+          - all:
+              - not:
+                  has:
+                    field: alias
+                    kind: identifier
+              - has:
+                  field: name
+                  pattern: $START
+  bun-start-imported:
+    kind: import_specifier
+    not:
+      regex: ^type\s
+    all:
+      - inside:
+          stopBy: end
+          matches: value-import-of-bun
+      - has:
+          field: name
+          matches: bun-start-name
+      - any:
+          - has:
+              field: alias
+              pattern: $START
+          - all:
+              - not:
+                  has:
+                    field: alias
+                    kind: identifier
+              - has:
+                  field: name
+                  pattern: $START
+  bun-shell-imported:
+    kind: import_specifier
+    not:
+      regex: ^type\s
+    all:
+      - inside:
+          stopBy: end
+          matches: value-import-of-bun
+      - has:
+          field: name
+          matches: bun-shell-name
+      - any:
+          - has:
+              field: alias
+              pattern: $TAG
+          - all:
+              - not:
+                  has:
+                    field: alias
+                    kind: identifier
+              - has:
+                  field: name
+                  pattern: $TAG
+  process-starter:
+    any:
+      - kind: member_expression
+        regex: ^Bun\s*\.\s*spawn(?:Sync)?$
+      - all:
+          - kind: identifier
+          # Why: a file that imports neither module starts nothing by a name, which its
+          # imports alone tell before any of them is searched.
+          - inside:
+              stopBy: end
+              kind: program
+              has:
+                any:
+                  - matches: value-import-of-child-process
+                  - matches: value-import-of-bun
+          - pattern: $START
+          # Why: an import stands directly in the program, so the search walks only its imports.
+          - inside:
+              stopBy: end
+              kind: program
+              has:
+                kind: import_statement
+                has:
+                  stopBy: end
+                  any:
+                    - matches: child-process-start-imported
+                    - matches: bun-start-imported
+      - all:
+          - kind: member_expression
+          - has:
+              field: property
+              matches: child-process-start-name
+          - has:
+              field: object
+              kind: identifier
+              pattern: $NAMESPACE
+          - inside:
+              stopBy: end
+              kind: program
+              has:
+                matches: value-import-of-child-process
+                any:
+                  - pattern: import * as $NAMESPACE from $SOURCE
+                  - pattern: import $NAMESPACE from $SOURCE
+  environment:
+    kind: member_expression
+    regex: ^(?:(?:process|Bun)\s*\.\s*env|import\s*\.\s*meta\s*\.\s*env)$
+  whole-environment:
+    any:
+      - matches: environment
+      - kind: object
+        has:
+          kind: spread_element
+          has:
+            matches: environment
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: ^Object\s*\.\s*assign$
+          - has:
+              field: arguments
+              kind: arguments
+              has:
+                matches: environment
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: ^structuredClone$
+          - has:
+              field: arguments
+              kind: arguments
+              has:
+                matches: environment
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: ^Object\s*\.\s*fromEntries$
+          - has:
+              field: arguments
+              kind: arguments
+              has:
+                kind: call_expression
+                all:
+                  - has:
+                      field: function
+                      regex: ^Object\s*\.\s*entries$
+                  - has:
+                      field: arguments
+                      kind: arguments
+                      has:
+                        matches: environment
+  env-key:
+    regex: ^["'`]?env["'`]?$
+  shell-tag:
+    any:
+      - kind: member_expression
+        regex: ^Bun\s*\.\s*\$$
+      - all:
+          - kind: identifier
+          - inside:
+              stopBy: end
+              kind: program
+              has:
+                matches: value-import-of-bun
+          - pattern: $TAG
+          - inside:
+              stopBy: end
+              kind: program
+              has:
+                kind: import_statement
+                has:
+                  stopBy: end
+                  matches: bun-shell-imported
+  shell-command:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          matches: shell-tag
+      - has:
+          field: arguments
+          kind: template_string
+  env-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^env$
+  shell-given-its-env:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          kind: member_expression
+          all:
+            - has:
+                field: object
+                matches: shell-tag
+            - has:
+                field: property
+                regex: ^env$
+      - has:
+          field: arguments
+          kind: arguments
+          all:
+            - has:
+                nthChild: 1
+                not:
+                  matches: whole-environment
+            - not:
+                has:
+                  nthChild: 2
+  whole-environment-given-to-a-start:
+    kind: pair
+    all:
+      - has:
+          field: key
+          matches: env-key
+      - has:
+          field: value
+          matches: whole-environment
+      - inside:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            matches: process-starter
+  # Why: a command of Bun's shell runs with Bun.env unless .env() gives it or the shell one.
+  shell-command-left-to-inherit:
+    kind: call_expression
+    all:
+      - matches: shell-command
+      - not:
+          inside:
+            stopBy: end
+            matches: env-call
+      - not:
+          inside:
+            stopBy: end
+            kind: program
+            has:
+              stopBy: end
+              matches: shell-given-its-env
+  whole-environment-given-to-the-shell:
+    kind: call_expression
+    all:
+      - matches: env-call
+      - has:
+          field: function
+          has:
+            field: object
+            any:
+              - matches: shell-tag
+              - matches: shell-command
+              - has:
+                  stopBy: end
+                  matches: shell-command
+      - has:
+          field: arguments
+          kind: arguments
+          all:
+            - has:
+                nthChild: 1
+                matches: whole-environment
+            - not:
+                has:
+                  nthChild: 2
+  # Why: an argument read from a name may hold options a pattern cannot see, so its start is left
+  # to review.
+  start-left-to-inherit:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          matches: process-starter
+      - has:
+          field: arguments
+          kind: arguments
+          not:
+            has:
+              not:
+                any:
+                  - regex: ^[(),]$
+                  - kind: comment
+                  - kind: string
+                  - kind: template_string
+                  - kind: array
+                  - kind: arrow_function
+                  - kind: function_expression
+                  - kind: object
+                    not:
+                      has:
+                        stopBy: end
+                        any:
+                          - kind: pair
+                            has:
+                              field: key
+                              matches: env-key
+                          - kind: shorthand_property_identifier
+                            regex: ^env$
+                          - kind: spread_element
+rule:
+  any:
+    - matches: whole-environment-given-to-a-start
+    - matches: shell-command-left-to-inherit
+    - matches: whole-environment-given-to-the-shell
+    - matches: start-left-to-inherit

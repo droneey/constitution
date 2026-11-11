@@ -6,7 +6,12 @@ import type { Contribution } from '../../../../../../../merged-file/entities';
 import type { PresetEntry } from '../../../../../../../preset-entry/entities';
 import { PresetEntry as Entries } from '../../../../../../../preset-entry/entities';
 import type { PresetValue } from '../../../../../../../setting/entities';
-import { Setting, ValueKind, PresetValue as Values } from '../../../../../../../setting/entities';
+import {
+  Joining,
+  Setting,
+  ValueKind,
+  PresetValue as Values,
+} from '../../../../../../../setting/entities';
 import type { TargetFile } from '../../../../../../../shared/value-objects';
 import { EntryTarget, KeyKind, SettingKey } from '../../../../../../../shared/value-objects';
 
@@ -79,7 +84,7 @@ const givenOf = (preset: PresetValue, place: Place): readonly Given[] => {
   if (preset.kind !== ValueKind.Map) {
     const { setting } = preset;
 
-    if (preset.isWords) {
+    if (preset.joining !== Joining.None) {
       return [
         place,
       ];

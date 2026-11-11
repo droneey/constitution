@@ -21,10 +21,3 @@ tanstack-router:
               rules:
                 style:
                   useFilenamingConvention: 'off'
-  links-name-typed-targets:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/links-name-typed-targets.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'

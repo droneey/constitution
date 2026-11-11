@@ -36,7 +36,7 @@ core:
                 - '*.${role.composition-root}'
                 - '*.${role.shared-code}'
   shared-imports-no-feature-adapter-port-or-root:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           importlinter:
@@ -51,6 +51,9 @@ core:
                 - '*.${role.host-integration}'
                 - '*.${role.shared-kernel}.${role.port}'
                 - '*.${role.composition-root}'
+              # Why: the rule bars what shared imports itself; the kernel it may import reaches its
+              # own ports, which no chain through it makes an import of shared.
+              allow_indirect_imports: true
   domain-imports-only-itself-and-the-kernel:
     python:
       pyproject.toml:
@@ -94,7 +97,7 @@ core:
                 - '*.${role.composition-root}'
                 - '*.${role.shared-code}'
   feature-never-imports-a-feature:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           importlinter:
@@ -144,7 +147,7 @@ core:
                 - '*.${role.bounded-context}.*.${role.domain-layer}.*.${role.aggregate-transition}'
               allow_indirect_imports: true
   composition-module-never-imports-another:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           importlinter:
@@ -264,7 +267,7 @@ core:
               allowed_importers:
                 - '*.__main__'
   integration-never-imported:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           importlinter:
@@ -319,6 +322,43 @@ core:
                 - '**.${role.use-case}.${role.read-operation}'
                 - '**.${role.binding}.${role.read-operation}'
               allow_indirect_imports: true
+  layer-imports-dependencies-by-its-role:
+    python:
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      import_linter_${role.generated-file}/layer_imports_dependencies_by_its_role.py !text: !copy ${constitution.path}/presets/import-linter/plugins/python/layer-imports-dependencies-by-its-role.py
+      pyproject.toml:
+        tool:
+          importlinter:
+            include_external_packages: true
+            contract_types:
+              # Why: a contract type and its class's path, which YAML cannot break.
+              # yamllint disable-line rule:line-length
+              - 'layer-imports-dependencies-by-its-role: layer_imports_dependencies_by_its_role.LayerImportsDependenciesByItsRoleContract'
+            contracts[name=layer-imports-dependencies-by-its-role]:
+              type: layer-imports-dependencies-by-its-role
+              feature_form_layers:
+                - ${role.bounded-context}
+                - ${role.composition-module}
+              pure_layers:
+                - ${role.shared-kernel}
+              pure_module_layers:
+                - ${role.domain-layer}
+                - ${role.application}
+              edge_layers:
+                - ${role.adapter}
+                - ${role.host-integration}
+                - ${role.generic-library}
+                - ${role.composition-root}
+              edge_module_layers:
+                - ${role.adapter}
+              module_layers:
+                - ${role.domain-layer}
+                - ${role.application}
+                - ${role.adapter}
+                - ${role.presentation-layer}
+              entry: ${role.entry}
+              extra_entry: ${role.extra-entry}
   surface-only-on-a-module-or-one-kind:
     python:
       pyproject.toml:
@@ -329,7 +369,7 @@ core:
               source_modules:
                 - '**'
               forbidden_modules:
-                - ${package.name}
+                - ${package.importName}
                 - '*.${role.adapter}'
                 - '*.${role.composition-module}'
                 - '*.${role.composition-module}.*.${role.adapter}'
@@ -414,6 +454,23 @@ core:
               allowed_importers:
                 - '*.${role.shared-code}.*'
 python:
+  relative-imports-stay-in-the-module:
+    python:
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      import_linter_${role.generated-file}/relative_imports_stay_in_the_module.py !text: !copy ${constitution.path}/presets/import-linter/plugins/python/relative-imports-stay-in-the-module.py
+      pyproject.toml:
+        tool:
+          importlinter:
+            contract_types:
+              # Why: a contract type and its class's path, which YAML cannot break.
+              # yamllint disable-line rule:line-length
+              - 'relative-imports-stay-in-the-module: relative_imports_stay_in_the_module.RelativeImportsStayInTheModuleContract'
+            contracts[name=relative-imports-stay-in-the-module]:
+              type: relative-imports-stay-in-the-module
+              feature_form_layers:
+                - ${role.bounded-context}
+                - ${role.composition-module}
   standard-module-with-an-effect-imported-only-by-the-edge:
     python:
       pyproject.toml:

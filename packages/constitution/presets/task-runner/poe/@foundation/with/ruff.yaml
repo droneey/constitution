@@ -5,7 +5,15 @@ ruff:
         tool:
           poe:
             tasks:
-              check:format: ruff format --check
-              check:lint: ruff check
-              fix:format: ruff format
-              fix:lint: ruff check --fix
+              check:format:
+                shell: !commands
+                  - ruff format --check
+              check:lint:
+                shell: !commands
+                  - ruff check
+              fix:format:
+                shell: !commands
+                  - ruff format
+              fix:lint:
+                shell: !commands
+                  - ruff check --fix

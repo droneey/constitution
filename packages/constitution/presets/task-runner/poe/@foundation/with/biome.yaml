@@ -5,5 +5,15 @@ biome:
         tool:
           poe:
             tasks:
-              check:biome: bunx --bun biome check --error-on-warnings
-              fix:biome: bunx --bun biome check --write
+              check:lint:
+                shell: !commands
+                  - bunx --bun biome check --formatter-enabled=false --error-on-warnings
+              check:format:
+                shell: !commands
+                  - bunx --bun biome format
+              fix:lint:
+                shell: !commands
+                  - bunx --bun biome check --write
+              fix:format:
+                shell: !commands
+                  - bunx --bun biome format --write

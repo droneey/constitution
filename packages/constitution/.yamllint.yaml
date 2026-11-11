@@ -33,6 +33,9 @@ rules:
     max: 1
 extends: default
 
-# git
 ignore-from-file:
+  # ast-grep
+  - .yamlignore
+
+  # git
   - .gitignore

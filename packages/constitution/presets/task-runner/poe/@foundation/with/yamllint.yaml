@@ -5,4 +5,14 @@ yamllint:
         tool:
           poe:
             tasks:
-              check:yaml: yamllint --strict .
+              check:lint:
+                shell: !commands
+                  - !words
+                    - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+                    - "'*.yaml'"
+                    - "'*.yml'"
+                    - --
+                    - yamllint
+                    - --strict
+                    - --
+                    - "'${workspace.members}'"

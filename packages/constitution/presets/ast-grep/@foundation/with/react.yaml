@@ -1,0 +1,33 @@
+react:
+  compound-part-keyed-in-pascal-case:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/compound-part-keyed-in-pascal-case.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/compound-part-keyed-in-pascal-case.yaml
+  modern-react-api-only:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/modern-react-api-only.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/modern-react-api-only.yaml
+  null-written-only-where-react-uses-it:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/null-written-only-where-react-uses-it.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/null-written-only-where-react-uses-it.yaml
+  react-compiler-on:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/react-compiler-on.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/react-compiler-on.yaml

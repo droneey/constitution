@@ -7,7 +7,6 @@
 /packages/@mutation-check/typescript/**
 /packages/brand/**
 /packages/constitution/**
-/packages/python-check/**
 
 # mise
 .mise/locks/

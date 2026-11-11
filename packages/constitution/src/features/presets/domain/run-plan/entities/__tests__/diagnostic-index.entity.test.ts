@@ -97,6 +97,15 @@ describe('DiagnosticIndex', () => {
         'file-within-500-lines',
       ],
     },
+    {
+      condition: "a plugin's rule stands in brackets after its language",
+      output:
+        'error[file-within-500-lines@typescript]: Split the file\nerror[biome-refuses-empty-names@python]: Name it',
+      slugs: [
+        'file-within-500-lines',
+        'biome-refuses-empty-names',
+      ],
+    },
   ])('should name each rule the output shows broken when $condition', ({ output, slugs }) => {
     // Act
     const named = slugsIn(output);

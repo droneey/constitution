@@ -1,4 +1,4 @@
-@theme {
+@theme inline {
   /* Why: the library switches to its phone layout below md; the site keeps one layout at every
      width. */
   --breakpoint-md: 0rem;

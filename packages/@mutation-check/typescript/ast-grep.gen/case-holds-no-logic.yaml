@@ -1,0 +1,41 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: case-holds-no-logic@typescript
+language: Tsx
+severity: error
+message: 'Keep logic out of a case: variants are rows of a table, expected values are literals'
+files:
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  runner:
+    any:
+      - pattern: test
+      - pattern: it
+      - pattern: test.concurrent
+      - pattern: it.concurrent
+      - pattern: test.each($TABLE)
+      - pattern: it.each($TABLE)
+      - pattern: test.concurrent.each($TABLE)
+      - pattern: it.concurrent.each($TABLE)
+  case-body:
+    nthChild: 2
+    inside:
+      kind: arguments
+      inside:
+        kind: call_expression
+        has:
+          field: function
+          matches: runner
+rule:
+  any:
+    - kind: if_statement
+    - kind: switch_statement
+    - kind: for_statement
+    - kind: for_in_statement
+    - kind: while_statement
+    - kind: do_statement
+    - kind: ternary_expression
+  inside:
+    stopBy: end
+    matches: case-body

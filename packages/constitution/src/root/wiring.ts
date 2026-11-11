@@ -123,7 +123,10 @@ const portsOf = ({ isColoured, program: input }: PortsInput): Ports => {
   };
 
   return {
-    activeRules: createActiveRulesSource(project),
+    activeRules: createActiveRulesSource({
+      ...project,
+      presetFiles,
+    }),
     appliedFilesRepository: createFileAppliedFilesRepository(),
     commands: createShellCommandRunner({
       environment: input.environment.tools,

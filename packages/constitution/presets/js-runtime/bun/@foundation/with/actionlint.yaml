@@ -3,7 +3,8 @@ actionlint:
     yaml:
       package.json ? ${file.isTop}:
         scripts:
-          check:workflows: actionlint -pyflakes=
+          check:lint: !commands
+            - actionlint -pyflakes=
 js-runtime/bun:
   '*':
     yaml:

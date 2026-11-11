@@ -505,10 +505,10 @@
 
 **Date:** 2026-11-09 · **Status:** Accepted
 
-- **Decision.** A concept that carries a term id lists its words in the code spans of the sentence that defines it, and a block that builds on its owner respells the list under the same id, as it respells a folder; core's empty names and empty verbs are such lists. A plugin names a list as `${term.<id>}` and a role as `${role.<id>}`, the entry file among them, and an entry copies the plugin into the unit with `!copy`: `presets apply` writes it whole into `biome.gen/`, filled as the unit's language reads the terms, and writes it again from each release; Biome's configuration names the copy and leaves `biome.gen/` out of what it checks.
+- **Decision.** A concept that carries a term id lists its words in the code spans of the sentence that defines it, and a block that builds on its owner respells the list under the same id, as it respells a folder; core's empty names and empty verbs are such lists. A plugin names a list as `${term.<id>}` and a role as `${role.<id>}`, the entry file among them, and an entry copies the plugin into the unit with `!copy`: `presets apply` writes it whole into `ast-grep.gen/`, filled as the unit's language reads the terms, and writes it again from each release; `sgconfig.yaml` names the folder, and the formatters leave it out of what they check.
 - **Rejected.**
   - The words kept in each plugin: a pack that respells the list cannot reach them, and the plugin's list drifts from the term's.
-  - A plugin read from the release by its path with the words passed in: GritQL takes no outside list, and Biome loads a plugin only as a file.
+  - A plugin read from the release by its path with the words passed in: neither GritQL nor ast-grep takes an outside list, and each loads a rule only as a file.
   - A copy kept beside the project's files and formatted by Biome's fix: the formatter rewrites it after every apply, which then reads it as loosened.
   - The entry file's name, `main`, written into the settings: a language that names its entry otherwise, or a pack that respells it, gets settings that miss the file.
 - **Why.** A word list a tool enforces has one home, the term a reader also reads, and the tool's file is still one the tool runs without the Constitution.
@@ -525,9 +525,21 @@
 
 **Date:** 2026-11-08 · **Status:** Accepted
 
-- **Decision.** A module that exports a component exports only components and their types, so Fast Refresh keeps the component's state across an edit. In the react-dom and react-native pairings the GritQL plugin `component-module-exports-only-components` holds it, and Biome's `useComponentExportOnlyModules` stays off.
+- **Decision.** A module that exports a component exports only components and their types, so Fast Refresh keeps the component's state across an edit. In the react-dom and react-native pairings the ast-grep rule `component-module-exports-only-components` holds it, and Biome's `useComponentExportOnlyModules` stays off.
 - **Rejected.** Biome's `useComponentExportOnlyModules`, which flags a type's export, a compound component's root built with `Object.assign` and a spec's own components, each of which the React rules allow or ask for.
 - **Why.** A check that refuses what other rules require is either switched off or obeyed against them; a plugin can hold exactly what the rule says.
+
+## ADR-0060 — ast-grep holds the rules no tool of their own holds, in every language
+
+**Date:** 2026-11-10 · **Status:** Accepted
+
+- **Decision.** A rule that no tool of its subject holds is held by a rule of ast-grep, one file a rule and a language, its `id` the slug and the language, `<slug>@<language>`, and one grammar, Tsx, reads every TypeScript file. GritQL keeps only `statements-grouped-by-blank-lines`, which reads the blank lines between statements that ast-grep's tree drops. The import rules of Python are contracts of import-linter, its own contract types shipped as plugins, and the package `python-check` is gone. A setting that holds its rule whole in a language is marked `!whole`, and the hand-back gate gives that rule's heading alone in a file of that language.
+- **Rejected.**
+  - Biome's GritQL for every language: it reads TypeScript, CSS and JSON alone, and a plugin of it holds no option of its own.
+  - A script of our own for Python's imports, `python-check`: a tool's contract holds the same rule, reports it in the tool's own run and costs no package to keep.
+  - Two ast-grep grammars for TypeScript, with and without markup: every rule would be written twice, and a rule for one would miss the files of the other.
+  - The whole hold read from a setting's presence: about two settings in five hold their rule only in part, so only an explicit mark says the tool holds it all.
+- **Why.** One engine for every language keeps a rule written once where a tool can hold it, and a rule the gate hands as its heading costs an agent nothing to read where a tool already fails on its breach.
 
 ## Old numbers
 

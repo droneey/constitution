@@ -12,9 +12,11 @@ type DiagnosticIndex = ReadonlyMap<string, readonly HeldRule[]>;
 
 // Why: a tool prints a rule it holds as a camel-case name closing a category, as
 // `lint/style/noMagicNumbers`, as a code of letters and three digits or more, as `PLR2004`, or as a
-// plugin's message opening with its rule in brackets; the same words in another form are as likely
-// a global, an option or a version.
-const DIAGNOSTIC = /\/([a-z]+(?:[A-Z][a-z\d]*)+)\b|\b([A-Z]+)(\d{3,})\b|(\[[a-z\d-]+\])/g;
+// plugin's rule in brackets, after its language where the plugin is one of a language's, as
+// `[file-within-500-lines@typescript]`; the same words in another form are as likely a global, an
+// option or a version.
+const DIAGNOSTIC =
+  /\/([a-z]+(?:[A-Z][a-z\d]*)+)\b|\b([A-Z]+)(\d{3,})\b|\[([a-z\d-]+)(?:@[a-z]+)?\]/g;
 
 const empty: DiagnosticIndex = new Map();
 
@@ -28,10 +30,10 @@ const selectorsOf = (letters: string, digits: string): readonly string[] =>
     (_, count) => `${letters}${digits.slice(0, count)}`,
   );
 
-const keysOf = ([, name, letters, digits, prefix]: RegExpExecArray): readonly string[] =>
+const keysOf = ([, name, letters, digits, plugin]: RegExpExecArray): readonly string[] =>
   digits === undefined
     ? [
-        String(name ?? prefix),
+        name ?? `[${String(plugin)}]`,
       ]
     : selectorsOf(String(letters), digits);
 

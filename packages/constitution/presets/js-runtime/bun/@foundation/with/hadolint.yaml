@@ -3,7 +3,10 @@ hadolint:
     dockerfile:
       package.json:
         scripts:
-          check:dockerfile: hadolint Dockerfile
+          check:lint: !commands
+            - slot: dockerfile
+          check:lint@dockerfile:
+            - hadolint Dockerfile
 js-runtime/bun:
   '*':
     dockerfile:

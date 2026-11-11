@@ -16,7 +16,7 @@ type PluginFinding = FindingOf<ManifestReadDetails & PluginDetails>;
 
 const PLUGIN = '.claude-plugin/plugin.json';
 const SKILL = 'skills/ratify/SKILL.md';
-const AGENT = 'agents/reviewer.md';
+const AGENT = 'ai/agents/reviewer.md';
 const LISTING_SKILLS =
   '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./skills/"]}';
 const RATIFY = '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';

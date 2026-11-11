@@ -5,4 +5,9 @@ import-linter:
         tool:
           poe:
             tasks:
-              check:architecture: lint-imports --no-logo
+              check:architecture:
+                cmd: lint-imports --no-logo
+                # Why: import-linter loads the contracts the presets register from the plugins
+                # they copy there.
+                env:
+                  PYTHONPATH: import_linter_${role.generated-file}

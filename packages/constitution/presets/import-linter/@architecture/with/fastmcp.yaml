@@ -1,0 +1,11 @@
+contracts/api:
+  server-framework-imported-by-the-presentation:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=layer-imports-dependencies-by-its-role]:
+              homes:
+                fastmcp:
+                  - edge
+                  - ${role.presentation-layer}

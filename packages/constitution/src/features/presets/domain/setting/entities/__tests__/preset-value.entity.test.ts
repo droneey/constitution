@@ -345,4 +345,23 @@ describe('PresetValue', () => {
     // Assert
     expect(answer).toBe(isInsertOnly);
   });
+
+  it.each([
+    {
+      condition: 'a map is marked whole',
+      given: PresetValue.wholeMapOf([]),
+      isWhole: true,
+    },
+    {
+      condition: 'a map is not marked whole',
+      given: PresetValue.mapOf([]),
+      isWhole: false,
+    },
+  ])('should tell whether the value holds its rule whole when $condition', ({ given, isWhole }) => {
+    // Act
+    const told = PresetValue.isWhole(given);
+
+    // Assert
+    expect(told).toBe(isWhole);
+  });
 });

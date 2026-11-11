@@ -4,7 +4,6 @@ dev = [
   "complexipy==8.0.1",
   "deptry==0.25.1",
   "droneey-mutation-check-python",
-  "droneey-python-check",
   "hypothesis==6.169.0",
   "import-linter==2.15",
   "mutmut==3.8.0",
@@ -28,7 +27,6 @@ python-preference = "only-system"
 
 [tool.uv.sources]
 droneey-mutation-check-python = { workspace = true }
-droneey-python-check = { workspace = true }
 
 [tool.uv.workspace]
-members = ["packages/*/python", "packages/python-check"]
+members = ["packages/*/python"]

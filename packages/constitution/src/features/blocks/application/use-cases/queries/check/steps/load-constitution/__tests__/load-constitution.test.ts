@@ -116,16 +116,16 @@ describe('loadConstitution', () => {
     });
   });
 
-  it("should read each agent's front matter when files sit directly in agents/, nested, hidden and other files aside", () => {
+  it("should read each agent's front matter when files sit directly in ai/agents/, nested, hidden and other files aside", () => {
     // Arrange
     const files = {
       '.claude/agents/local.md': '---\nname: local\n---\n',
-      'agents/.draft.md': '---\nname: draft\n---\n',
-      'agents/notes/reviewer.md': '---\nname: nested\n---\n',
-      'agents/reviewer.md.orig': '---\nname: backup\n---\n',
-      'agents/reviewer.md':
+      'ai/agents/.draft.md': '---\nname: draft\n---\n',
+      'ai/agents/notes/reviewer.md': '---\nname: nested\n---\n',
+      'ai/agents/reviewer.md.orig': '---\nname: backup\n---\n',
+      'ai/agents/reviewer.md':
         '---\nname: reviewer\ndescription: Reviews files.\n---\n\nYou review.\n',
-      'agents/scribe.md': '# Scribe\n',
+      'ai/agents/scribe.md': '# Scribe\n',
     };
 
     // Act
@@ -140,11 +140,11 @@ describe('loadConstitution', () => {
           name: 'reviewer',
           status: ReadStatus.Parsed,
         },
-        path: TreePath.create('agents/reviewer.md'),
+        path: TreePath.create('ai/agents/reviewer.md'),
       },
       {
         file: 'scribe',
-        path: TreePath.create('agents/scribe.md'),
+        path: TreePath.create('ai/agents/scribe.md'),
       },
     ]);
   });

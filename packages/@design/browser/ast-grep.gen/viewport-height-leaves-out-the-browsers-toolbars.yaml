@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: viewport-height-leaves-out-the-browsers-toolbars@css
+language: Css
+severity: error
+message: 'Use svh or dvh for a height: vh and lvh count the space under the toolbars'
+files:
+  - '**/*.css'
+rule:
+  any:
+    - kind: integer_value
+    - kind: float_value
+  has:
+    kind: unit
+    regex: '(?i)^l?vh$'
+  # Why: a media, container or supports query measures the viewport rather than sizing a box by it,
+  # and only a declaration sizes one.
+  inside:
+    stopBy: end
+    kind: declaration

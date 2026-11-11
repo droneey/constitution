@@ -1,0 +1,20 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: schema-builds-values-through-their-constructor@typescript
+language: Tsx
+severity: error
+message: Build the value through its create function, not a brand of the schema's own
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: member_expression
+    all:
+      - has:
+          field: property
+          regex: ^brand$
+      - has:
+          field: object
+          regex: ^z\s*\.

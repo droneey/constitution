@@ -1,0 +1,43 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: inline-style-holds-only-custom-properties@typescript
+language: Tsx
+severity: error
+message: 'Pass the value as a custom property: an inline style is an object of --* properties only'
+utils:
+  custom-property:
+    kind: pair
+    has:
+      field: key
+      kind: string
+      regex: ^['"]--
+  style-object-with-other-member:
+    kind: object
+    not:
+      inside:
+        kind: pair
+        stopBy: end
+    has:
+      any:
+        - kind: spread_element
+        - kind: shorthand_property_identifier
+        - kind: method_definition
+        - kind: pair
+          not:
+            matches: custom-property
+rule:
+  inside:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: ^style$
+  any:
+    - kind: string
+    - kind: jsx_expression
+      not:
+        has:
+          kind: object
+          stopBy: end
+    - kind: jsx_expression
+      has:
+        matches: style-object-with-other-member
+        stopBy: end

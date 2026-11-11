@@ -1,0 +1,62 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: locale-passed-to-every-intl-call@typescript
+language: Tsx
+severity: error
+message: "Pass the active locale: without one the runtime's locale decides"
+utils:
+  runtime-locale:
+    any:
+      - kind: undefined
+      - pattern: void 0
+      - kind: array
+        regex: ^\[\s*\]$
+  locale-left-out:
+    kind: arguments
+    any:
+      - regex: ^\(\s*\)$
+      - has:
+          nthChild: 1
+          matches: runtime-locale
+  formatting-member:
+    kind: member_expression
+    has:
+      field: property
+      regex: ^toLocale(?:Date|Time)?String$
+  intl-formatter:
+    kind: member_expression
+    has:
+      field: object
+      kind: identifier
+      regex: ^Intl$
+    all:
+      - kind: member_expression
+        has:
+          field: property
+          regex: ^[A-Z]
+  formatter-call:
+    kind: call_expression
+    has:
+      field: function
+      any:
+        - matches: formatting-member
+        - matches: intl-formatter
+  formatter-built:
+    kind: new_expression
+    has:
+      field: constructor
+      matches: intl-formatter
+rule:
+  any:
+    - matches: formatter-call
+      has:
+        field: arguments
+        matches: locale-left-out
+    - matches: formatter-built
+      not:
+        has:
+          field: arguments
+          kind: arguments
+    - matches: formatter-built
+      has:
+        field: arguments
+        matches: locale-left-out

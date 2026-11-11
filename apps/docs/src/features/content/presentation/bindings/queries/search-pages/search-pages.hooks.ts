@@ -28,7 +28,8 @@ const hitOf = ({ breadcrumbs, kind, table, ...found }: SearchResult): SearchHit 
 export function useSearchPages(): SearchState {
   const searchPages = use(SearchPagesContext);
 
-  // biome-ignore lint/plugin/react-compiler-on: the search runs again whenever its function changes, and Fumadocs' hook, which the Compiler skips, compares it by identity
+  // Why: The search runs again whenever its function changes, and Fumadocs' hook, which the Compiler skips, compares it by identity.
+  // ast-grep-ignore: react-compiler-on@typescript
   const run = useCallback(
     async (query: string): Promise<SearchHit[]> =>
       searchPages === undefined ? [] : (await searchPages(query)).map(hitOf),

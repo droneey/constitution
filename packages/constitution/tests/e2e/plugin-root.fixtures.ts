@@ -31,7 +31,7 @@ const releaseFormat = Number(
     readFileSync(join(repository, 'package.json'), 'utf8'),
   )?.[1],
 );
-const HOOKS = 'hooks';
+const HOOKS = 'ai/hooks';
 
 const created: string[] = [];
 

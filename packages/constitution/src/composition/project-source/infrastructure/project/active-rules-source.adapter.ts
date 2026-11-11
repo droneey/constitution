@@ -1,12 +1,12 @@
-import type { ProjectPorts } from '#/features/project';
 import { findProject, findProjectHolding } from '#/features/project';
 import type { ActiveRead, ActiveRulesSource, ChapterRules } from '#/features/session';
 import type { ProjectPlace } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
+import type { GateRulesPorts } from './gate-rules.utils';
 import { readActiveOf, realPathOf, rulesInOf } from './gate-rules.utils';
 
-const createActiveRulesSource = (project: ProjectPorts): ActiveRulesSource => ({
+const createActiveRulesSource = (project: GateRulesPorts): ActiveRulesSource => ({
   findProjectAround: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
     findProject({
       files: project.files,

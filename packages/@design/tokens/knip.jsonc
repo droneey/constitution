@@ -19,6 +19,9 @@
     "scripts/**/*.ts",
   ],
   "ignoreBinaries": [
+    // ast-grep
+    "ast-grep",
+
     // rumdl
     "rumdl",
 

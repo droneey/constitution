@@ -36,18 +36,23 @@ describe('Agent.fileOf', () => {
   it.each([
     {
       expected: 'reviewer',
-      name: 'the file sits directly in agents/',
-      path: 'agents/reviewer.md',
+      name: 'the file sits directly in ai/agents/',
+      path: 'ai/agents/reviewer.md',
     },
     {
       expected: undefined,
       name: 'the file is nested',
-      path: 'agents/team/reviewer.md',
+      path: 'ai/agents/team/reviewer.md',
     },
     {
       expected: undefined,
       name: 'the file is hidden',
-      path: 'agents/.reviewer.md',
+      path: 'ai/agents/.reviewer.md',
+    },
+    {
+      expected: undefined,
+      name: 'its ai/agents/ folder sits below the root',
+      path: 'docs/ai/agents/reviewer.md',
     },
   ])('should give $expected when $name', ({ expected, path }) => {
     // Arrange

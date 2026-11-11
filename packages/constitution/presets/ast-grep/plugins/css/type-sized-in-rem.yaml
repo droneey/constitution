@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: type-sized-in-rem@css
+language: Css
+severity: error
+message: >-
+  Set a font size in rem, never in px or another absolute unit, so it follows the reader's text size
+files:
+  - '**/*.css'
+utils:
+  absolute-length:
+    any:
+      - kind: integer_value
+      - kind: float_value
+    has:
+      kind: unit
+      regex: '(?i)^(?:px|pt|pc|in|cm|mm|q)$'
+  # Why: a math function's argument may add a rem term to a length in another unit.
+  term-beside-a-rem-term:
+    inside:
+      stopBy: end
+      kind: binary_expression
+      has:
+        stopBy: end
+        kind: unit
+        regex: '(?i)^rem$'
+  # Why: a custom property that holds a font size is named for one.
+  font-size-declaration:
+    kind: declaration
+    has:
+      kind: property_name
+      regex: '(?i)^(?:font-size|--.*font-size.*)$'
+  # Why: the grammar splits `16px/1.5` into a bare number and plain text, so the font shorthand's
+  # size, the length before its slash, is read from the declaration's text.
+  font-shorthand-sized-in-an-absolute-unit:
+    kind: declaration
+    regex: '(?i)^font\s*:[^;/]*?[\s:(,][+-]?(?:\d*\.)?\d+(?:px|pt|pc|in|cm|mm|q)(?:[\s/;,)!]|$)'
+rule:
+  any:
+    - all:
+        - matches: absolute-length
+        - not:
+            matches: term-beside-a-rem-term
+        - inside:
+            stopBy: end
+            matches: font-size-declaration
+    - matches: font-shorthand-sized-in-an-absolute-unit

@@ -11,6 +11,22 @@ enum ValueKind {
   Copy = 'copy',
 }
 
+// Why: a list is written as it is, joined into one text of words, or joined into one command line of
+// commands.
+enum Joining {
+  None = 'none',
+  Words = 'words',
+  Commands = 'commands',
+}
+
+// Why: a map is merged as it is, kept with its keys sorted, or marks the settings that hold their rule
+// whole.
+enum MapForm {
+  Plain = 'plain',
+  Sorted = 'sorted',
+  Whole = 'whole',
+}
+
 interface PresetPair {
   readonly key: string;
   readonly value: PresetValue;
@@ -18,7 +34,7 @@ interface PresetPair {
 
 type PresetValue =
   | {
-      readonly isWords: boolean;
+      readonly joining: Joining;
       readonly kind:
         | ValueKind.Copy
         | ValueKind.Default
@@ -28,7 +44,7 @@ type PresetValue =
       readonly setting: Setting;
     }
   | {
-      readonly isSorted: boolean;
+      readonly form: MapForm;
       readonly kind: ValueKind.Map;
       readonly pairs: readonly PresetPair[];
     };
@@ -135,32 +151,50 @@ const isInsertOnly = (given: PresetValue): boolean =>
   );
 
 const plain = (setting: Setting): PresetValue => ({
-  isWords: false,
+  joining: Joining.None,
   kind: ValueKind.Plain,
   setting,
 });
 
 const wordsOf = (words: readonly Setting[]): PresetValue => ({
-  isWords: true,
+  joining: Joining.Words,
   kind: ValueKind.Plain,
   setting: words,
 });
 
+const commandsOf = (commands: readonly Setting[]): PresetValue => ({
+  joining: Joining.Commands,
+  kind: ValueKind.Plain,
+  setting: commands,
+});
+
 const mapOf = (pairs: readonly PresetPair[]): PresetValue => ({
-  isSorted: false,
+  form: MapForm.Plain,
   kind: ValueKind.Map,
   pairs,
 });
 
 const sortedMapOf = (pairs: readonly PresetPair[]): PresetValue => ({
-  isSorted: true,
+  form: MapForm.Sorted,
   kind: ValueKind.Map,
   pairs,
 });
 
+const wholeMapOf = (pairs: readonly PresetPair[]): PresetValue => ({
+  form: MapForm.Whole,
+  kind: ValueKind.Map,
+  pairs,
+});
+
+const isWhole = (given: PresetValue): boolean =>
+  // Stryker disable next-line ConditionalExpression: only a map carries the whole mark, so the test of its kind only narrows the type
+  given.kind === ValueKind.Map && given.form === MapForm.Whole;
+
 const PresetValue = {
+  commandsOf,
   isFilledFrom,
   isInsertOnly,
+  isWhole,
   itemsOf,
   mapOf,
   placesSlot,
@@ -168,9 +202,10 @@ const PresetValue = {
   settingOf,
   slotOf,
   sortedMapOf,
+  wholeMapOf,
   withoutSlots,
   wordsOf,
 } as const;
 
 export type { PresetPair };
-export { PresetValue, ValueKind };
+export { Joining, MapForm, PresetValue, ValueKind };

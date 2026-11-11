@@ -20,6 +20,7 @@ implementations:
   - js-runtime/bun
   - task-runner
   - tsc
+  - ast-grep
   - biome
   - dependency-cruiser
   - git

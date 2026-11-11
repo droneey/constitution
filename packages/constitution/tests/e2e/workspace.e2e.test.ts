@@ -366,17 +366,20 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
 
   it.each([
     ...PYTHON_PACKAGES,
-  ])('should find nothing when python-check reads %s from its folder', (unit) => {
+  ])('should find nothing when import-linter reads %s from its folder', (unit) => {
     // Arrange
     const folder = workspace();
 
     // Act
     const { passed } = runTool(folder, {
       args: [
-        'src',
+        'PYTHONPATH=src:import_linter_gen',
+        uvBinary('lint-imports'),
+        '--no-cache',
+        '--no-logo',
       ],
       folder: unit,
-      program: uvBinary('python-check'),
+      program: 'env',
     });
 
     // Assert
@@ -394,10 +397,13 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     // Act
     const { output } = runTool(folder, {
       args: [
-        'src',
+        'PYTHONPATH=src:import_linter_gen',
+        uvBinary('lint-imports'),
+        '--no-cache',
+        '--no-logo',
       ],
       folder: 'apps/reports',
-      program: uvBinary('python-check'),
+      program: 'env',
     });
 
     // Assert

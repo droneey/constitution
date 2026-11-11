@@ -174,7 +174,8 @@ describe('DocsPageScreen', () => {
     await renderInDocs(overviewPage());
 
     // Assert
-    // biome-ignore lint/plugin/spec-never-selects-from-the-document: the router is configured with this selector for Fumadocs' scroller, which no role, label or text names, and this one case proves it names the main article's parent
+    // Why: The router is configured with this selector for Fumadocs' scroller, which no role, label or text names, and this one case proves it names the main article's parent.
+    // ast-grep-ignore: spec-never-selects-from-the-document@typescript
     expect(document.querySelector(PAGE_SCROLLER_SELECTOR)).toBe(
       screen.getByRole('main').parentElement,
     );

@@ -1,6 +1,8 @@
 import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
+import { YAML_READ_OPTIONS } from '#/libs/yaml-reading';
+
 import type { FrontMatterParser } from '../../application/contracts';
 import type { FrontMatterRead } from '../../domain/block/entities';
 import { ReadStatus } from '../../domain/shared/entities';
@@ -93,6 +95,7 @@ const writtenOf = (
   const lineCounter = new LineCounter();
   const document = parseDocument(yaml, {
     lineCounter,
+    ...YAML_READ_OPTIONS,
     prettyErrors: false,
     // Stryker disable next-line StringLiteral: YAML 1.2 reads by the core schema where none is named
     schema: 'core',

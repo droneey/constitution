@@ -274,28 +274,6 @@ biome:
             json:
               formatter:
                 trailingCommas: all
-  biome-refuses-empty-verbs:
-    typescript:
-      biome.jsonc:
-        files:
-          includes:
-            - '!!**/biome.${role.generated-file}'
-        plugins:
-          - ./biome.${role.generated-file}/biome-refuses-empty-verbs.${role.grit-rule}
-      # Why: a key and a path, which YAML cannot break.
-      # yamllint disable-line rule:line-length
-      biome.${role.generated-file}/biome-refuses-empty-verbs.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
-  biome-refuses-empty-names:
-    typescript:
-      biome.jsonc:
-        files:
-          includes:
-            - '!!**/biome.${role.generated-file}'
-        plugins:
-          - ./biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}
-      # Why: a key and a path, which YAML cannot break.
-      # yamllint disable-line rule:line-length
-      biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
 core:
   formatters-share-one-indent:
     '*':
@@ -308,15 +286,13 @@ core:
       biome.jsonc:
         formatter:
           lineWidth: 100
-  catch-handles-only-what-it-recognises:
+  failure-never-dropped-unread:
     typescript:
       biome.jsonc:
         linter:
           rules:
             suspicious:
               noEmptyBlockStatements: error
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.${role.grit-rule}
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
@@ -512,14 +488,6 @@ core:
       biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.${role.grit-rule}
-  case-named-should-when:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.${role.grit-rule}]:
-          includes:
-            - '**/${role.colocated-specs}/**'
-            - '**/*.${role.spec-file}.ts'
-            - '**/*.${role.spec-file}.tsx'
   case-holds-no-logic:
     typescript:
       biome.jsonc:
@@ -527,28 +495,6 @@ core:
           rules:
             suspicious:
               noConditionalExpect: error
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.${role.grit-rule}]:
-          includes:
-            - '**/${role.colocated-specs}/**'
-            - '**/*.${role.spec-file}.ts'
-            - '**/*.${role.spec-file}.tsx'
-  case-split-by-arrange-act-assert-comments:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.${role.grit-rule}]:
-          includes:
-            - '**/${role.colocated-specs}/**'
-            - '**/*.${role.spec-file}.ts'
-            - '**/*.${role.spec-file}.tsx'
-  case-pins-meaning-never-wording:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.${role.grit-rule}]:
-          includes:
-            - '**/${role.colocated-specs}/**'
-            - '**/*.${role.spec-file}.ts'
-            - '**/*.${role.spec-file}.tsx'
-            - '**/${role.package-suites}/**'
   debug-output-never-ships:
     typescript:
       biome.jsonc:

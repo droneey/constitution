@@ -70,6 +70,7 @@ describe("the configuration yamllint's presets write", () => {
     expect(files).toStrictEqual([
       '.yamllint.yaml',
       'constitution.yaml',
+      'sgconfig.yaml',
       'valid.yaml',
     ]);
   });

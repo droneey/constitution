@@ -24,7 +24,7 @@ const partTitleMessage = (input: PartTitleInput): string =>
   `The rules to read, part ${input.number} of ${input.count}`;
 
 const partIntroMessage = (): string =>
-  "Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names, and `constitution rules --for <file> --why` prints it. Read the whole file.";
+  "Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule a tool of the check holds comes as its heading alone, since the check names it where it is broken. A rule's statement and its Why stay in the chapter its heading names, and `constitution rules --for <file> --why` prints them. Read the whole file.";
 
 const vocabularyHeadingMessage = (file: string): string => `Vocabulary of ${file}`;
 

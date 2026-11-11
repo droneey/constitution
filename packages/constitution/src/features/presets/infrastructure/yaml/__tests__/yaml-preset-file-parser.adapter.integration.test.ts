@@ -4,7 +4,7 @@ import fc from 'fast-check';
 
 import type { PresetFileRead } from '../../../application/contracts';
 import { PresetFileReadStatus } from '../../../application/contracts';
-import { PresetValue, ValueKind } from '../../../domain/setting/entities';
+import { Joining, PresetValue, ValueKind } from '../../../domain/setting/entities';
 import { createYamlPresetFileParser } from '../yaml-preset-file-parser.adapter';
 
 const parser = createYamlPresetFileParser();
@@ -26,6 +26,7 @@ const texts = fc.oneof(
         '!replace ',
         '!sorted ',
         '!words ',
+        '!commands ',
         '!env ',
         '!!str ',
         '&x ',
@@ -88,6 +89,11 @@ describe('createYamlPresetFileParser', () => {
       '        command: !words',
       '          - bun run',
       '          - slot: checks',
+      '        lint: !commands',
+      '          - biome check',
+      '          - !words',
+      '            - run.sh',
+      '            - slot: members',
       '        overrides.*.<rule>: !inherits rules.<rule>',
       '      .gitignore: !default',
       '        - dist/',
@@ -119,7 +125,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'rules',
                           value: {
-                            isWords: false,
+                            joining: Joining.None,
                             kind: ValueKind.Replace,
                             setting: [
                               'a',
@@ -132,7 +138,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'randomize',
                           value: {
-                            isWords: false,
+                            joining: Joining.None,
                             kind: ValueKind.Default,
                             setting: true,
                           },
@@ -140,7 +146,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'quoted',
                           value: {
-                            isWords: false,
+                            joining: Joining.None,
                             kind: ValueKind.Default,
                             setting: 'no',
                           },
@@ -148,7 +154,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'layout',
                           value: {
-                            isWords: false,
+                            joining: Joining.None,
                             kind: ValueKind.Default,
                             setting: {
                               style: 'space',
@@ -181,7 +187,7 @@ describe('createYamlPresetFileParser', () => {
                             {
                               key: 'check',
                               value: {
-                                isWords: false,
+                                joining: Joining.None,
                                 kind: ValueKind.Default,
                                 setting: 'bun run check',
                               },
@@ -198,9 +204,21 @@ describe('createYamlPresetFileParser', () => {
                           ]),
                         },
                         {
+                          key: 'lint',
+                          value: PresetValue.commandsOf([
+                            'biome check',
+                            [
+                              'run.sh',
+                              {
+                                slot: 'members',
+                              },
+                            ],
+                          ]),
+                        },
+                        {
                           key: 'overrides.*.<rule>',
                           value: {
-                            isWords: false,
+                            joining: Joining.None,
                             kind: ValueKind.Inherit,
                             setting: 'rules.<rule>',
                           },
@@ -210,7 +228,7 @@ describe('createYamlPresetFileParser', () => {
                     {
                       key: '.gitignore',
                       value: {
-                        isWords: false,
+                        joining: Joining.None,
                         kind: ValueKind.Default,
                         setting: [
                           'dist/',
@@ -247,10 +265,46 @@ describe('createYamlPresetFileParser', () => {
         {
           key: 'rule.grit',
           value: {
-            isWords: false,
+            joining: Joining.None,
             kind: ValueKind.Copy,
             setting: '${constitution.path}/presets/biome/plugins/rule.grit',
           },
+        },
+      ]),
+    });
+  });
+
+  it("should read a language's map of settings the whole mark tags as a whole map", () => {
+    // Act
+    const read = parser.parse('a:\n  b:\n    c: !whole\n      d.json:\n        e: 1\n');
+
+    // Assert
+    expect(read).toStrictEqual({
+      status: PresetFileReadStatus.Parsed,
+      value: PresetValue.mapOf([
+        {
+          key: 'a',
+          value: PresetValue.mapOf([
+            {
+              key: 'b',
+              value: PresetValue.mapOf([
+                {
+                  key: 'c',
+                  value: PresetValue.wholeMapOf([
+                    {
+                      key: 'd.json',
+                      value: PresetValue.mapOf([
+                        {
+                          key: 'e',
+                          value: PresetValue.plain(1),
+                        },
+                      ]),
+                    },
+                  ]),
+                },
+              ]),
+            },
+          ]),
         },
       ]),
     });
@@ -301,7 +355,7 @@ describe('createYamlPresetFileParser', () => {
           {
             key: 'a',
             value: {
-              isWords: false,
+              joining: Joining.None,
               kind: ValueKind.Default,
               setting,
             },
@@ -405,6 +459,22 @@ describe('createYamlPresetFileParser', () => {
       text: 'a: !sorted b\n',
     },
     {
+      condition: 'the words mark tags a command that is no list',
+      read: {
+        line: 2,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a: !commands\n  - !words b\n',
+    },
+    {
+      condition: 'a mark tags a command',
+      read: {
+        line: 2,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a: !commands\n  - !default [b]\n',
+    },
+    {
       condition: 'the words mark tags a map',
       read: {
         line: 1,
@@ -435,6 +505,30 @@ describe('createYamlPresetFileParser', () => {
         status: PresetFileReadStatus.Unparsed,
       },
       text: 'a: !copy {b: 1}\n',
+    },
+    {
+      condition: "the whole mark tags a rule's map of languages",
+      read: {
+        line: 3,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a:\n  b: !whole\n    c:\n      d.json:\n        e: 1\n',
+    },
+    {
+      condition: "the whole mark tags a file's settings",
+      read: {
+        line: 5,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a:\n  b:\n    c:\n      d.json: !whole\n        e: 1\n',
+    },
+    {
+      condition: "the whole mark tags a language's text",
+      read: {
+        line: 3,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a:\n  b:\n    c: !whole d\n',
     },
     {
       condition: 'a mark tags a null',

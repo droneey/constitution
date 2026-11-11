@@ -1,0 +1,30 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: field-declares-its-autocomplete@typescript
+language: Tsx
+severity: error
+message: A field for the user's own data declares its purpose with autoComplete
+utils:
+  own-data-type:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: ^type$
+    regex: '\b(?:email|tel|password|url)\b'
+  declared-autocomplete:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: ^autoComplete$
+rule:
+  any:
+    - kind: jsx_self_closing_element
+    - kind: jsx_opening_element
+  all:
+    - has:
+        field: name
+        regex: ^input$
+    - has:
+        matches: own-data-type
+    - not:
+        has:
+          matches: declared-autocomplete

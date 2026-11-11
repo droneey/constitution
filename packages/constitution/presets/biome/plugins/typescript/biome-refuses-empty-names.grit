@@ -1,6 +1,0 @@
-language js
-
-JsIdentifierBinding() as $name where {
-  $name <: or { `${term.empty-names}` },
-  register_diagnostic(span=$name, message="[biome-refuses-empty-names] Name what it holds: an empty word says nothing", severity="error")
-}

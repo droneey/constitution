@@ -1,0 +1,42 @@
+bun-test:
+  bun-spec-mocks-no-module:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/bun-spec-mocks-no-module.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/bun-spec-mocks-no-module.yaml
+  bun-spec-never-sleeps:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/bun-spec-never-sleeps.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/bun-spec-never-sleeps.yaml
+  bun-test-retries-no-case:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/bun-test-retries-no-case.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/bun-test-retries-no-case.yaml
+  strict-matcher-only:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/strict-matcher-only.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/strict-matcher-only.yaml
+core:
+  test-runs-unconditionally:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/test-runs-unconditionally.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/test-runs-unconditionally.yaml

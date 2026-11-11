@@ -20,8 +20,10 @@
   },
   "scripts": {
     "check": "bun run --sequential 'check:*'",
-    "check:lint": "biome check --error-on-warnings",
+    "check:format": "biome format",
+    "check:lint": "ast-grep scan && biome check --formatter-enabled=false --error-on-warnings",
     "fix": "bun run --sequential 'fix:*'",
+    "fix:format": "biome format --write",
     "fix:lint": "biome check --write"
   },
   "devDependencies": {

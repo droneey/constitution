@@ -1,6 +1,7 @@
 import { parseDocument } from 'yaml';
 
 import { attempted } from '#/kernel/utils';
+import { YAML_READ_OPTIONS } from '#/libs/yaml-reading';
 
 import type { BlockCardParser } from '../../application/contracts';
 import type { BlockCard } from '../../domain/block-set/entities';
@@ -13,6 +14,7 @@ const isReferenceError = (error: unknown): error is ReferenceError =>
 const card = (yaml: string): BlockCard => {
   // Stryker disable next-line ObjectLiteral: YAML 1.2 reads by the core schema where none is named
   const document = parseDocument(yaml, {
+    ...YAML_READ_OPTIONS,
     // Stryker disable next-line StringLiteral: an empty schema name names none, and YAML 1.2 then reads by the core schema
     schema: 'core',
   });

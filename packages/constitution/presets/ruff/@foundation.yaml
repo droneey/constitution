@@ -128,13 +128,15 @@ core:
               extend-select:
                 - S
   formatters-share-one-indent:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           ruff:
+            format:
+              indent-style: space
             indent-width: 2
   formatters-share-one-width:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           ruff:
@@ -234,14 +236,17 @@ python:
           ruff:
             lint:
               extend-select:
-                - S
+                - S101
+              extend-per-file-ignores:
+                ${role.package-suites}/**:
+                  - S101
   '*':
     python:
       pyproject.toml:
         tool:
           ruff:
             lint:
-              extend-ignore:
+              ignore:
                 - D1
               extend-select:
                 - D
@@ -415,4 +420,3 @@ ruff:
                 ${role.package-suites}/**:
                   - INP001
                   - PLR2004
-                  - S101

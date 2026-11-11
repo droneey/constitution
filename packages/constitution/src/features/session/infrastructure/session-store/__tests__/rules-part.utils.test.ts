@@ -155,11 +155,22 @@ const goldenReading: OwedReading = {
       statement: 'A function does one thing.',
       why: 'One thing is read, named and tested at once.',
     }),
+    ruleOf({
+      file: functionsFile,
+      index: 6,
+      isHeld: true,
+      lowered: {
+        level: Level.Should,
+        reason: 'generated code',
+      },
+      statement: 'A function holds at most 100 lines.',
+      tightens: RuleSlug.create('rule-5'),
+    }),
   ],
 };
 
 describe('partsOf', () => {
-  it('should give the vocabularies first, then the statements at the level that binds here, MUST first and with no Why, as the golden file shows', async () => {
+  it('should give the vocabularies first, then the statements at the level that binds here, MUST first and with no Why, and a rule a tool holds as its heading alone, as the golden file shows', async () => {
     // Act
     const [text = ''] = textsOf(goldenReading);
 
@@ -441,7 +452,7 @@ describe('readingTextOf', () => {
       withWhy: true,
     },
   ])(
-    'should give the vocabularies, then the statements MUST first, unmarked and in one text, each with its Why $withWhy',
+    'should give the vocabularies, then the statements MUST first, unmarked and in one text, a rule a tool holds whole too, each with its Why $withWhy',
     ({ expected, withWhy }) => {
       // Arrange
       const reading: OwedReading = {
@@ -457,6 +468,7 @@ describe('readingTextOf', () => {
           }),
           ruleOf({
             index: 2,
+            isHeld: true,
           }),
         ],
       };

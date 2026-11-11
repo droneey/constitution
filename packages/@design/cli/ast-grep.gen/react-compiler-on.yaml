@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: react-compiler-on@typescript
+language: Tsx
+severity: error
+message: >-
+  Leave memoisation to the React Compiler; an effect's callback is wrapped in useEffectEvent
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  opted-out:
+    kind: expression_statement
+    regex: ^['"]use no memo['"];?$
+    not:
+      follows:
+        stopBy: end
+        not:
+          any:
+            - kind: comment
+            - regex: ^\{$
+    any:
+      - follows:
+          kind: comment
+      - precedes:
+          kind: comment
+  opted-out-scope:
+    any:
+      - kind: statement_block
+        inside:
+          field: body
+          any:
+            - kind: function_declaration
+            - kind: function_expression
+            - kind: arrow_function
+      - kind: program
+    has:
+      matches: opted-out
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: ^(?:React\.)?(?:useMemo|useCallback|memo)$
+  not:
+    inside:
+      stopBy: end
+      matches: opted-out-scope

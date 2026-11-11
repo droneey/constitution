@@ -1,0 +1,15 @@
+schema:
+  schema-library-home-is-where-input-is-parsed:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=layer-imports-dependencies-by-its-role]:
+              homes:
+                pydantic:
+                  - edge
+                  - ${role.presentation-layer}
+                  - ${role.shared-code}
+                pydantic_settings:
+                  - edge
+                  - ${role.shared-code}

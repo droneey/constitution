@@ -1,0 +1,27 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: strict-matcher-only@typescript
+language: Tsx
+severity: error
+message: >-
+  Compare the part of the outcome the case is about with toStrictEqual: toEqual, toMatchObject,
+  objectContaining, arrayContaining, toBeTruthy and toBeFalsy pass on a partial or loose match
+files:
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: member_expression
+    any:
+      - has:
+          field: property
+          regex: ^(?:toEqual|toMatchObject|toBeTruthy|toBeFalsy)$
+      - all:
+          - has:
+              field: property
+              regex: ^(?:objectContaining|arrayContaining)$
+          - has:
+              field: object
+              regex: ^expect(?:\s*\.\s*not)?$

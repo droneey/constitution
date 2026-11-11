@@ -7,7 +7,7 @@ mutmut:
             do_not_mutate_patterns:
               - ^\s*logger\.(debug|info|warning|error|exception|critical)\(
   mutants-run-the-specs-the-gate-counts:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           mutmut:

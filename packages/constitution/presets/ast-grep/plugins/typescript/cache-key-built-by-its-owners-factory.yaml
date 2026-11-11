@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cache-key-built-by-its-owners-factory@typescript
+language: Tsx
+severity: error
+message: >-
+  Take the key from the key factory: an inline key drifts from it and an invalidation misses it
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'
+  - '**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.tsx'
+utils:
+  inline-key:
+    kind: array
+    any:
+      - inside:
+          kind: pair
+          field: value
+          has:
+            field: key
+            kind: property_identifier
+            regex: ^queryKey$
+      - nthChild: 1
+        inside:
+          kind: arguments
+          inside:
+            kind: call_expression
+            has:
+              field: function
+              kind: member_expression
+              has:
+                field: property
+                regex: ^(?:getQueryData|getQueryState|setQueryData)$
+rule:
+  matches: inline-key

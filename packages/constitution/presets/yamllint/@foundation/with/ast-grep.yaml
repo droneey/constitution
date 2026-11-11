@@ -1,0 +1,9 @@
+ast-grep:
+  '*':
+    yaml:
+      .yamllint.yaml:
+        ignore-from-file:
+          - .yamlignore
+      .yamlignore:
+        - ast-grep.${role.generated-file}/
+        - ast-grep-utils.${role.generated-file}/

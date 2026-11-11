@@ -2,15 +2,19 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
+import type { PresetFileRead } from '#/features/presets';
+import { PresetFileReadStatus } from '#/features/presets';
 import type { ActiveRead } from '#/features/session';
 import { ActiveReadStatus } from '#/features/session';
 import { Level } from '#/kernel/constants';
+import type { WholeHolds } from '#/kernel/entities';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
 import { readActiveOf, realPathOf, rulesInOf } from '../gate-rules.utils';
 import {
   chapterPath,
   chapterText,
+  gateRulesPortsOf,
   projectPortsOf,
   projectTreeOf,
   UNPARSED_CONFIG,
@@ -145,7 +149,7 @@ describe('readActiveOf', () => {
     },
   ])('should give $status when $condition', ({ ports, status }) => {
     // Act
-    const read = readActiveOf(ports, projectPlace);
+    const read = readActiveOf(gateRulesPortsOf(ports), projectPlace);
 
     // Assert
     expect(read.status).toBe(status);
@@ -154,6 +158,9 @@ describe('readActiveOf', () => {
 
 const levelsOf = (read: ActiveRead): ReadonlyMap<string, Level> | undefined =>
   read.status === ActiveReadStatus.Read ? read.rules.levels : undefined;
+
+const heldOf = (read: ActiveRead): WholeHolds | undefined =>
+  read.status === ActiveReadStatus.Read ? read.rules.held : undefined;
 
 describe('readActiveOf, with a rule and a failure of its own', () => {
   it("should give each rule's level as the release reads it", () => {
@@ -167,7 +174,7 @@ describe('readActiveOf, with a rule and a failure of its own', () => {
     );
 
     // Act
-    const read = readActiveOf(ports, projectPlace);
+    const read = readActiveOf(gateRulesPortsOf(ports), projectPlace);
 
     // Assert
     expect(levelsOf(read)).toStrictEqual(
@@ -184,6 +191,66 @@ describe('readActiveOf, with a rule and a failure of its own', () => {
     );
   });
 
+  it("should read the release's preset files to find the rules a tool holds whole", () => {
+    // Arrange
+    const parsed: string[] = [];
+    const ports = {
+      ...gateRulesPortsOf(
+        projectPortsOf(
+          projectTreeOf({
+            files: {
+              [`${releaseFolderPath}/presets/bun/@foundation.yaml`]: 'bun: {}\n',
+            },
+          }),
+        ),
+      ),
+      presetFiles: {
+        parse: (text: string): PresetFileRead => {
+          parsed.push(text);
+
+          return {
+            status: PresetFileReadStatus.Unparsed,
+          };
+        },
+      },
+    };
+
+    // Act
+    readActiveOf(ports, projectPlace);
+
+    // Assert
+    expect(parsed).toStrictEqual([
+      'bun: {}\n',
+    ]);
+  });
+
+  it('should give every rule in full when reading the presets fails', () => {
+    // Arrange
+    const ports = {
+      ...gateRulesPortsOf(
+        projectPortsOf(
+          projectTreeOf({
+            files: {
+              [chapterPath]: chapterText,
+              [`${releaseFolderPath}/presets/bun/@foundation.yaml`]: 'bun: {}\n',
+            },
+          }),
+        ),
+      ),
+      presetFiles: {
+        parse: () => {
+          throw new TypeError('a defect');
+        },
+      },
+    };
+
+    // Act
+    const read = readActiveOf(ports, projectPlace);
+
+    // Assert
+    expect(heldOf(read)).toStrictEqual(new Map());
+  });
+
   it('should let through a failure that is no failure to read the project', () => {
     // Arrange
     const ports = {
@@ -196,7 +263,7 @@ describe('readActiveOf, with a rule and a failure of its own', () => {
     };
 
     // Act
-    const read = (): unknown => readActiveOf(ports, projectPlace);
+    const read = (): unknown => readActiveOf(gateRulesPortsOf(ports), projectPlace);
 
     // Assert
     expect(read).toThrow(new TypeError('a defect'));

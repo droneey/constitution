@@ -32,14 +32,14 @@ pytest:
             filterwarnings:
               - error
   test-modules-imported-by-importlib:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           pytest:
             addopts:
               - --import-mode=importlib
   integration-folders-not-collected:
-    python:
+    python: !whole
       pyproject.toml:
         tool:
           pytest:

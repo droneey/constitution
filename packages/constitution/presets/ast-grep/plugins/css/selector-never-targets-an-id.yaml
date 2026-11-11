@@ -1,0 +1,10 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: selector-never-targets-an-id@css
+language: Css
+severity: error
+message: >-
+  Style by class or attribute: an id selector outweighs every class and styles one element only
+files:
+  - '**/*.css'
+rule:
+  kind: id_selector

@@ -53,6 +53,7 @@ interface EntryText {
 type PresetEntry = EntryTarget & {
   readonly block: BlockId;
   readonly index: number;
+  readonly isWhole: boolean;
   readonly language: LanguageKey;
   readonly rule: RuleKey;
   readonly set: PresetSet;

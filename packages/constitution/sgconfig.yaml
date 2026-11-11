@@ -1,0 +1,12 @@
+# ast-grep
+languageGlobs:
+  tsx:
+    - '*.ts'
+    - '*.mts'
+    - '*.cts'
+ruleDirs:
+  - ast-grep.gen
+
+# typescript
+utilDirs:
+  - ast-grep-utils.gen

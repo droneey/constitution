@@ -6,6 +6,7 @@ import type { ListKey, RequiredConfigKey } from '#/kernel/constants';
 import { ConfigKey, LIST_KEYS, REQUIRED_CONFIG_KEYS } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { fieldsOf } from '#/kernel/utils';
+import { YAML_READ_OPTIONS } from '#/libs/yaml-reading';
 
 import type { ConfigParser } from '../../application/contracts';
 import type { ConfigRead, DeclaredUnit } from '../../domain/project-config/entities';
@@ -114,6 +115,7 @@ const parse = (text: string): ConfigRead => {
   const lineCounter = new LineCounter();
   const document = parseDocument(text, {
     lineCounter,
+    ...YAML_READ_OPTIONS,
     // Stryker disable next-line StringLiteral: YAML 1.2 reads by the core schema where none is named
     schema: 'core',
   });

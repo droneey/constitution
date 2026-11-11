@@ -1,0 +1,44 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: module-level-text-holds-the-message@typescript
+language: Tsx
+severity: error
+message: >-
+  Declare a module-level message with msg and translate it where it renders: t at module level runs
+  once, before the locale is active
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  translation:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:t|plural|select|selectOrdinal)$
+  lingui-macro-imported:
+    kind: import_statement
+    has:
+      field: source
+      regex: ^["']@lingui/core/macro["']$
+  run-later:
+    any:
+      - kind: function_declaration
+      - kind: generator_function_declaration
+      - kind: function_expression
+      - kind: generator_function
+      - kind: arrow_function
+      - kind: method_definition
+      - kind: public_field_definition
+        not:
+          regex: ^(?:@[\s\S]*\s)?(?:(?:declare|public|protected|private|readonly|override|accessor)\s+)*static\b
+rule:
+  matches: translation
+  all:
+    - inside:
+        stopBy: end
+        kind: program
+        has:
+          matches: lingui-macro-imported
+    - not:
+        inside:
+          stopBy: end
+          matches: run-later

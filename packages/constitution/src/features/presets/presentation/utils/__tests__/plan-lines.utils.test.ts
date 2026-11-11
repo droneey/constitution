@@ -17,6 +17,7 @@ const entry: PresetEntry = {
   ...EntryTarget.of('biome.json'),
   block: BlockId.create('biome'),
   index: 0,
+  isWhole: false,
   language: EVERY,
   rule: EVERY,
   set: {

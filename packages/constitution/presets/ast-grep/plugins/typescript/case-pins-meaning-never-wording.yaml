@@ -1,0 +1,40 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: case-pins-meaning-never-wording@typescript
+language: Tsx
+severity: error
+message: >-
+  Compare what the outcome means — its code, its subject, the values it names — and pin the
+  wording once, in the golden file of its renderer
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  # Why: prose is three words in a row; a code, a path, an id or a number is not.
+  prose:
+    any:
+      - kind: string
+      - kind: template_string
+      - kind: regex
+    regex: '\p{L}[\p{L}\p{N}''’-]* +\p{L}[\p{L}\p{N}''’-]* +\p{L}[\p{L}\p{N}''’-]*'
+  matcher-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^(?:toBe|toEqual|toStrictEqual|toContain|toMatch|toStartWith|toEndWith|toThrow(?:Error)?)$
+# Why: a value a case reads from a row of its table is data, and the golden file of its renderer
+# pins the wording.
+rule:
+  matches: prose
+  nthChild: 1
+  inside:
+    kind: arguments
+    not:
+      has:
+        nthChild: 2
+    inside:
+      matches: matcher-call

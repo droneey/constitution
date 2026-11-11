@@ -76,6 +76,9 @@ target-version = "py314"
 indent-width = 2
 line-length = 100
 
+# import-linter
+extend-exclude = ["import_linter_gen"]
+
 [tool.ruff.lint]
 extend-select = [
   # ruff
@@ -100,6 +103,7 @@ extend-select = [
   "G002",
   "G003",
   "G004",
+  "S101",
   "D",
   "SLF",
   "TC",
@@ -126,8 +130,7 @@ extend-select = [
 ]
 
 # ruff
-extend-ignore = ["D1"]
-ignore = ["PLR09"]
+ignore = ["D1", "PLR09"]
 select = [
   "PGH",
   "RUF",
@@ -169,7 +172,7 @@ select = [
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"tests/**" = ["INP001", "PLR2004", "S101"]
+"tests/**" = ["S101", "INP001", "PLR2004"]
 
 [tool.ruff.lint.pylint]
 max-positional-args = 3
@@ -222,16 +225,13 @@ mark-parentheses = false
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "single"
+indent-style = "space"
 
 [tool.poe]
 # task-runner/poe
 executor = "simple"
 
 [tool.poe.tasks]
-# biome
-"check:biome" = "bunx --bun biome check --error-on-warnings"
-"fix:biome" = "bunx --bun biome check --write"
-
 # complexipy
 "check:complexity" = "complexipy src tests"
 
@@ -241,26 +241,11 @@ executor = "simple"
 # pytest
 "test:specs" = "pytest --cov -o \"norecursedirs=.* e2e\""
 
-# python-check
-"check:code" = "python-check src tests"
-
-# ruff
-"check:format" = "ruff format --check"
-"check:lint" = "ruff check"
-"fix:format" = "ruff format"
-"fix:lint" = "ruff check --fix"
-
 # ty
 "check:types" = "ty check"
 
 # vulture
 "check:unused" = "vulture"
-
-# tombi
-"fix:toml" = "tombi format"
-
-# yamllint
-"check:yaml" = "yamllint --strict ."
 
 # mutmut
 "mutate:branch" = "mutmut-check"
@@ -268,10 +253,6 @@ executor = "simple"
 
 # jscpd
 "check:duplicates" = "bunx --bun jscpd"
-
-# tombi
-[tool.poe.tasks."check:toml"]
-shell = "tombi format --check && tombi lint"
 
 [tool.poe.tasks.build]
 shell = "mkdir -p dist && python -m zipapp src -m droneey_mutation_check_python.main:main -o dist/mutmut-check.pyz"
@@ -286,6 +267,31 @@ shell = "../../../.droneey/constitution/presets/task-runner/poe/plugins/shell/ta
 [tool.poe.tasks.fix]
 shell = "../../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh fix"
 
+[tool.poe.tasks.pack]
+cmd = "scripts/pack.sh"
+
+# biome
+[tool.poe.tasks."check:format"]
+shell = "bunx --bun biome format && ruff format --check && tombi format --check"
+
+[tool.poe.tasks."fix:format"]
+shell = "bunx --bun biome format --write && ruff format && tombi format"
+
+# ast-grep
+[tool.poe.tasks."check:lint"]
+shell = "ast-grep scan && bunx --bun biome check --formatter-enabled=false --error-on-warnings && ruff check && tombi lint && ../../../.droneey/constitution/presets/plugins/shell/run-on-files.sh '*.yaml' '*.yml' -- yamllint --strict --"
+
+# biome
+[tool.poe.tasks."fix:lint"]
+shell = "bunx --bun biome check --write && ruff check --fix"
+
+# import-linter
+[tool.poe.tasks."check:architecture"]
+cmd = "lint-imports --no-logo"
+
+[tool.poe.tasks."check:architecture".env]
+PYTHONPATH = "import_linter_gen"
+
 # ty
 [tool.ty.rules]
 all = "error"
@@ -296,5 +302,419 @@ respect-type-ignore-comments = false
 [tool.ty.terminal]
 error-on-warning = true
 
-[tool.poe.tasks.pack]
-cmd = "scripts/pack.sh"
+# import-linter
+[tool.importlinter]
+include_external_packages = true
+contract_types = [
+  "layer-imports-dependencies-by-its-role: layer_imports_dependencies_by_its_role.LayerImportsDependenciesByItsRoleContract",
+  "relative-imports-stay-in-the-module: relative_imports_stay_in_the_module.RelativeImportsStayInTheModuleContract"
+]
+root_packages = ["droneey_mutation_check_python"]
+
+[[tool.importlinter.contracts]]
+name = "module-imports-form-no-cycle"
+type = "acyclic_siblings"
+ancestors = ["droneey_mutation_check_python"]
+
+[[tool.importlinter.contracts]]
+name = "kernel-imports-only-itself"
+type = "forbidden"
+source_modules = ["*.kernel"]
+forbidden_modules = [
+  "*.infrastructure",
+  "*.composition",
+  "*.entrypoints",
+  "*.features",
+  "*.integrations",
+  "*.libs",
+  "*.root",
+  "*.shared"
+]
+
+[[tool.importlinter.contracts]]
+name = "libs-import-no-code-of-the-program"
+type = "forbidden"
+source_modules = ["*.libs"]
+forbidden_modules = [
+  "*.infrastructure",
+  "*.composition",
+  "*.entrypoints",
+  "*.features",
+  "*.integrations",
+  "*.kernel",
+  "*.root",
+  "*.shared"
+]
+
+[[tool.importlinter.contracts]]
+name = "shared-imports-no-feature-adapter-port-or-root"
+type = "forbidden"
+source_modules = ["*.shared"]
+forbidden_modules = [
+  "*.infrastructure",
+  "*.composition",
+  "*.features",
+  "*.integrations",
+  "*.kernel.contracts",
+  "*.root"
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "domain-imports-only-itself-and-the-kernel"
+type = "forbidden"
+source_modules = ["*.features.*.domain"]
+forbidden_modules = [
+  "*.infrastructure",
+  "*.composition",
+  "*.entrypoints",
+  "*.features.*.infrastructure",
+  "*.features.*.application",
+  "*.features.*.presentation",
+  "*.kernel.contracts",
+  "*.integrations",
+  "*.libs",
+  "*.root",
+  "*.shared"
+]
+
+[[tool.importlinter.contracts]]
+name = "application-imports-only-its-domain-the-kernel-and-composed-surfaces"
+type = "forbidden"
+source_modules = ["*.composition.*.application", "*.features.*.application"]
+forbidden_modules = [
+  "*.infrastructure",
+  "*.composition.*.infrastructure",
+  "*.composition.*.presentation",
+  "*.features.*.infrastructure",
+  "*.features.*.presentation",
+  "*.entrypoints",
+  "*.integrations",
+  "*.libs",
+  "*.root",
+  "*.shared"
+]
+
+[[tool.importlinter.contracts]]
+name = "feature-never-imports-a-feature"
+type = "independence"
+modules = ["*.features.*"]
+
+[[tool.importlinter.contracts]]
+name = "binding-unit-calls-only-use-cases"
+type = "forbidden"
+source_modules = ["*.composition.*.presentation", "*.features.*.presentation"]
+forbidden_modules = ["*.composition.*.application.contracts", "*.features.*.application.contracts"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "domain-model-changed-only-through-a-use-case.presentation"
+name = "domain-model-changed-only-through-a-use-case"
+type = "forbidden"
+source_modules = ["*.composition.*.presentation", "*.features.*.presentation"]
+forbidden_modules = ["*.composition.*.domain.*.transitions", "*.features.*.domain.*.transitions"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "domain-model-changed-only-through-a-use-case.adapters"
+name = "domain-model-changed-only-through-a-use-case"
+type = "forbidden"
+source_modules = ["*.composition.*.infrastructure", "*.features.*.infrastructure"]
+forbidden_modules = ["*.composition.*.domain.*.transitions", "*.features.*.domain.*.transitions"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "composition-module-never-imports-another"
+type = "independence"
+modules = ["*.composition.*"]
+
+[[tool.importlinter.contracts]]
+id = "adapter-imports-only-its-owners-domain-ports-or-shared-layers.adapters-apart"
+name = "adapter-imports-only-its-owners-domain-ports-or-shared-layers"
+type = "independence"
+modules = [
+  "*.infrastructure.*",
+  "*.composition.*.infrastructure.*",
+  "*.features.*.infrastructure.*"
+]
+
+[[tool.importlinter.contracts]]
+id = "adapter-imports-only-its-owners-domain-ports-or-shared-layers.outer-layers"
+name = "adapter-imports-only-its-owners-domain-ports-or-shared-layers"
+type = "forbidden"
+source_modules = ["*.infrastructure", "*.features.*.infrastructure"]
+forbidden_modules = [
+  "*.composition",
+  "*.entrypoints",
+  "*.features.*.application.use_cases",
+  "*.features.*.presentation",
+  "*.root"
+]
+
+[[tool.importlinter.contracts]]
+id = "adapter-imports-only-its-owners-domain-ports-or-shared-layers.shared-adapters"
+name = "adapter-imports-only-its-owners-domain-ports-or-shared-layers"
+type = "forbidden"
+source_modules = ["*.infrastructure"]
+forbidden_modules = ["*.features"]
+
+[[tool.importlinter.contracts]]
+id = "adapter-imports-only-its-owners-domain-ports-or-shared-layers.composition-adapters"
+name = "adapter-imports-only-its-owners-domain-ports-or-shared-layers"
+type = "forbidden"
+source_modules = ["*.composition.*.infrastructure"]
+forbidden_modules = [
+  "*.composition.*.application.use_cases",
+  "*.composition.*.presentation",
+  "*.entrypoints",
+  "*.features.*.infrastructure",
+  "*.features.*.application.use_cases",
+  "*.features.*.presentation",
+  "*.root"
+]
+
+[[tool.importlinter.contracts]]
+name = "root-imported-only-by-entry-files"
+type = "protected"
+protected_modules = ["*.root"]
+allowed_importers = ["*.main", "*.entrypoints.*.main"]
+
+[[tool.importlinter.contracts]]
+name = "adapter-imported-only-by-the-root"
+type = "protected"
+protected_modules = [
+  "*.infrastructure",
+  "*.infrastructure.**",
+  "*.composition.*.infrastructure",
+  "*.composition.*.infrastructure.**",
+  "*.features.*.infrastructure",
+  "*.features.*.infrastructure.**"
+]
+allowed_importers = [
+  "*",
+  "*.root",
+  "*.root.**",
+  "*.infrastructure",
+  "*.infrastructure.**",
+  "*.composition.*.infrastructure",
+  "*.composition.*.infrastructure.**",
+  "*.features.*.infrastructure",
+  "*.features.*.infrastructure.**"
+]
+as_packages = false
+
+[[tool.importlinter.contracts]]
+id = "entrypoint-never-imported.entrypoints"
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.entrypoints"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+id = "entrypoint-never-imported.entrypoints-apart"
+name = "entrypoint-never-imported"
+type = "independence"
+modules = ["*.entrypoints.*"]
+
+[[tool.importlinter.contracts]]
+id = "entrypoint-never-imported.dunder-main"
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.__main__"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+id = "entrypoint-never-imported.main"
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.main"]
+allowed_importers = ["*.__main__"]
+
+[[tool.importlinter.contracts]]
+id = "integration-never-imported.integrations"
+name = "integration-never-imported"
+type = "protected"
+protected_modules = ["*.integrations"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+id = "integration-never-imported.integrations-apart"
+name = "integration-never-imported"
+type = "independence"
+modules = ["*.integrations.*"]
+
+[[tool.importlinter.contracts]]
+name = "import-points-inward"
+type = "forbidden"
+source_modules = ["*.infrastructure", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.composition"]
+
+[[tool.importlinter.contracts]]
+id = "query-and-command-apart.queries"
+name = "query-and-command-apart"
+type = "forbidden"
+source_modules = ["**.use_cases.queries", "**.bindings.queries"]
+forbidden_modules = ["**.use_cases.commands", "**.bindings.commands"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "query-and-command-apart.commands"
+name = "query-and-command-apart"
+type = "forbidden"
+source_modules = ["**.use_cases.commands", "**.bindings.commands"]
+forbidden_modules = ["**.use_cases.queries", "**.bindings.queries"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "layer-imports-dependencies-by-its-role"
+type = "layer-imports-dependencies-by-its-role"
+feature_form_layers = ["features", "composition"]
+pure_layers = ["kernel"]
+pure_module_layers = ["domain", "application"]
+edge_layers = ["infrastructure", "integrations", "libs", "root"]
+edge_module_layers = ["infrastructure"]
+module_layers = ["domain", "application", "infrastructure", "presentation"]
+entry = "main"
+extra_entry = "entrypoints"
+
+[[tool.importlinter.contracts]]
+name = "surface-only-on-a-module-or-one-kind"
+type = "forbidden"
+source_modules = ["**"]
+forbidden_modules = [
+  "droneey_mutation_check_python",
+  "*.infrastructure",
+  "*.composition",
+  "*.composition.*.infrastructure",
+  "*.composition.*.application",
+  "*.composition.*.presentation",
+  "*.composition.*.domain",
+  "*.composition.*.domain.*",
+  "*.features",
+  "*.features.*.infrastructure",
+  "*.features.*.application",
+  "*.features.*.presentation",
+  "*.features.*.domain",
+  "*.features.*.domain.*",
+  "*.integrations",
+  "*.kernel",
+  "*.libs",
+  "*.shared"
+]
+as_packages = false
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.kernel"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.kernel.*.*"]
+allowed_importers = ["*.kernel.*"]
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.adapters"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.infrastructure.*.*"]
+allowed_importers = ["*.infrastructure.*"]
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.composition"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.composition.*.*"]
+allowed_importers = ["*.composition.*"]
+ignore_imports = [
+  "*.root -> *.composition.*.infrastructure.*",
+  "*.root.** -> *.composition.*.infrastructure.*",
+  "* -> *.composition.*.infrastructure.*"
+]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.features"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.features.*.*"]
+allowed_importers = ["*.features.*"]
+ignore_imports = [
+  "*.root -> *.features.*.infrastructure.*",
+  "*.root.** -> *.features.*.infrastructure.*",
+  "* -> *.features.*.infrastructure.*"
+]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.libs"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.libs.*.*"]
+allowed_importers = ["*.libs.*"]
+
+[[tool.importlinter.contracts]]
+id = "module-reached-only-through-its-surface.shared"
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.shared.*.*"]
+allowed_importers = ["*.shared.*"]
+
+[[tool.importlinter.contracts]]
+name = "relative-imports-stay-in-the-module"
+type = "relative-imports-stay-in-the-module"
+feature_form_layers = ["features", "composition"]
+
+[[tool.importlinter.contracts]]
+name = "standard-module-with-an-effect-imported-only-by-the-edge"
+type = "forbidden"
+source_modules = [
+  "*.composition.*.presentation",
+  "*.composition.*.application",
+  "*.composition.*.domain",
+  "*.features.*.presentation",
+  "*.features.*.application",
+  "*.features.*.domain",
+  "*.kernel",
+  "*.shared"
+]
+forbidden_modules = [
+  "ctypes",
+  "curses",
+  "dbm",
+  "fcntl",
+  "fileinput",
+  "ftplib",
+  "getpass",
+  "glob",
+  "grp",
+  "imaplib",
+  "mmap",
+  "multiprocessing",
+  "os",
+  "platform",
+  "poplib",
+  "pty",
+  "pwd",
+  "random",
+  "resource",
+  "runpy",
+  "secrets",
+  "select",
+  "selectors",
+  "shelve",
+  "shutil",
+  "signal",
+  "smtplib",
+  "socket",
+  "socketserver",
+  "sqlite3",
+  "ssl",
+  "subprocess",
+  "syslog",
+  "tempfile",
+  "termios",
+  "time",
+  "tty",
+  "webbrowser",
+  "wsgiref",
+  "xmlrpc"
+]

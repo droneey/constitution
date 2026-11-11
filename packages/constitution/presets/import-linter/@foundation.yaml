@@ -7,7 +7,7 @@ core:
             contracts[name=module-imports-form-no-cycle]:
               type: acyclic_siblings
               ancestors:
-                - ${package.name}
+                - ${package.importName}
 import-linter:
   '*':
     python:
@@ -15,4 +15,4 @@ import-linter:
         tool:
           importlinter:
             root_packages:
-              - ${package.name}
+              - ${package.importName}

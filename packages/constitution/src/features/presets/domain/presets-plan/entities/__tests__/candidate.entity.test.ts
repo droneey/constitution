@@ -19,6 +19,7 @@ const entryOf = (text: string): PresetEntry & TargetFile => ({
   writtenPath: 'biome.json',
   block: BlockId.create('biome'),
   index: 0,
+  isWhole: false,
   language: EVERY,
   rule: EVERY,
   set: {

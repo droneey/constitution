@@ -1,0 +1,154 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: name-cased-by-the-typescript-conventions@typescript
+language: Tsx
+severity: error
+message: >-
+  A module-level constant holding a literal is SCREAMING_SNAKE_CASE; one computed at run time is
+  camelCase, or PascalCase for a component or the companion of a type of its name
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  screaming-snake-case:
+    kind: identifier
+    regex: ^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$
+  pascal-case:
+    kind: identifier
+    regex: ^[A-Z][A-Za-z0-9]*$
+  primitive-literal:
+    any:
+      - kind: string
+      - kind: number
+      - kind: 'true'
+      - kind: 'false'
+      - kind: regex
+      - kind: unary_expression
+        has:
+          field: argument
+          kind: number
+      - kind: template_string
+        not:
+          has:
+            kind: template_substitution
+  as-const:
+    kind: as_expression
+    regex: \bas\s+const$
+    has:
+      nthChild: 1
+      any:
+        - matches: primitive-literal
+        - kind: object
+        - kind: array
+  literal:
+    any:
+      - matches: primitive-literal
+      - matches: as-const
+      - kind: satisfies_expression
+        has:
+          nthChild: 1
+          matches: as-const
+  component-value:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: call_expression
+        has:
+          field: function
+          regex: ^(?:[A-Za-z]+\.)?(?:memo|forwardRef|lazy|createContext|assign)$
+  companion-of-a-type:
+    kind: variable_declarator
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        any:
+          - kind: type_alias_declaration
+            has:
+              field: name
+              pattern: $NAME
+          - kind: interface_declaration
+            has:
+              field: name
+              pattern: $NAME
+  exported-by-a-clause:
+    kind: variable_declarator
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        kind: export_specifier
+        has:
+          field: name
+          pattern: $NAME
+  module-level-constant:
+    kind: variable_declarator
+    has:
+      field: value
+      pattern: $_
+    inside:
+      kind: lexical_declaration
+      regex: ^const\s
+    not:
+      inside:
+        stopBy: end
+        any:
+          - kind: statement_block
+            not:
+              inside:
+                any:
+                  - kind: internal_module
+                  - kind: module
+          - kind: class_static_block
+          - kind: for_statement
+          - kind: for_in_statement
+  holds-a-literal:
+    kind: variable_declarator
+    has:
+      field: value
+      matches: literal
+rule:
+  kind: identifier
+  all:
+    - pattern: $NAME
+    - inside:
+        field: name
+        matches: module-level-constant
+        any:
+          - all:
+              - matches: holds-a-literal
+              - not:
+                  has:
+                    field: name
+                    matches: screaming-snake-case
+              - not:
+                  all:
+                    - not:
+                        has:
+                          field: value
+                          matches: primitive-literal
+                    - matches: companion-of-a-type
+          - all:
+              - not:
+                  matches: holds-a-literal
+              - any:
+                  - has:
+                      field: name
+                      matches: screaming-snake-case
+                  - all:
+                      - has:
+                          field: name
+                          matches: pascal-case
+                      - not:
+                          has:
+                            field: value
+                            matches: component-value
+                      - not:
+                          inside:
+                            stopBy: end
+                            kind: export_statement
+                      - not:
+                          matches: companion-of-a-type
+                      - not:
+                          matches: exported-by-a-clause

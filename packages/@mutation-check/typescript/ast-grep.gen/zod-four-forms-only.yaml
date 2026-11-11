@@ -1,0 +1,58 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: zod-four-forms-only@typescript
+language: Tsx
+severity: error
+message: >-
+  Write the Zod 4 form: z.enum, z.strictObject, z.looseObject, A.extend(B.shape), and a format such
+  as z.email() on its own
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  zod-imported:
+    kind: import_statement
+    has:
+      field: source
+      regex: ^["']zod(?:/v4)?["']$
+  native-enum:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^z\s*\.\s*nativeEnum$
+  deprecated-object-method:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      all:
+        - has:
+            field: property
+            regex: ^(?:passthrough|strict|merge)$
+        - has:
+            field: object
+            any:
+              - regex: ^z\s*\.
+              - kind: identifier
+                regex: Schema$
+  format-on-a-string:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      all:
+        - has:
+            field: property
+            regex: ^(?:email|url|uuid|uuidv4|uuidv6|uuidv7|guid|cuid|cuid2|ulid|nanoid|emoji|jwt|base64|base64url|xid|ksuid|ipv4|ipv6|cidrv4|cidrv6|e164|datetime|date|time|duration)$
+        - has:
+            field: object
+            regex: ^z\s*\.\s*string\s*\(
+rule:
+  any:
+    - matches: native-enum
+    - matches: deprecated-object-method
+    - matches: format-on-a-string
+  inside:
+    stopBy: end
+    kind: program
+    has:
+      matches: zod-imported

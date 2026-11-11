@@ -3,7 +3,11 @@ betterleaks:
     '*':
       package.json ? ${file.isTop}:
         scripts:
+          # Why: a commit of more files than git's rename limit makes the history's scan
+          # warn; a secrets scan needs no rename detection, and without it a moved file's
+          # lines are read again whole.
           check:secrets: >-
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=diff.renames GIT_CONFIG_VALUE_0=false
             betterleaks git . --redact --no-banner
             && betterleaks git . --pre-commit --redact --no-banner
             && betterleaks git . --pre-commit --staged --redact --no-banner

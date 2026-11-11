@@ -12,12 +12,20 @@
     "expand": "always",
   },
   "files": {
+    // biome
     "ignoreUnknown": true,
     "includes": [
+      // biome
       "**",
       "!!**/.droneey",
+
+      // ast-grep
+      "!!**/ast-grep.gen",
+      "!!**/ast-grep-utils.gen",
     ],
   },
+
+  // biome
   "markdown": {
     "linter": {
       "enabled": false,

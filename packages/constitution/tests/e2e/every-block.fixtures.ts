@@ -105,6 +105,7 @@ const deployedUnits: readonly DeployedUnit[] = [
       ],
       implementations: [
         'actionlint',
+        'ast-grep',
         'betterleaks',
         'biome',
         'bun-test',
@@ -302,6 +303,7 @@ const deployedUnits: readonly DeployedUnit[] = [
         'observability',
       ],
       implementations: [
+        'ast-grep',
         'complexipy',
         'deptry',
         'fastapi',
@@ -311,7 +313,6 @@ const deployedUnits: readonly DeployedUnit[] = [
         'import-linter',
         'mutmut',
         'pytest',
-        'python-check',
         'ruff',
         'schema/pydantic',
         'structlog',

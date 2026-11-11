@@ -1,5 +1,8 @@
 {
   "ignoreBinaries": [
+    // ast-grep
+    "ast-grep",
+
     // tombi
     "tombi",
 

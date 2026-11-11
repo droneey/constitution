@@ -14,6 +14,7 @@ languages:
 implementations:
   - uv
   - git
+  - ast-grep
   - biome
   - jscpd
   - yamllint
@@ -27,7 +28,7 @@ implementations:
   - deptry
   - vulture
   - complexipy
-  - python-check
+  - import-linter
 packs:
   - pack
 overrides: []

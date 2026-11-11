@@ -1,7 +1,13 @@
 import type { BlockId } from '#/kernel/value-objects';
 
 import type { PresetPair, PresetValue } from '../../setting/entities';
-import { Setting, PresetValue as Value, ValueKind, WholeDefault } from '../../setting/entities';
+import {
+  MapForm,
+  Setting,
+  PresetValue as Value,
+  ValueKind,
+  WholeDefault,
+} from '../../setting/entities';
 import type { MergeProblem } from '../../shared/entities';
 import { KeyKind, SettingKey } from '../../shared/value-objects';
 import type { Placed, PlacedMap, PlacedSetting } from './merge-state.entity';
@@ -53,11 +59,16 @@ const pairPlaced = (state: MergeState, map: Placed, pair: PresetPair): MergeStat
 
   return key.kind === KeyKind.Insert
     ? MergeState.inserted(state, {
+        keyPath: [
+          ...map.keyPath,
+          pair.key,
+        ],
         list: [
           ...map.keyPath,
           key.list,
         ],
         slot: key.slot,
+        source: map.source,
         value: pair.value,
       })
     : valuePlaced(state, {
@@ -76,7 +87,7 @@ const valuePlaced = (state: MergeState, placed: PlacedValue): MergeState => {
   return given.kind === ValueKind.Map
     ? mapPlaced(state, {
         ...placed,
-        isSorted: given.isSorted,
+        isSorted: given.form === MapForm.Sorted,
         pairs: given.pairs,
       })
     : placers[given.kind](state, {

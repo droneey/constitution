@@ -23,6 +23,9 @@
     "tailwindcss",
   ],
   "ignoreBinaries": [
+    // ast-grep
+    "ast-grep",
+
     // rumdl
     "rumdl",
 

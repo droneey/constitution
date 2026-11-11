@@ -1,0 +1,38 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ky-body-parsed-by-schema@typescript
+language: Tsx
+severity: error
+message: 'A response body is unknown until a schema parses it: .json<T>() and ky<T>() are casts'
+utils:
+  body-cast:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          kind: member_expression
+          has:
+            field: property
+            regex: ^json$
+      - has:
+          field: type_arguments
+          kind: type_arguments
+      - has:
+          field: arguments
+          kind: arguments
+          not:
+            has:
+              not:
+                regex: ^[(),]$
+  request-cast:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          regex: ^ky(?:\s*\.\s*(?:get|post|put|patch|delete|head))?$
+      - has:
+          field: type_arguments
+          kind: type_arguments
+rule:
+  any:
+    - matches: body-cast
+    - matches: request-cast

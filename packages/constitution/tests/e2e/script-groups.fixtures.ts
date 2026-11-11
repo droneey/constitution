@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { appliedUnit, constitutionOf } from './applied-unit.fixtures';
 import { cliPath } from './cli.fixtures';
 import { environmentOf, searchPathWith, toolEnvironment } from './package.fixtures';
+import { COMMAND_SEPARATOR } from './script-commands.fixtures';
 
 interface Ran {
   readonly exitCode: number | undefined;
@@ -93,6 +94,8 @@ const workspace = (): string => {
 const scriptsOf = (folder: string): Readonly<Record<string, string>> =>
   manifest.parse(JSON.parse(readFileSync(join(folder, 'package.json'), 'utf8'))).scripts ?? {};
 
+const LINT_TASK = 'check:lint';
+
 const shellFilesOf = (unit: string): readonly string[] => {
   const root = workspace();
   const stand = join(root, '.stand');
@@ -115,11 +118,14 @@ const shellFilesOf = (unit: string): readonly string[] => {
     },
   );
 
+  const shellcheckCommand = Object.entries(scriptsOf(folder))
+    .flatMap(([task, script]) => (task === LINT_TASK ? script.split(COMMAND_SEPARATOR) : []))
+    .find((command) => command.includes(' shellcheck '));
   const listed = spawnSync(
     'sh',
     [
       '-c',
-      `${scriptsOf(folder)['check:shell']}`,
+      String(shellcheckCommand),
     ],
     {
       cwd: folder,

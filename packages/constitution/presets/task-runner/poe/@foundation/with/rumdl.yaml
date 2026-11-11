@@ -5,6 +5,15 @@ rumdl:
         tool:
           poe:
             tasks:
-              check:markdown:
-                shell: rumdl check . && rumdl fmt --check .
-              fix:markdown: rumdl check --fix
+              check:lint:
+                shell: !commands
+                  - rumdl check .
+              check:format:
+                shell: !commands
+                  - rumdl fmt --check .
+              fix:lint:
+                shell: !commands
+                  - rumdl check --fix .
+              fix:format:
+                shell: !commands
+                  - rumdl fmt .

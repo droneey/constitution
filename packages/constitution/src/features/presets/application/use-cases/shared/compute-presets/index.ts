@@ -1,2 +1,2 @@
-export type { ComputePresetsInput } from './compute-presets';
-export { computePresets } from './compute-presets';
+export type { ComputePresetsInput, ConstitutionPathsInput } from './compute-presets';
+export { computePresets, constitutionPathsOf } from './compute-presets';

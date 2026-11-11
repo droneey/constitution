@@ -51,12 +51,6 @@ license.ignore = true
 reason = "this repository's own gate for mutmut, a member of its uv workspace that only checks code and never ships in a program"
 
 [[PackageOverrides]]
-name = "droneey-python-check"
-ecosystem = "PyPI"
-license.ignore = true
-reason = "this repository's own check of Python, a member of its uv workspace that only checks code and never ships in a program"
-
-[[PackageOverrides]]
 name = "@droneey/constitution"
 ecosystem = "npm"
 license.ignore = true

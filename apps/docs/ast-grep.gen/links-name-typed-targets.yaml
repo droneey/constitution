@@ -1,0 +1,34 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: links-name-typed-targets@typescript
+language: Tsx
+severity: error
+message: >-
+  Name the route by its typed path and params: a path built from strings escapes the route types
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  built-path:
+    all:
+      - any:
+          - kind: template_string
+            has:
+              kind: template_substitution
+          - pattern: $LEFT + $RIGHT
+      - regex: ^['"`]/
+rule:
+  matches: built-path
+  any:
+    - inside:
+        kind: pair
+        field: value
+        has:
+          field: key
+          regex: ^['"]?to['"]?$
+    - inside:
+        kind: jsx_expression
+        inside:
+          kind: jsx_attribute
+          has:
+            kind: property_identifier
+            regex: ^to$

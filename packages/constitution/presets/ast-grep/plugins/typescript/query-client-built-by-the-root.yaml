@@ -1,0 +1,24 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: query-client-built-by-the-root@typescript
+language: Tsx
+severity: error
+message: >-
+  Build the QueryClient in the root, once per app or request: a module-level client is shared
+  between requests and specs
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.source}/${role.composition-root}/**'
+  - '**/${role.entry}.ts'
+  - '**/${role.extra-entry}/*/${role.entry}.ts'
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/${role.entry}.tsx'
+  - '**/${role.extra-entry}/*/${role.entry}.tsx'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: new_expression
+  has:
+    field: constructor
+    regex: ^QueryClient$

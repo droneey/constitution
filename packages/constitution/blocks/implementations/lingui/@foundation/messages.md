@@ -131,8 +131,7 @@ Lingui hands every message to `@messageformat/parser`, whose one mode reads a st
 ```json title="Prefer"
 {
   "scripts": {
-    "check:catalogue": "lingui extract --clean && lingui compile --strict",
-    "check:catalogue-apostrophes": "! grep -nE \"'[{#]\" src/locales/*/messages.po"
+    "check:catalogue": "lingui extract --clean && lingui compile --strict && ! grep -nE \"'[{#]\" src/locales/*/messages.po"
   }
 }
 ```

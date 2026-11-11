@@ -9,13 +9,20 @@
     "expand": "always",
   },
   "files": {
+    // biome
     "ignoreUnknown": true,
     "includes": [
+      // biome
       "**",
       "!!**/.droneey",
-      "!!**/biome.gen",
+
+      // ast-grep
+      "!!**/ast-grep.gen",
+      "!!**/ast-grep-utils.gen",
     ],
   },
+
+  // biome
   "markdown": {
     "linter": {
       "enabled": false,
@@ -669,130 +676,10 @@
     "useIgnoreFile": true,
   },
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+
+  // biome
   "plugins": [
-    // biome
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-named-should-when.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-holds-no-logic.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/tests/**",
-      ],
-    },
-
-    // typescript
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
-      "includes": [
-        "**",
-        "!**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.grit",
-      "includes": [],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/module-level-variable-declared-const.grit",
-      "includes": [
-        "**",
-        "!**/*.test.ts",
-        "!**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
-    // js-runtime
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/spawn-given-an-env-built-for-it.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
-    // biome
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
     "./../../.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
-
-    // typescript
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
-
-    // biome
-    "./biome.gen/biome-refuses-empty-verbs.grit",
-    "./biome.gen/biome-refuses-empty-names.grit",
   ],
   "assist": {
     "actions": {

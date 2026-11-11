@@ -22,6 +22,9 @@
     "react!",
   ],
   "ignoreBinaries": [
+    // ast-grep
+    "ast-grep",
+
     // rumdl
     "rumdl",
 

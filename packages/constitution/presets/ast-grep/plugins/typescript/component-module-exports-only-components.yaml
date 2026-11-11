@@ -1,0 +1,304 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: component-module-exports-only-components@typescript
+language: Tsx
+severity: error
+message: >-
+  A module that exports a component exports only components and their types, so Fast Refresh can
+  swap it: move this value into a file of its own
+files:
+  - '**/*.tsx'
+utils:
+  pascal-name:
+    regex: ^[A-Z][A-Za-z0-9]*$
+  component-function:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: call_expression
+        has:
+          field: function
+          regex: ^(?:[A-Za-z]+\.)?(?:memo|forwardRef)$
+  # A compound's root is a component function, or a PascalCase name the module declares as one.
+  # Each use site takes its own metavariables, since ast-grep keeps a metavariable bound once a
+  # rule has matched it.
+  compound-of-file:
+    kind: call_expression
+    all:
+      - pattern: Object.assign($FILE_ROOT, $FILE_PARTS)
+      - has:
+          field: arguments
+          has:
+            nthChild: 1
+            any:
+              - matches: component-function
+              - all:
+                  - kind: identifier
+                  - matches: pascal-name
+                  - inside:
+                      stopBy: end
+                      kind: program
+                      has:
+                        stopBy: end
+                        any:
+                          - kind: function_declaration
+                            has:
+                              field: name
+                              pattern: $FILE_ROOT
+                          - kind: variable_declarator
+                            all:
+                              - has:
+                                  field: name
+                                  pattern: $FILE_ROOT
+                              - has:
+                                  field: value
+                                  matches: component-function
+  compound-of-export:
+    kind: call_expression
+    all:
+      - pattern: Object.assign($EXPORT_ROOT, $EXPORT_PARTS)
+      - has:
+          field: arguments
+          has:
+            nthChild: 1
+            any:
+              - matches: component-function
+              - all:
+                  - kind: identifier
+                  - matches: pascal-name
+                  - inside:
+                      stopBy: end
+                      kind: program
+                      has:
+                        stopBy: end
+                        any:
+                          - kind: function_declaration
+                            has:
+                              field: name
+                              pattern: $EXPORT_ROOT
+                          - kind: variable_declarator
+                            all:
+                              - has:
+                                  field: name
+                                  pattern: $EXPORT_ROOT
+                              - has:
+                                  field: value
+                                  matches: component-function
+  component-value-of-file:
+    any:
+      - matches: component-function
+      - matches: compound-of-file
+  component-value-of-export:
+    any:
+      - matches: component-function
+      - matches: compound-of-export
+  # $FILE_NAME names a component the module declares.
+  component-named-in-file:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        any:
+          - kind: function_declaration
+            has:
+              field: name
+              pattern: $FILE_NAME
+          - kind: variable_declarator
+            all:
+              - has:
+                  field: name
+                  pattern: $FILE_NAME
+              - has:
+                  field: value
+                  matches: component-value-of-file
+  # $EXPORT_NAME names a component the module declares.
+  component-named-for-export:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        any:
+          - kind: function_declaration
+            has:
+              field: name
+              pattern: $EXPORT_NAME
+          - kind: variable_declarator
+            all:
+              - has:
+                  field: name
+                  pattern: $EXPORT_NAME
+              - has:
+                  field: value
+                  matches: component-value-of-export
+  value-declared-for-export:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        any:
+          - kind: function_declaration
+          - kind: variable_declarator
+          - kind: class_declaration
+          - kind: abstract_class_declaration
+          - kind: enum_declaration
+        has:
+          field: name
+          pattern: $EXPORT_NAME
+  type-declared-for-export:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        any:
+          - kind: type_alias_declaration
+          - kind: interface_declaration
+        has:
+          field: name
+          pattern: $EXPORT_NAME
+  exported-declarator:
+    kind: variable_declarator
+    inside:
+      kind: lexical_declaration
+      inside:
+        kind: export_statement
+  re-export:
+    kind: export_statement
+    has:
+      field: source
+      kind: string
+  type-only-specifier:
+    any:
+      - regex: ^type\s
+      - inside:
+          kind: export_clause
+          inside:
+            kind: export_statement
+            regex: ^export\s+type\s
+  local-specifier:
+    kind: export_specifier
+    not:
+      any:
+        - matches: type-only-specifier
+        - inside:
+            stopBy: end
+            matches: re-export
+  exports-component:
+    kind: program
+    has:
+      stopBy: end
+      any:
+        - kind: function_declaration
+          inside:
+            kind: export_statement
+            field: declaration
+          has:
+            field: name
+            matches: pascal-name
+        - matches: exported-declarator
+          all:
+            - has:
+                field: name
+                matches: pascal-name
+            - has:
+                field: value
+                matches: component-value-of-file
+        - matches: local-specifier
+          has:
+            field: name
+            all:
+              - pattern: $FILE_NAME
+              - matches: pascal-name
+              - matches: component-named-in-file
+        - kind: export_statement
+          has:
+            field: value
+            any:
+              - matches: component-value-of-file
+              - all:
+                  - kind: identifier
+                  - pattern: $FILE_NAME
+                  - matches: pascal-name
+                  - matches: component-named-in-file
+  non-component-export:
+    any:
+      # export { name }, a value declared here or a name in camelCase
+      - matches: local-specifier
+        has:
+          field: name
+          all:
+            - pattern: $EXPORT_NAME
+            - not:
+                all:
+                  - matches: pascal-name
+                  - matches: component-named-for-export
+            - any:
+                - matches: value-declared-for-export
+                - all:
+                    - not:
+                        matches: type-declared-for-export
+                    - not:
+                        matches: pascal-name
+      # export { name } from '…', a name in camelCase
+      - kind: export_specifier
+        inside:
+          stopBy: end
+          matches: re-export
+        not:
+          matches: type-only-specifier
+        has:
+          field: name
+          not:
+            matches: pascal-name
+      # export function name(), a name in camelCase
+      - kind: export_statement
+        has:
+          field: declaration
+          kind: function_declaration
+          has:
+            field: name
+            not:
+              matches: pascal-name
+      # export const name = …, anything but a component under a PascalCase name
+      - matches: exported-declarator
+        not:
+          all:
+            - has:
+                field: name
+                matches: pascal-name
+            - has:
+                field: value
+                matches: component-value-of-export
+      # export class, export enum
+      - kind: export_statement
+        has:
+          field: declaration
+          any:
+            - kind: class_declaration
+            - kind: abstract_class_declaration
+            - kind: enum_declaration
+      # export default …, anything but a component
+      - kind: export_statement
+        has:
+          field: value
+          not:
+            any:
+              - matches: component-value-of-export
+              - all:
+                  - kind: identifier
+                  - pattern: $EXPORT_NAME
+                  - matches: pascal-name
+                  - matches: component-named-for-export
+      # export * from '…'
+      - matches: re-export
+        not:
+          has:
+            kind: export_clause
+rule:
+  all:
+    - matches: non-component-export
+    - inside:
+        stopBy: end
+        matches: exports-component

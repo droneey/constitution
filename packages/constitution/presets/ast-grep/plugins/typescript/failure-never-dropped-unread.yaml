@@ -1,0 +1,21 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: failure-never-dropped-unread@typescript
+language: Tsx
+severity: error
+message: >-
+  A catch with no statement is empty: handle the failure, rethrow it, or suppress
+  this rule with the reason
+rule:
+  kind: catch_clause
+  has:
+    field: body
+    kind: statement_block
+    has:
+      kind: comment
+    # Why: a block's braces are its unnamed children, beside its statements and its comments.
+    not:
+      has:
+        not:
+          any:
+            - kind: comment
+            - regex: ^[{}]$

@@ -1,0 +1,106 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: duration-measured-by-performance-now@typescript
+language: Tsx
+severity: error
+message: 'Measure a duration with performance.now(): the wall clock jumps'
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  wall-clock-reading:
+    any:
+      - pattern: Date.now()
+      - pattern: new Date().getTime()
+      - pattern: Temporal.Now.$_METHOD($$$)
+  wall-clock-difference:
+    any:
+      - pattern: Date.now() - $START
+      - pattern: new Date().getTime() - $START
+      - pattern: Temporal.Now.$_METHOD($$$).since($START)
+      - pattern: Temporal.Now.$_METHOD($$$).until($START)
+      - pattern: $START.since(Temporal.Now.$_METHOD($$$))
+      - pattern: $START.until(Temporal.Now.$_METHOD($$$))
+  wall-clock-declarator:
+    kind: variable_declarator
+    all:
+      - has:
+          field: name
+          pattern: $START
+      - has:
+          field: value
+          matches: wall-clock-reading
+  wall-clock-statement:
+    any:
+      - kind: lexical_declaration
+        has:
+          matches: wall-clock-declarator
+      - kind: variable_declaration
+        has:
+          matches: wall-clock-declarator
+      - kind: export_statement
+        has:
+          field: declaration
+          any:
+            - kind: lexical_declaration
+            - kind: variable_declaration
+          has:
+            matches: wall-clock-declarator
+      - kind: expression_statement
+        has:
+          kind: assignment_expression
+          all:
+            - has:
+                field: left
+                pattern: $START
+            - has:
+                field: right
+                matches: wall-clock-reading
+  started-in-an-enclosing-body:
+    inside:
+      stopBy: end
+      any:
+        - kind: program
+        - kind: statement_block
+        - kind: switch_case
+        - kind: switch_default
+      has:
+        matches: wall-clock-statement
+  started-in-its-class:
+    all:
+      - has:
+          stopBy: end
+          pattern: $START
+          all:
+            - pattern: this.$FIELD
+      - inside:
+          stopBy: end
+          kind: class_body
+          any:
+            - has:
+                kind: public_field_definition
+                all:
+                  - has:
+                      field: name
+                      pattern: $FIELD
+                  - has:
+                      field: value
+                      matches: wall-clock-reading
+            - has:
+                stopBy: end
+                kind: assignment_expression
+                all:
+                  - has:
+                      field: left
+                      pattern: this.$FIELD
+                  - has:
+                      field: right
+                      matches: wall-clock-reading
+rule:
+  any:
+    - kind: binary_expression
+    - kind: call_expression
+  all:
+    - matches: wall-clock-difference
+    - any:
+        - matches: started-in-an-enclosing-body
+        - matches: started-in-its-class
