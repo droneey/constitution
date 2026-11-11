@@ -1,0 +1,27 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-module-sits-in-the-presentation-it-serves@typescript
+language: Tsx
+severity: error
+message: >-
+  A Nest module lives in the ${role.framework-module}/ of the presentation it serves, or is the
+  root's module
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.presentation-layer}/${role.framework-module}/**'
+  - '**/${role.source}/${role.composition-root}/${role.composition-root}.${role.nest-module}'
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: decorator
+  has:
+    any:
+      - kind: identifier
+        regex: ^Module$
+      - kind: call_expression
+        has:
+          field: function
+          regex: ^Module$

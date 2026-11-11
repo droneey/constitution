@@ -1,0 +1,37 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: commander-subcommand-registered-with-add-command@typescript
+language: Tsx
+severity: error
+message: >-
+  Register each subcommand a factory built with addCommand on the program, never by .command(),
+  which builds it in place or looks for a stand-alone executable
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  imports-commander:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["'](?:commander|@commander-js/extra-typings)["']$
+  command-declared:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^command$
+rule:
+  all:
+    - matches: command-declared
+    - matches: imports-commander

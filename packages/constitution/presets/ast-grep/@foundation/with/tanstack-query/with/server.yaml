@@ -1,0 +1,9 @@
+tanstack-query:
+  query-client-built-in-the-render-function:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/query-client-built-in-the-render-function.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/query-client-built-in-the-render-function.yaml

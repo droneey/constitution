@@ -7,3 +7,19 @@ ky:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/ky-body-parsed-by-schema.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ky-body-parsed-by-schema.yaml
+  ky-retry-jitter-on:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ky-retry-jitter-on.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ky-retry-jitter-on.yaml
+  ky-timeout-kept:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ky-timeout-kept.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ky-timeout-kept.yaml

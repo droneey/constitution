@@ -1,0 +1,17 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ast-grep-suppression-names-one-rule@python
+language: Python
+severity: error
+message: >-
+  Name the one rule a suppression silences, as ast-grep-ignore: <slug>@<language>, never the bare
+  ast-grep-ignore or a list of rules
+files:
+  - '**/*.py'
+rule:
+  kind: comment
+  all:
+    - regex: ^(?://|/\*+|#)\s*ast-grep-ignore
+    - any:
+        - not:
+            regex: ^(?://|/\*+|#)\s*ast-grep-ignore:\s*[A-Za-z0-9_-]+@[A-Za-z0-9_-]+
+        - regex: ast-grep-ignore:.*,

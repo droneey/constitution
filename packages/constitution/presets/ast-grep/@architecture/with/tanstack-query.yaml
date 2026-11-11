@@ -7,7 +7,23 @@ integrations/remote-data:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/cache-key-built-by-its-owners-factory.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/cache-key-built-by-its-owners-factory.yaml
+  offline-path-left-to-its-use-case:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/offline-path-left-to-its-use-case.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/offline-path-left-to-its-use-case.yaml
 tanstack-query:
+  invalidation-in-on-settled:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/invalidation-in-on-settled.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/invalidation-in-on-settled.yaml
   query-client-built-by-the-root:
     typescript:
       sgconfig.yaml:

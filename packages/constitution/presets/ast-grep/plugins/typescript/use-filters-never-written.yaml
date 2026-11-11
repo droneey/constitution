@@ -1,0 +1,20 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: use-filters-never-written@typescript
+language: Tsx
+severity: error
+message: >-
+  Leave every failure to the one filter the root registers: no controller or method binds a filter
+  of its own with @UseFilters
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: ^UseFilters$

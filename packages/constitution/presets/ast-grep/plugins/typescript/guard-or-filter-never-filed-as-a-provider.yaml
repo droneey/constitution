@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: guard-or-filter-never-filed-as-a-provider@typescript
+language: Tsx
+severity: error
+message: >-
+  A guard or an exception filter is a unit of its presentation's bindings, never a provider in
+  ${role.framework-provider}/
+files:
+  - '**/${role.framework-provider}/**'
+ignores:
+  - '**/${role.colocated-specs}/**'
+utils:
+  decorated-as-a-filter:
+    kind: decorator
+    has:
+      any:
+        - kind: identifier
+          regex: ^Catch$
+        - kind: call_expression
+          has:
+            field: function
+            regex: ^Catch$
+  guard-or-filter-contract:
+    kind: implements_clause
+    has:
+      any:
+        - kind: type_identifier
+          regex: ^(?:CanActivate|ExceptionFilter)$
+        - kind: generic_type
+          has:
+            field: name
+            regex: ^(?:CanActivate|ExceptionFilter)$
+rule:
+  any:
+    - matches: decorated-as-a-filter
+    - matches: guard-or-filter-contract

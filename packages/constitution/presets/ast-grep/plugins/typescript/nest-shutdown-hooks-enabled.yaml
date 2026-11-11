@@ -1,0 +1,33 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-shutdown-hooks-enabled@typescript
+language: Tsx
+severity: error
+message: >-
+  Enable the app's shutdown hooks with app.enableShutdownHooks() beside NestFactory, so a stop
+  closes its pools and its work in flight
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: ^NestFactory\s*\.\s*(?:create|createMicroservice|createApplicationContext)$
+  not:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          has:
+            field: property
+            regex: ^enableShutdownHooks$

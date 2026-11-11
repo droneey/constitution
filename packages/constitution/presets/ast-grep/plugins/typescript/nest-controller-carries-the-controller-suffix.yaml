@@ -1,0 +1,24 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-controller-carries-the-controller-suffix@typescript
+language: Tsx
+severity: error
+message: A controller sits in a file that ends in .${role.nest-controller}
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/*.${role.nest-controller}'
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: decorator
+  has:
+    any:
+      - kind: identifier
+        regex: ^Controller$
+      - kind: call_expression
+        has:
+          field: function
+          regex: ^Controller$

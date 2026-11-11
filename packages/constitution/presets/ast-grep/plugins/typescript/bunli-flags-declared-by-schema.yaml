@@ -1,0 +1,40 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: bunli-flags-declared-by-schema@typescript
+language: Tsx
+severity: error
+message: >-
+  Declare every flag by option(schema, { short, description }), so it is parsed before the
+  handler
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: pair
+  all:
+    - has:
+        field: value
+        not:
+          any:
+            - kind: identifier
+            - kind: member_expression
+            - kind: call_expression
+              has:
+                field: function
+                regex: ^option$
+    - inside:
+        kind: object
+        inside:
+          kind: pair
+          all:
+            - has:
+                field: key
+                regex: ^["'`]?options["'`]?$
+            - inside:
+                kind: object
+                inside:
+                  kind: arguments
+                  inside:
+                    kind: call_expression
+                    has:
+                      field: function
+                      regex: ^defineCommand$

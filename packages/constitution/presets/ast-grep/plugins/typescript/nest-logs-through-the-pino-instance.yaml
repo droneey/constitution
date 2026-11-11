@@ -1,0 +1,54 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-logs-through-the-pino-instance@typescript
+language: Tsx
+severity: error
+message: >-
+  Start the Nest app with bufferLogs: true and make the pino logger Nest's own by
+  app.useLogger(app.get(Logger))
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  logs-buffered:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^["'`]?bufferLogs["'`]?$
+      - has:
+          field: value
+          kind: 'true'
+  logger-made-nests-own:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^useLogger$
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: ^NestFactory\s*\.\s*(?:create|createMicroservice|createApplicationContext)$
+    - any:
+        - not:
+            has:
+              field: arguments
+              has:
+                kind: object
+                has:
+                  matches: logs-buffered
+        - not:
+            inside:
+              stopBy: end
+              kind: program
+              has:
+                stopBy: end
+                matches: logger-made-nests-own

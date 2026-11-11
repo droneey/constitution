@@ -1,0 +1,22 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: shared-preset-pinned-to-its-release-tag@json
+language: Json
+severity: error
+message: >-
+  Name a preset extended from a repository with the tag of the version it pins, as
+  github>owner/repository#v1.2.3, never by a branch or its name alone
+files:
+  - '**/renovate.json'
+rule:
+  kind: string
+  all:
+    - regex: ^"[A-Za-z]+>
+    - not:
+        regex: ^"[A-Za-z]+>[^"#]+#v?[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?"$
+    - inside:
+        kind: array
+        inside:
+          kind: pair
+          has:
+            field: key
+            regex: ^"extends"$

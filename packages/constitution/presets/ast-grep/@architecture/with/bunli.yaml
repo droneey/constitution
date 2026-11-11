@@ -1,0 +1,9 @@
+bunli:
+  bunli-subcommand-from-a-factory:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/bunli-subcommand-from-a-factory.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/bunli-subcommand-from-a-factory.yaml

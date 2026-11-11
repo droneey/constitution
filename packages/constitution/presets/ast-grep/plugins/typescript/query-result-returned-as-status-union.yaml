@@ -1,0 +1,88 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: query-result-returned-as-status-union@typescript
+language: Tsx
+severity: error
+message: >-
+  Return Query's own result from a hook that wraps a query or a mutation, never its parts spread
+  into flags
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  function-scope:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  hook:
+    any:
+      - kind: function_declaration
+        has:
+          field: name
+          regex: ^use[A-Z0-9]
+      - all:
+          - any:
+              - kind: arrow_function
+              - kind: function_expression
+          - inside:
+              kind: variable_declarator
+              has:
+                field: name
+                regex: ^use[A-Z0-9]
+  query-hook-called:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:useQuery|useMutation|useInfiniteQuery)$
+  result-taken-apart:
+    kind: variable_declarator
+    all:
+      - has:
+          field: name
+          any:
+            - kind: object_pattern
+            - kind: array_pattern
+      - has:
+          field: value
+          matches: query-hook-called
+      - inside:
+          stopBy:
+            matches: function-scope
+          matches: hook
+  other-shape-returned:
+    kind: object
+    all:
+      - any:
+          - inside:
+              kind: return_statement
+              inside:
+                kind: statement_block
+                inside:
+                  matches: hook
+          - inside:
+              kind: parenthesized_expression
+              inside:
+                matches: hook
+      - inside:
+          stopBy:
+            matches: function-scope
+          matches: hook
+          has:
+            stopBy: end
+            matches: query-hook-called
+      - has:
+          stopBy: end
+          kind: member_expression
+          has:
+            field: property
+            regex: ^(?:data|error|status|isPending|isLoading|isError|isSuccess|isFetching|mutate|mutateAsync|refetch)$
+rule:
+  any:
+    - matches: result-taken-apart
+    - matches: other-shape-returned

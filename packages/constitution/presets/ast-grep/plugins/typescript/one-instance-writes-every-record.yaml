@@ -1,0 +1,34 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: one-instance-writes-every-record@typescript
+language: Tsx
+severity: error
+message: >-
+  Create the one pino instance at the program's start and hand it, or its children, to the code
+  that logs
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.source}/${role.composition-root}/**'
+  - '**/${role.source}/${role.entry}.ts'
+  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
+  - '**/${role.source}/${role.generic-library}/**'
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: identifier
+        regex: ^pino$
+    - inside:
+        stopBy: end
+        kind: program
+        has:
+          kind: import_statement
+          has:
+            field: source
+            regex: ^["']pino["']$

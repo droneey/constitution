@@ -1,0 +1,66 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: in-flight-reads-cancelled-by-on-mutate@typescript
+language: Tsx
+severity: error
+message: >-
+  Cancel the key's reads in flight by await cancelQueries in onMutate before writing the
+  prediction, or a read that lands later writes over it
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  function-scope:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  on-mutate:
+    any:
+      - all:
+          - any:
+              - kind: arrow_function
+              - kind: function_expression
+          - inside:
+              kind: pair
+              has:
+                field: key
+                regex: ^["'`]?onMutate["'`]?$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^onMutate$
+  predicted:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^(?:setQueryData|setQueriesData)$
+  cancelled:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^cancelQueries$
+rule:
+  matches: predicted
+  all:
+    - inside:
+        stopBy:
+          matches: function-scope
+        matches: on-mutate
+    - not:
+        inside:
+          stopBy:
+            matches: function-scope
+          follows:
+            stopBy: end
+            any:
+              - matches: cancelled
+              - has:
+                  stopBy: end
+                  matches: cancelled

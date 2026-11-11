@@ -1,0 +1,25 @@
+commander:
+  commander-exits-overridden:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/commander-exits-overridden.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-exits-overridden.yaml
+  commander-output-through-the-programs-writers:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/commander-output-through-the-programs-writers.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-output-through-the-programs-writers.yaml
+  commander-settings-copied-to-every-command:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/commander-settings-copied-to-every-command.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-settings-copied-to-every-command.yaml

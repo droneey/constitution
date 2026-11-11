@@ -1,0 +1,17 @@
+commander:
+  commander-subcommand-built-as-a-command:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/commander-subcommand-built-as-a-command.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-subcommand-built-as-a-command.yaml
+  commander-subcommand-registered-with-add-command:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/commander-subcommand-registered-with-add-command.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-subcommand-registered-with-add-command.yaml

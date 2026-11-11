@@ -1,0 +1,81 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: request-logger-takes-the-instance@typescript
+language: Tsx
+severity: error
+message: >-
+  Hand pino-http the program's instance as logger: given none, it builds an instance of its own
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  logger-given:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?logger["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^logger$
+  options-without-a-logger:
+    kind: object
+    not:
+      has:
+        matches: logger-given
+  request-logger-built-bare:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          regex: ^pinoHttp$
+      - has:
+          field: arguments
+          any:
+            - not:
+                has:
+                  any:
+                    - kind: identifier
+                    - kind: member_expression
+                    - kind: object
+                    - kind: call_expression
+            - has:
+                nthChild: 1
+                matches: options-without-a-logger
+  nest-module-built-bare:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          regex: ^LoggerModule\s*\.\s*forRoot$
+      - has:
+          field: arguments
+          any:
+            - not:
+                has:
+                  any:
+                    - kind: identifier
+                    - kind: member_expression
+                    - kind: object
+                    - kind: call_expression
+            - has:
+                kind: object
+                not:
+                  has:
+                    kind: pair
+                    has:
+                      field: key
+                      regex: ^["'`]?pinoHttp["'`]?$
+            - has:
+                kind: object
+                has:
+                  kind: pair
+                  all:
+                    - has:
+                        field: key
+                        regex: ^["'`]?pinoHttp["'`]?$
+                    - has:
+                        field: value
+                        matches: options-without-a-logger
+rule:
+  any:
+    - matches: request-logger-built-bare
+    - matches: nest-module-built-bare
