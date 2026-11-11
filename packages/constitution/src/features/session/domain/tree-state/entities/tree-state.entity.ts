@@ -1,3 +1,5 @@
+import type { AbsolutePath } from '#/kernel/value-objects';
+
 import type { TreeFingerprint } from '../value-objects';
 import type { FileSignatures } from './shell-tree.entity';
 
@@ -30,6 +32,13 @@ type MainLine =
     }
   | UnreadTree;
 
+type HeldFiles =
+  | {
+      readonly paths: ReadonlySet<AbsolutePath>;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
 type TreeSnapshot =
   | {
       readonly fileSignatures: FileSignatures;
@@ -37,5 +46,5 @@ type TreeSnapshot =
     }
   | UnreadTree;
 
-export type { MainLine, TreeSnapshot, TreeState, UnreadTree };
+export type { HeldFiles, MainLine, TreeSnapshot, TreeState, UnreadTree };
 export { TreeStateStatus };

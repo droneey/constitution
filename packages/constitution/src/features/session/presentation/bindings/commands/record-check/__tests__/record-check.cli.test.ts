@@ -7,6 +7,7 @@ import { createRecordCheckCommand } from '../record-check.cli';
 
 interface Asked {
   command: string;
+  isInBackground: boolean;
   session: SessionId;
 }
 
@@ -39,24 +40,43 @@ const runOf = async (
 };
 
 describe('createRecordCheckCommand', () => {
-  it('should hand the command the agent ran and its session to the record, and write nothing', async () => {
-    // Arrange
-    const stdin = '{"session_id":"s1","tool_input":{"command":"bun run check"}}';
+  it.each([
+    {
+      condition: 'it ran to its end',
+      isInBackground: false,
+      stdin: '{"session_id":"s1","tool_input":{"command":"bun run check"}}',
+    },
+    {
+      condition: 'it was started in the background',
+      isInBackground: true,
+      stdin:
+        '{"session_id":"s1","tool_input":{"command":"bun run check","run_in_background":true}}',
+    },
+    {
+      condition: 'it names its background flag by no boolean',
+      isInBackground: false,
+      stdin:
+        '{"session_id":"s1","tool_input":{"command":"bun run check","run_in_background":"yes"}}',
+    },
+  ])(
+    'should hand the command the agent ran, its session and whether $condition to the record, and write nothing',
+    async ({ isInBackground, stdin }) => {
+      // Act
+      const run = await runOf(stdin);
 
-    // Act
-    const run = await runOf(stdin);
-
-    // Assert
-    expect(run).toStrictEqual({
-      asked: [
-        {
-          command: 'bun run check',
-          session: SessionId.create('s1'),
-        },
-      ],
-      stdout: '',
-    });
-  });
+      // Assert
+      expect(run).toStrictEqual({
+        asked: [
+          {
+            command: 'bun run check',
+            isInBackground,
+            session: SessionId.create('s1'),
+          },
+        ],
+        stdout: '',
+      });
+    },
+  );
 
   it.each([
     {

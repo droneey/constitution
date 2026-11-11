@@ -38,6 +38,7 @@ describe('recordCheck', () => {
       // Act
       recordCheck({
         command,
+        isInBackground: false,
         session: keptSession,
         sessionRepository: createFakeSessionRepository(store),
         workingTree: createFakeWorkingTree({
@@ -49,6 +50,27 @@ describe('recordCheck', () => {
       expect(store.get(keptSession)?.marks.get(SessionMark.Checked)).toBe(checked);
     },
   );
+
+  it('should leave the tree as the one a check runs on, never as checked, when the check was started in the background', () => {
+    // Arrange
+    const store = heldSessionsOf();
+
+    // Act
+    recordCheck({
+      command: 'constitution run check',
+      isInBackground: true,
+      session: keptSession,
+      sessionRepository: createFakeSessionRepository(store),
+      workingTree: createFakeWorkingTree({
+        state: TREE,
+      }),
+    });
+
+    // Assert
+    expect(Object.fromEntries(store.get(keptSession)?.marks ?? [])).toStrictEqual({
+      [SessionMark.CheckStarted]: TREE,
+    });
+  });
 
   it.each([
     {
@@ -84,6 +106,7 @@ describe('recordCheck', () => {
     // Act
     recordCheck({
       command: 'constitution run check',
+      isInBackground: false,
       session,
       sessionRepository: createFakeSessionRepository(store),
       workingTree: createFakeWorkingTree({

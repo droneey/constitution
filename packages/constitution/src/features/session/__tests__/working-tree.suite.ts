@@ -17,6 +17,7 @@ enum RemoteMainLine {
 
 interface WorkingTreeWorld {
   readonly committed: readonly string[];
+  readonly deleted: readonly string[];
   readonly ignored: readonly string[];
   readonly isWorktree: boolean;
   readonly mainLine: RemoteMainLine;
@@ -37,6 +38,7 @@ const worldOf = (overrides: Partial<WorkingTreeWorld> = {}): WorkingTreeWorld =>
   committed: [
     'a.txt',
   ],
+  deleted: [],
   ignored: [],
   isWorktree: false,
   mainLine: RemoteMainLine.Absent,
@@ -170,6 +172,94 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
           ignored.map((ignoredPath) => AbsolutePath.join(repositoryFolderPath, ignoredPath)),
         ),
         status: IgnoreStatus.Told,
+      });
+    });
+
+    it('should tell which of the paths asked the tree holds, tracked or present and unignored', () => {
+      // Arrange
+      const { elsewhere, repositoryFolderPath, tree } = input.treeOf(
+        worldOf({
+          committed: [
+            'a.txt',
+            'gone.txt',
+          ],
+          deleted: [
+            'gone.txt',
+          ],
+          ignored: [
+            'build',
+            'ignored.txt',
+          ],
+          untracked: [
+            'b.txt',
+            'build/out.js',
+            'c[1].txt',
+            'ignored.txt',
+          ],
+        }),
+      );
+
+      const inTree = (path: string): AbsolutePath => AbsolutePath.join(repositoryFolderPath, path);
+
+      // Act
+      const held = tree.heldAmong({
+        paths: [
+          inTree('a.txt'),
+          inTree('gone.txt'),
+          inTree('b.txt'),
+          inTree('c[1].txt'),
+          inTree('ignored.txt'),
+          inTree('build/out.js'),
+          inTree('never.txt'),
+          AbsolutePath.join(elsewhere, 'b.txt'),
+        ],
+        repositoryFolderPath,
+      });
+
+      // Assert
+      expect(held).toStrictEqual({
+        paths: new Set([
+          inTree('a.txt'),
+          inTree('gone.txt'),
+          inTree('b.txt'),
+          inTree('c[1].txt'),
+        ]),
+        status: TreeStateStatus.Read,
+      });
+    });
+
+    it('should tell that the tree holds none of no paths', () => {
+      // Arrange
+      const { elsewhere, tree } = input.treeOf(worldOf());
+
+      // Act
+      const held = tree.heldAmong({
+        paths: [],
+        repositoryFolderPath: elsewhere,
+      });
+
+      // Assert
+      expect(held).toStrictEqual({
+        paths: new Set(),
+        status: TreeStateStatus.Read,
+      });
+    });
+
+    it('should give the files held as no repository for a folder of no repository', () => {
+      // Arrange
+      const { elsewhere, tree } = input.treeOf(worldOf());
+
+      // Act
+      const held = tree.heldAmong({
+        paths: [
+          AbsolutePath.join(elsewhere, 'b.txt'),
+        ],
+        repositoryFolderPath: elsewhere,
+      });
+
+      // Assert
+      expect(held).toStrictEqual({
+        status: TreeStateStatus.NoRepository,
       });
     });
 

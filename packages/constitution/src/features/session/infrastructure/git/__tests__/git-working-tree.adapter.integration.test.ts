@@ -1147,6 +1147,10 @@ runWorkingTreeSuite({
       });
     }
 
+    for (const path of world.deleted) {
+      rmSync(join(project, path));
+    }
+
     mkdirSync(join(folder, 'elsewhere'));
 
     const worktree = join(folder, 'worktree');

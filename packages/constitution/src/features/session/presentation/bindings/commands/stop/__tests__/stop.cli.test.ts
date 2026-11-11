@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { projectCheck } from '#/kernel/constants';
 import { AbsolutePath, BlockId } from '#/kernel/value-objects';
+import { LIST_SEPARATOR } from '#/shared/cli';
 
 import type { AgentInSession } from '../../../../../domain/session/entities';
 import { SessionAgent } from '../../../../../domain/session/entities';
@@ -15,11 +16,12 @@ import type {
 } from '../../../../../domain/stop-judgement/entities';
 import { HandBackStep, StopVerdict } from '../../../../../domain/stop-judgement/entities';
 import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
-import { actionsText, passesToldMessage } from '../../../../utils';
+import { actionsText, countedTextOf, moreFilesText, passesToldMessage } from '../../../../utils';
 import { createStopCommand } from '../stop.cli';
 import {
   checkAndReviewMessage,
   checkMessage,
+  filesText,
   reviewMessage,
   subagentChangesMessage,
   unjudgedMessage,
@@ -503,45 +505,48 @@ describe('createStopCommand', () => {
       },
     ]);
   });
-  it('should name each subagent whose work the coordinator reviews, then the review it lacks', async () => {
+  it('should count the files subagents changed and name the first few, then the review it lacks', async () => {
     // Arrange
     const judgement = heldOf(
       [
         HandBackStep.Review,
       ],
       [
-        {
-          agent: AgentId.create('agent-1'),
-          path: AbsolutePath.create('/work/src/a.ts'),
-        },
-        {
-          agent: AgentId.create('agent-1'),
-          path: AbsolutePath.create('/work/src/b.ts'),
-        },
-      ],
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+      ].map((name, index) => ({
+        agent: AgentId.create(`agent-${index % 2}`),
+        path: AbsolutePath.create(`/work/src/${name}.ts`),
+      })),
     );
 
     // Act
     const run = await runOf(judgement, '{"session_id":"s1","hook_event_name":"Stop"}');
 
     // Assert
-    expect({
-      answer: answerOf(run.stdout),
-      namesAgent: run.stdout.includes('agent-1'),
-      namesPaths: run.stdout.includes('/work/src/a.ts, /work/src/b.ts'),
-    }).toStrictEqual({
-      answer: {
-        decision: 'block',
-        reason: [
-          subagentChangesMessage({
-            agent: 'agent-1',
-            paths: '/work/src/a.ts, /work/src/b.ts',
+    expect(answerOf(run.stdout)).toStrictEqual({
+      decision: 'block',
+      reason: [
+        subagentChangesMessage({
+          files: countedTextOf({
+            count: 5,
+            text: filesText,
           }),
-          reviewMessage('typescript, ui'),
-        ].join('\n'),
-      },
-      namesAgent: true,
-      namesPaths: true,
+          paths: [
+            '/work/src/a.ts',
+            '/work/src/b.ts',
+            '/work/src/c.ts',
+            countedTextOf({
+              count: 2,
+              text: moreFilesText,
+            }),
+          ].join(LIST_SEPARATOR),
+        }),
+        reviewMessage('typescript, ui'),
+      ].join('\n'),
     });
   });
 
@@ -633,6 +638,64 @@ describe('createStopCommand', () => {
     expect(run.stdout.length < CLAUDE_CODE_TEXT_CAP).toBe(true);
   });
 
+  it('should count and name once a file that two subagents changed', async () => {
+    // Arrange
+    const judgement = heldOf(
+      [
+        HandBackStep.Review,
+      ],
+      [
+        'agent-1',
+        'agent-2',
+      ].map((agent) => ({
+        agent: AgentId.create(agent),
+        path: AbsolutePath.create('/work/src/a.ts'),
+      })),
+    );
+
+    // Act
+    const run = await runOf(judgement, '{"session_id":"s1","hook_event_name":"Stop"}');
+
+    // Assert
+    expect(answerOf(run.stdout)).toStrictEqual({
+      decision: 'block',
+      reason: [
+        subagentChangesMessage({
+          files: countedTextOf({
+            count: 1,
+            text: filesText,
+          }),
+          paths: '/work/src/a.ts',
+        }),
+        reviewMessage('typescript, ui'),
+      ].join('\n'),
+    });
+  });
+
+  it('should tell how many files subagents changed', async () => {
+    // Arrange
+    const judgement = heldOf(
+      [
+        HandBackStep.Review,
+      ],
+      Array.from(
+        {
+          length: 12,
+        },
+        (_, index) => ({
+          agent: AgentId.create('agent-1'),
+          path: AbsolutePath.create(`/work/src/f${index}.ts`),
+        }),
+      ),
+    );
+
+    // Act
+    const run = await runOf(judgement, '{"session_id":"s1","hook_event_name":"Stop"}');
+
+    // Assert
+    expect(run.stdout.includes('12')).toBe(true);
+  });
+
   it('should tell how many actions the gates let through', async () => {
     // Act
     const run = await runOf(undefined, STDIN, {
@@ -645,8 +708,8 @@ describe('createStopCommand', () => {
 
   it.each([
     {
-      condition: 'subagents it leaves out',
-      count: '42',
+      condition: 'files it leaves out',
+      count: '57',
       judgement: heldOf(
         [
           HandBackStep.Review,
@@ -664,7 +727,7 @@ describe('createStopCommand', () => {
     },
     {
       condition: 'blocks it leaves out',
-      count: '100',
+      count: '395',
       judgement: {
         ...heldOf([
           HandBackStep.Review,

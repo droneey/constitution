@@ -9,35 +9,35 @@ import type { AgentInSession } from '../../../../domain/session/entities';
 import { SessionAgent } from '../../../../domain/session/entities';
 import { HookEventName } from '../../../../domain/shared/entities';
 import type { StopEvent, StopJudgement } from '../../../../domain/stop-judgement/entities';
-import { HandBackStep, ReviewDebt, StopVerdict } from '../../../../domain/stop-judgement/entities';
+import { HandBackStep, StopVerdict } from '../../../../domain/stop-judgement/entities';
 import type { TreeFingerprint } from '../../../../domain/tree-state/value-objects';
 import { HookField, stopEventSchema } from '../../../constants';
 import type { HookOutput } from '../../../utils';
 import {
   actionsText,
   agentInSessionOf,
-  capShareOf,
   countedTextOf,
   hookEventOf,
   hookOutputOf,
-  listWithin,
+  listFirst,
   moreFilesText,
   passesToldMessage,
 } from '../../../utils';
 import {
   checkAndReviewMessage,
   checkMessage,
+  filesText,
   moreBlocksText,
-  moreSubagentsText,
   reviewMessage,
   subagentChangesMessage,
   unjudgedMessage,
 } from './stop.messages';
 
-const CAP_SHARES_PERCENT = {
-  blocks: 15,
-  subagentPaths: 10,
-  subagents: 30,
+// Why: the agent may stop again and again while it waits, and a refusal that named every file and
+// every block each time would flood its transcript; a few of each say where to look.
+const SHOWN = {
+  blocks: 5,
+  subagentPaths: 3,
 } as const;
 
 interface StopContext extends CommandContext {
@@ -75,10 +75,10 @@ type JudgedAnswer = Extract<
 >;
 
 const missingStepsReasonOf = (judgement: HeldJudgement): string => {
-  const blocks = listWithin({
-    budget: capShareOf(CAP_SHARES_PERCENT.blocks),
+  const blocks = listFirst({
     lines: judgement.blocks,
     note: moreBlocksText,
+    shown: SHOWN.blocks,
   }).join(LIST_SEPARATOR);
 
   if (!judgement.missing.includes(HandBackStep.Review)) {
@@ -93,22 +93,32 @@ const missingStepsReasonOf = (judgement: HeldJudgement): string => {
     : reviewMessage(blocks);
 };
 
-const heldReasonOf = (judgement: HeldJudgement): string =>
-  [
-    ...listWithin({
-      budget: capShareOf(CAP_SHARES_PERCENT.subagents),
-      lines: ReviewDebt.bySubagent(judgement.subagentChanges).map((changes) =>
+const subagentChangesReasonOf = (judgement: HeldJudgement): readonly string[] => {
+  // Why: two subagents that changed one file owe one review of it.
+  const paths = [
+    ...new Set(judgement.subagentChanges.map((debt) => debt.path)),
+  ];
+
+  return paths.length === 0
+    ? []
+    : [
         subagentChangesMessage({
-          agent: changes.agent,
-          paths: listWithin({
-            budget: capShareOf(CAP_SHARES_PERCENT.subagentPaths),
-            lines: changes.paths,
+          files: countedTextOf({
+            count: paths.length,
+            text: filesText,
+          }),
+          paths: listFirst({
+            lines: paths,
             note: moreFilesText,
+            shown: SHOWN.subagentPaths,
           }).join(LIST_SEPARATOR),
         }),
-      ),
-      note: moreSubagentsText,
-    }),
+      ];
+};
+
+const heldReasonOf = (judgement: HeldJudgement): string =>
+  [
+    ...subagentChangesReasonOf(judgement),
     missingStepsReasonOf(judgement),
   ].join('\n');
 

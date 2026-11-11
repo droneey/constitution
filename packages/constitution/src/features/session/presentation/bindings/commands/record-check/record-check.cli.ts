@@ -8,13 +8,19 @@ import { HookField, recordCheckEventSchema } from '../../../constants';
 import { hookEventOf } from '../../../utils';
 
 interface RecordCheckContext extends CommandContext {
-  readonly recordCheck: (input: { command: string; session: SessionId }) => void;
+  readonly recordCheck: (input: {
+    command: string;
+    isInBackground: boolean;
+    session: SessionId;
+  }) => void;
 }
 
 // Why: a command that failed fires PostToolUseFailure, never this hook.
 const createRecordCheckCommand = (context: RecordCheckContext): Command =>
   new Command('record-check')
-    .description("Note the tree when a shell command that passed ran the project's check.")
+    .description(
+      "Note the tree when a shell command that passed ran the project's check, or started it in the background.",
+    )
     .addHelpText(
       'before',
       context.helpExamples([
@@ -32,6 +38,7 @@ const createRecordCheckCommand = (context: RecordCheckContext): Command =>
       if (session !== undefined && command !== undefined) {
         context.recordCheck({
           command,
+          isInBackground: event[HookField.ToolInput][HookField.RunInBackground] === true,
           session,
         });
       }

@@ -27,18 +27,29 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
       session,
     });
 
+  const own = sessionQueries.ownChanges(input);
+  const reviewOwed = sessionQueries.reviewDebt(session);
+
   return StopJudgement.judge({
     event: input,
+    held: input.workingTree.heldAmong({
+      paths: [
+        ...own,
+        ...reviewOwed.map((debt) => debt.path),
+      ],
+      repositoryFolderPath: state.repositoryFolderPath,
+    }),
     isMainThread: input.agent === SessionAgent.main,
     mainLine: input.workingTree.mainLineOf(state.repositoryFolderPath),
     marks: {
       [SessionMark.Checked]: markOf(SessionMark.Checked),
+      [SessionMark.CheckStarted]: markOf(SessionMark.CheckStarted),
       [SessionMark.ReviewStarted]: markOf(SessionMark.ReviewStarted),
       [SessionMark.Reviewed]: markOf(SessionMark.Reviewed),
       [SessionMark.Turn]: markOf(SessionMark.Turn),
     },
-    own: sessionQueries.ownChanges(input),
-    reviewOwed: sessionQueries.reviewDebt(session),
+    own,
+    reviewOwed,
     snapshot: input.workingTree.snapshotOf(state.repositoryFolderPath),
     state,
     tree: input.workingTree.stateOf(state.repositoryFolderPath),
