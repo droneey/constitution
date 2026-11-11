@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
@@ -199,7 +199,7 @@ const prompt = (session: Session): HookRun =>
     session,
   });
 
-const ran = (input: { command: string; session: Session }): HookRun =>
+const ran = (input: { command: string; isInBackground?: boolean; session: Session }): HookRun =>
   fire({
     event: 'PostToolUse',
     fields: Object.fromEntries([
@@ -213,6 +213,10 @@ const ran = (input: { command: string; session: Session }): HookRun =>
           [
             'command',
             input.command,
+          ],
+          [
+            'run_in_background',
+            input.isInBackground === true,
           ],
         ]),
       ],
@@ -772,5 +776,90 @@ describe('the hand-back gate', () => {
       reviewed: NOTHING,
       reviewerStop: NOTHING,
     });
+  });
+
+  it('should let the agent stop while the check it started in the background runs on the changed tree, and hold it for the review once the check passed', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      path: 'src/features/orders/ui/order-card.tsx',
+      session,
+    });
+    ran({
+      command: CHECK,
+      isInBackground: true,
+      session,
+    });
+
+    // Act
+    const running = stop({
+      session,
+    });
+
+    // Assert
+    expect(running).toStrictEqual(NOTHING);
+
+    // Act
+    ran({
+      command: CHECK,
+      session,
+    });
+
+    const checked = stop({
+      session,
+    });
+
+    // Assert
+    expect(checked).toStrictEqual(HELD_FOR_REVIEW);
+  });
+
+  it('should not hold the coordinator for the review of what a subagent wrote outside the project or deleted before git tracked it', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      agent: 'agent-1',
+      path: '../scratchpad/ui/notes.md',
+      session,
+    });
+    write({
+      agent: 'agent-1',
+      path: 'src/features/orders/ui/draft.tsx',
+      session,
+    });
+    rmSync(join(session.project, 'src/features/orders/ui/draft.tsx'));
+    stop({
+      active: true,
+      agent: 'agent-1',
+      event: StopEvent.Subagent,
+      session,
+    });
+    write({
+      path: 'src/main.ts',
+      session,
+    });
+    ran({
+      command: CHECK,
+      session,
+    });
+
+    // Act
+    const output = stop({
+      session,
+    });
+
+    // Assert
+    expect(output).toStrictEqual(NOTHING);
   });
 });

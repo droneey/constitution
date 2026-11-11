@@ -5,7 +5,7 @@ import type { FingerprintMark, ParsedState } from '../../session/entities';
 import { ActiveBlocks, SessionMark } from '../../session/entities';
 import { AgentKind } from '../../session/value-objects';
 import { HookEventName } from '../../shared/entities';
-import type { MainLine, TreeSnapshot, TreeState } from '../../tree-state/entities';
+import type { HeldFiles, MainLine, TreeSnapshot, TreeState } from '../../tree-state/entities';
 import { TreeStateStatus } from '../../tree-state/entities';
 import type { TreeFingerprint } from '../../tree-state/value-objects';
 import type { ReviewDebt } from './review-debt.entity';
@@ -52,6 +52,42 @@ interface OwnChanges {
   readonly reviewOwed: readonly ReviewDebt[];
   readonly state: ParsedState;
 }
+
+interface HeldChanges extends OwnChanges {
+  readonly unheldDebts: readonly ReviewDebt[];
+}
+
+// Why: a file written outside the tree, or written and deleted before it was ever tracked, leaves
+// nothing to check or review, and when git cannot tell what the tree holds every file stays owed.
+// A file staged for deletion is gone from the index, though git's status still names it.
+const heldChangesOf = (
+  input: OwnChanges & {
+    held: HeldFiles;
+    snapshot: TreeSnapshot;
+  },
+): HeldChanges => {
+  const { held, snapshot } = input;
+
+  if (held.status !== TreeStateStatus.Read) {
+    return {
+      own: input.own,
+      reviewOwed: input.reviewOwed,
+      state: input.state,
+      unheldDebts: [],
+    };
+  }
+
+  const isHeld = (path: AbsolutePath): boolean =>
+    held.paths.has(path) ||
+    (snapshot.status === TreeStateStatus.Read && snapshot.fileSignatures.has(path));
+
+  return {
+    own: input.own.filter(isHeld),
+    reviewOwed: input.reviewOwed.filter((debt) => isHeld(debt.path)),
+    state: input.state,
+    unheldDebts: input.reviewOwed.filter((debt) => !isHeld(debt.path)),
+  };
+};
 
 // Why: a tree with no change whose HEAD the remote's main line holds hands back nothing the main
 // line lacks, as a switch to the main line after a merge leaves it.
@@ -102,16 +138,33 @@ const missingStepsOf = (input: {
 // Why: a subagent cannot start the reviewer, so it answers for the check of its own changes
 // alone, and the main thread reviews them with its own.
 const judgementOfOwnChanges = (
-  input: OwnChanges & {
+  input: HeldChanges & {
     isMainThread: boolean;
     marks: StopMarks;
     now: TreeFingerprint;
   },
 ): StopJudgement | undefined => {
-  const { marks, now, own, reviewOwed } = input;
+  const { marks, now, own, reviewOwed, unheldDebts } = input;
 
-  if (now === marks[SessionMark.Turn] || own.length + reviewOwed.length === 0) {
+  if (now === marks[SessionMark.Turn]) {
     return undefined;
+  }
+
+  // Why: a debt on a file the tree no longer holds owes nothing, and the coordinator's stop settles
+  // it, so a file written later under its name is never owed for the subagent that wrote the first.
+  if (own.length + reviewOwed.length === 0) {
+    return input.isMainThread && unheldDebts.length > 0
+      ? {
+          subagentChanges: unheldDebts,
+          verdict: StopVerdict.Covered,
+        }
+      : undefined;
+  }
+
+  // Why: a check started in the background wakes the agent once it ends, and until then neither the
+  // check nor the review it comes before can be done again on this tree.
+  if (now === marks[SessionMark.CheckStarted] && now !== marks[SessionMark.Checked]) {
+    return;
   }
 
   // Why: the reviewer the agent dispatched runs on in the background until it reviewed the tree,
@@ -152,7 +205,10 @@ const judgementOfOwnChanges = (
 
   return input.isMainThread
     ? {
-        subagentChanges: reviewOwed,
+        subagentChanges: [
+          ...reviewOwed,
+          ...unheldDebts,
+        ],
         verdict: StopVerdict.Covered,
       }
     : undefined;
@@ -162,6 +218,7 @@ const judgementOfOwnChanges = (
 const judge = (
   input: OwnChanges & {
     event: StopEvent;
+    held: HeldFiles;
     isMainThread: boolean;
     mainLine: MainLine;
     marks: StopMarks;
@@ -199,7 +256,9 @@ const judge = (
       return isAcceptedTree(input)
         ? undefined
         : judgementOfOwnChanges({
-            ...input,
+            ...heldChangesOf(input),
+            isMainThread: input.isMainThread,
+            marks: input.marks,
             now: tree.fingerprint,
           });
   }

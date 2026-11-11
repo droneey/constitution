@@ -16,6 +16,7 @@ runWorkingTreeSuite({
     repositoryFolderPath: AbsolutePath.create(REPOSITORY_FOLDER_PATH),
     tree: createFakeWorkingTree({
       changed: world.untracked,
+      tracked: world.committed,
       ignored: world.ignored,
       isHeadOnMainLine: world.mainLine === RemoteMainLine.HoldsHead,
       ...(world.isWorktree

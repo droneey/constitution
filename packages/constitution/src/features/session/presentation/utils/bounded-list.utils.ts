@@ -73,4 +73,22 @@ const listWithin = (input: ListWithinInput): readonly string[] => {
   ];
 };
 
-export { bytesOf, bytesOfLines, countedNoteOf, entriesWithin, linesWithin, listWithin };
+interface ListFirstInput {
+  readonly lines: readonly string[];
+  readonly note: CountedText;
+  readonly shown: number;
+}
+
+const listFirst = (input: ListFirstInput): readonly string[] => {
+  const given = input.lines.slice(0, input.shown);
+
+  return [
+    ...given,
+    ...countedNoteOf({
+      count: input.lines.length - given.length,
+      note: input.note,
+    }),
+  ];
+};
+
+export { bytesOf, bytesOfLines, countedNoteOf, entriesWithin, linesWithin, listFirst, listWithin };

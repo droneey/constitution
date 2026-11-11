@@ -15,6 +15,7 @@ enum HookField {
   Limit = 'limit',
   NotebookPath = 'notebook_path',
   Offset = 'offset',
+  RunInBackground = 'run_in_background',
   SessionId = 'session_id',
   Source = 'source',
   StopHookActive = 'stop_hook_active',
@@ -123,6 +124,7 @@ interface StopHookEvent extends HookEvent {
 interface RecordCheckHookEvent extends HookEvent {
   readonly [HookField.ToolInput]: {
     readonly [HookField.Command]?: string | undefined;
+    readonly [HookField.RunInBackground]?: boolean | undefined;
   };
 }
 
@@ -178,6 +180,7 @@ const recordCheckEventSchema: z.ZodType<RecordCheckHookEvent> = z.object({
   [HookField.ToolInput]: z
     .looseObject({
       [HookField.Command]: textField,
+      [HookField.RunInBackground]: z.boolean().optional().catch(undefined),
     })
     .catch({}),
 });

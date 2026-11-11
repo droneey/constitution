@@ -124,6 +124,10 @@ const judgeOf = (input: {
       changed: isAccepted ? [] : changedFiles,
       isHeadOnMainLine: isAccepted,
       state: treeNow,
+      tracked: [
+        'README.md',
+        'src/ui/committed.ts',
+      ],
     }),
   });
 };
@@ -300,6 +304,45 @@ describe('judgeStop', () => {
       });
     },
   );
+
+  it("should hold the main session for the review of a subagent's change when the subagent committed it and the tree holds it unchanged", () => {
+    // Act
+    const judgement = judgeOf({
+      debt: [
+        'src/ui/committed.ts',
+      ],
+      event: HookEventName.Stop,
+      marks: [
+        {
+          mark: SessionMark.Checked,
+          value: treeNow,
+        },
+      ],
+      own: {
+        agent: SessionAgent.main,
+        paths: [],
+      },
+    });
+
+    // Assert
+    expect(judgement).toStrictEqual({
+      blocks: [
+        BlockId.create('ui'),
+        BlockId.create('typescript'),
+      ],
+      fingerprint: treeNow,
+      missing: [
+        HandBackStep.Review,
+      ],
+      subagentChanges: [
+        {
+          agent: subagent,
+          path: AbsolutePath.create('/work/project/src/ui/committed.ts'),
+        },
+      ],
+      verdict: StopVerdict.Blocked,
+    });
+  });
 
   it("should hold the main session for the review alone of a subagent's handed-over changes, naming them", () => {
     // Act
@@ -541,6 +584,33 @@ describe('judgeStop', () => {
       own: {
         agent: SessionAgent.main,
         paths: changedFiles,
+      },
+    },
+    {
+      condition: 'the check the main session started in the background still runs on the tree',
+      event: HookEventName.Stop,
+      marks: [
+        {
+          mark: SessionMark.CheckStarted,
+          value: treeNow,
+        },
+      ],
+      own: {
+        agent: SessionAgent.main,
+        paths: changedFiles,
+      },
+    },
+    {
+      condition:
+        'every file the main session wrote lies outside the tree or was deleted before git tracked it',
+      event: HookEventName.Stop,
+      marks: [],
+      own: {
+        agent: SessionAgent.main,
+        paths: [
+          '/elsewhere/notes.md',
+          'src/ui/gone.ts',
+        ],
       },
     },
     {

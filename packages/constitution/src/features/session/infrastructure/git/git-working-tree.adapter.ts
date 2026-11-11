@@ -7,9 +7,10 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 import { isSystemError } from '#/libs/system-error';
 
-import type { IgnoredAmongInput, IgnoredPaths, WorkingTree } from '../../application/contracts';
+import type { IgnoredPaths, PathsAmongInput, WorkingTree } from '../../application/contracts';
 import { IgnoreStatus } from '../../application/contracts';
 import type {
+  HeldFiles,
   MainLine,
   TreeSnapshot,
   TreeState,
@@ -350,7 +351,7 @@ const stateOf = (input: GitRunInput): TreeState => {
 
 // Why: with -z, check-ignore reads its paths and names the ignored ones each ended by a NUL, so a
 // name that holds a line break is told whole, in one run for every path.
-const ignoredAmong = (input: ChildProcessSettings & IgnoredAmongInput): IgnoredPaths => {
+const ignoredAmong = (input: ChildProcessSettings & PathsAmongInput): IgnoredPaths => {
   if (input.paths.length === 0) {
     return {
       paths: new Set(),
@@ -387,8 +388,51 @@ const ignoredAmong = (input: ChildProcessSettings & IgnoredAmongInput): IgnoredP
       };
 };
 
+// Why: ls-files takes its paths only as arguments, which a long list would overrun, so it lists
+// the tracked and the unignored files of the project once, and the paths asked are found among them.
+const heldAmong = (input: ChildProcessSettings & PathsAmongInput): HeldFiles => {
+  if (input.paths.length === 0) {
+    return {
+      paths: new Set(),
+      status: TreeStateStatus.Read,
+    };
+  }
+
+  const run = runGit({
+    ...input,
+    args: [
+      'ls-files',
+      '-z',
+      '--cached',
+      '--others',
+      '--exclude-standard',
+    ],
+  });
+
+  if (run.status === GitRunStatus.Failed) {
+    return unreadTreeOf(run.failure);
+  }
+
+  const named = new Set(
+    new TextDecoder()
+      .decode(run.output)
+      .split(PATH_SEPARATOR)
+      .map((path) => AbsolutePath.join(input.repositoryFolderPath, path)),
+  );
+
+  return {
+    paths: new Set(input.paths.filter((path) => named.has(path))),
+    status: TreeStateStatus.Read,
+  };
+};
+
 const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
-  ignoredAmong: (asked: IgnoredAmongInput): IgnoredPaths =>
+  heldAmong: (asked: PathsAmongInput): HeldFiles =>
+    heldAmong({
+      ...input,
+      ...asked,
+    }),
+  ignoredAmong: (asked: PathsAmongInput): IgnoredPaths =>
     ignoredAmong({
       ...input,
       ...asked,

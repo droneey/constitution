@@ -1,9 +1,15 @@
 import { sessionsFolderInProject } from '#/kernel/constants';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { IgnoredAmongInput, IgnoredPaths, WorkingTree } from '../application/contracts';
+import type { IgnoredPaths, PathsAmongInput, WorkingTree } from '../application/contracts';
 import { IgnoreStatus } from '../application/contracts';
-import type { MainLine, TreeSnapshot, TreeState, UnreadTree } from '../domain/tree-state/entities';
+import type {
+  HeldFiles,
+  MainLine,
+  TreeSnapshot,
+  TreeState,
+  UnreadTree,
+} from '../domain/tree-state/entities';
 import { TreeStateStatus } from '../domain/tree-state/entities';
 import { FileSignature, TreeFingerprint } from '../domain/tree-state/value-objects';
 
@@ -15,6 +21,7 @@ interface FakeWorkingTree {
   readonly mainCheckout?: string;
   readonly repositoryFolderPath?: string;
   readonly state?: string | UnreadTree;
+  readonly tracked?: readonly string[];
 }
 
 const noRepository: UnreadTree = {
@@ -37,8 +44,39 @@ const createFakeWorkingTree = (tree: FakeWorkingTree = {}): WorkingTree => {
     sessionsFolderInProject,
   ];
 
+  const isIgnored = (input: { path: AbsolutePath; repositoryFolderPath: AbsolutePath }): boolean =>
+    ignored.some((pattern) => {
+      const ignoredPath = AbsolutePath.join(input.repositoryFolderPath, pattern);
+
+      return input.path === ignoredPath || input.path.startsWith(`${ignoredPath}/`);
+    });
+
   return {
-    ignoredAmong: (asked: IgnoredAmongInput): IgnoredPaths => {
+    heldAmong: (asked: PathsAmongInput): HeldFiles => {
+      if (asked.paths.length > 0 && !isOwn(asked.repositoryFolderPath)) {
+        return noRepository;
+      }
+
+      const inTree = (path: string): AbsolutePath =>
+        AbsolutePath.join(asked.repositoryFolderPath, path);
+
+      const held = new Set([
+        ...(tree.tracked ?? []).map(inTree),
+        ...(tree.changed ?? []).map(inTree).filter(
+          (path) =>
+            !isIgnored({
+              path,
+              repositoryFolderPath: asked.repositoryFolderPath,
+            }),
+        ),
+      ]);
+
+      return {
+        paths: new Set(asked.paths.filter((path) => held.has(path))),
+        status: TreeStateStatus.Read,
+      };
+    },
+    ignoredAmong: (asked: PathsAmongInput): IgnoredPaths => {
       if (asked.paths.length === 0) {
         return {
           paths: new Set(),
@@ -55,10 +93,9 @@ const createFakeWorkingTree = (tree: FakeWorkingTree = {}): WorkingTree => {
       return {
         paths: new Set(
           asked.paths.filter((path) =>
-            ignored.some((pattern) => {
-              const ignoredPath = AbsolutePath.join(asked.repositoryFolderPath, pattern);
-
-              return path === ignoredPath || path.startsWith(`${ignoredPath}/`);
+            isIgnored({
+              path,
+              repositoryFolderPath: asked.repositoryFolderPath,
             }),
           ),
         ),

@@ -6,7 +6,7 @@ import { keptBlockOf, keptSession, sessionStateOf } from '../../../../__tests__/
 import { SessionAgent, SessionMark } from '../../../session/entities';
 import { AgentId } from '../../../session/value-objects';
 import { HookEventName } from '../../../shared/entities';
-import type { MainLine, TreeSnapshot, TreeState } from '../../../tree-state/entities';
+import type { HeldFiles, MainLine, TreeSnapshot, TreeState } from '../../../tree-state/entities';
 import { TreeStateStatus } from '../../../tree-state/entities';
 import { FileSignature, TreeFingerprint } from '../../../tree-state/value-objects';
 import type { ReviewDebt } from '../review-debt.entity';
@@ -30,6 +30,7 @@ const headHeld: MainLine = {
 };
 const noMarks: StopMarks = {
   [SessionMark.Checked]: undefined,
+  [SessionMark.CheckStarted]: undefined,
   [SessionMark.ReviewStarted]: undefined,
   [SessionMark.Reviewed]: undefined,
   [SessionMark.Turn]: treeBefore,
@@ -69,12 +70,25 @@ const owedReview: ReviewDebt = {
   agent: subagent,
   path: AbsolutePath.create('/work/project/src/ui/b.ts'),
 };
+const scratchFile = AbsolutePath.create('/private/tmp/scratchpad/notes.md');
+const goneReview: ReviewDebt = {
+  agent: subagent,
+  path: AbsolutePath.create('/work/project/src/ui/gone.ts'),
+};
+const heldByTree: HeldFiles = {
+  paths: new Set([
+    ownFile,
+    owedReview.path,
+  ]),
+  status: TreeStateStatus.Read,
+};
 
 describe('StopJudgement.judge', () => {
   it.each<{
     condition: string;
     event?: StopEvent;
     expected: ReturnType<typeof StopJudgement.judge>;
+    held?: HeldFiles;
     mainLine?: MainLine;
     marks?: Partial<StopMarks>;
     own?: readonly AbsolutePath[];
@@ -341,6 +355,257 @@ describe('StopJudgement.judge', () => {
       ],
     },
     {
+      condition: 'the check it started in the background still runs on this tree',
+      expected: undefined,
+      marks: {
+        [SessionMark.CheckStarted]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+      reviewOwed: [
+        owedReview,
+      ],
+    },
+    {
+      condition: 'a subagent stops while the check started in the background runs on this tree',
+      event: subagentStop,
+      expected: undefined,
+      marks: {
+        [SessionMark.CheckStarted]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'the agent changed the tree since it started the check in the background',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.CheckStarted]: treeBefore,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'the check it started in the background has passed on this tree',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+        [SessionMark.CheckStarted]: treeNow,
+      },
+      own: [
+        ownFile,
+      ],
+    },
+    {
+      condition: 'it wrote outside the tree, and a subagent wrote a file the tree no longer holds',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [
+          owedReview,
+        ],
+        verdict: StopVerdict.Blocked,
+      },
+      own: [
+        ownFile,
+        scratchFile,
+      ],
+      reviewOwed: [
+        owedReview,
+        goneReview,
+      ],
+    },
+    {
+      condition: 'every file the session wrote lies outside the tree or is gone from it',
+      expected: {
+        subagentChanges: [
+          goneReview,
+        ],
+        verdict: StopVerdict.Covered,
+      },
+      own: [
+        scratchFile,
+      ],
+      reviewOwed: [
+        goneReview,
+      ],
+    },
+    {
+      condition: 'a subagent stops when every file the session wrote is gone from the tree',
+      event: subagentStop,
+      expected: undefined,
+      own: [
+        scratchFile,
+      ],
+      reviewOwed: [
+        goneReview,
+      ],
+    },
+    {
+      condition: 'the session wrote outside the tree alone, and no subagent wrote anything',
+      expected: undefined,
+      own: [
+        scratchFile,
+      ],
+    },
+    {
+      condition:
+        'the session checked and had reviewed the tree, and a subagent wrote a file it no longer holds',
+      expected: {
+        subagentChanges: [
+          owedReview,
+          goneReview,
+        ],
+        verdict: StopVerdict.Covered,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+        [SessionMark.Reviewed]: treeNow,
+      },
+      reviewOwed: [
+        owedReview,
+        goneReview,
+      ],
+    },
+    {
+      condition: 'a subagent’s file is staged for deletion, so the index no longer holds it',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Review,
+        ],
+        subagentChanges: [
+          goneReview,
+        ],
+        verdict: StopVerdict.Blocked,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+      },
+      reviewOwed: [
+        goneReview,
+      ],
+      snapshot: {
+        fileSignatures: new Map([
+          [
+            goneReview.path,
+            FileSignature.create('gone'),
+          ],
+        ]),
+        status: TreeStateStatus.Read,
+      },
+    },
+    {
+      condition: 'git cannot tell which of the files the session wrote the tree holds',
+      expected: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Review,
+        ],
+        subagentChanges: [
+          goneReview,
+        ],
+        verdict: StopVerdict.Blocked,
+      },
+      held: {
+        reason: 'fatal: index file corrupt',
+        status: TreeStateStatus.Failed,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+      },
+      reviewOwed: [
+        goneReview,
+      ],
+    },
+    {
+      condition: 'git cannot tell whether the tree holds a file the session wrote outside it',
+      expected: {
+        blocks: [],
+        fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+        ],
+        subagentChanges: [],
+        verdict: StopVerdict.Blocked,
+      },
+      held: {
+        reason: 'fatal: index file corrupt',
+        status: TreeStateStatus.Failed,
+      },
+      own: [
+        scratchFile,
+      ],
+    },
+    {
+      condition:
+        'the session checked and had reviewed the tree, though git cannot tell which files it holds',
+      expected: {
+        subagentChanges: [
+          goneReview,
+        ],
+        verdict: StopVerdict.Covered,
+      },
+      held: {
+        reason: 'fatal: index file corrupt',
+        status: TreeStateStatus.Failed,
+      },
+      marks: {
+        [SessionMark.Checked]: treeNow,
+        [SessionMark.Reviewed]: treeNow,
+      },
+      reviewOwed: [
+        goneReview,
+      ],
+    },
+    {
+      condition: 'git cannot list the changes of the tree and the session wrote only outside it',
+      expected: undefined,
+      own: [
+        scratchFile,
+      ],
+      snapshot: {
+        reason: 'fatal: index file corrupt',
+        status: TreeStateStatus.Failed,
+      },
+    },
+    {
       condition: 'the agent changed nothing and owes no review',
       expected: undefined,
     },
@@ -432,6 +697,7 @@ describe('StopJudgement.judge', () => {
     const event = given.event ?? stop;
     const input = {
       event,
+      held: given.held ?? heldByTree,
       isMainThread: event.agent === SessionAgent.main,
       mainLine: given.mainLine ?? {
         isHeadHeld: false,

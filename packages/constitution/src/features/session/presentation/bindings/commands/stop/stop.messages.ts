@@ -12,12 +12,17 @@ const reviewMessage = (blocks: string): string =>
   `The changes fall under ${blocks} and no review covers this tree. Run /check to review them against the rules, and hand back only when the review is done. ${QUESTION}`;
 
 interface SubagentChangesInput {
-  readonly agent: string;
+  readonly files: string;
   readonly paths: string;
 }
 
 const subagentChangesMessage = (input: SubagentChangesInput): string =>
-  `Subagent ${input.agent} changed ${input.paths}; a subagent cannot start the reviewer, so you, the coordinator, review its work with /check.`;
+  `Subagents changed ${input.files}, such as ${input.paths}; a subagent cannot start the reviewer, so you, the coordinator, review their work with /check.`;
+
+const filesText: CountedText = {
+  many: (count) => `${count} files`,
+  one: '1 file',
+};
 
 interface CheckAndReviewInput {
   readonly blocks: string;
@@ -26,11 +31,6 @@ interface CheckAndReviewInput {
 
 const checkAndReviewMessage = (input: CheckAndReviewInput): string =>
   `The files you changed have neither a passing check nor a review on this tree. Run the project's check, \`${input.check}\`, then /check to review them, as they fall under ${input.blocks}; hand back only when both are done. ${QUESTION}`;
-
-const moreSubagentsText: CountedText = {
-  many: (count) => `${count} more subagents changed files; review their work too.`,
-  one: '1 more subagent changed files; review its work too.',
-};
 
 const moreBlocksText: CountedText = {
   many: (count) => `and ${count} more blocks`,
@@ -43,8 +43,8 @@ const unjudgedMessage = (reason: string): string =>
 export {
   checkAndReviewMessage,
   checkMessage,
+  filesText,
   moreBlocksText,
-  moreSubagentsText,
   reviewMessage,
   subagentChangesMessage,
   unjudgedMessage,
