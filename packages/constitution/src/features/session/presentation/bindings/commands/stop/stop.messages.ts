@@ -4,8 +4,7 @@ import type { CountedText } from '../../../utils';
 // the stop hook is active goes through.
 const QUESTION =
   'If you are stopping to ask the user a question and the work is not done, say so plainly and stop again.';
-// Why: the plugin's skill that reviews a change against the rules, called by its namespaced name, so
-// no command of Claude Code's own that shares its last word answers.
+// Why: a bare /review runs Claude Code's own command, not the plugin's skill.
 const REVIEW_SKILL = '/constitution:review';
 
 const checkMessage = (check: string): string =>
