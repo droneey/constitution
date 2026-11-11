@@ -12,6 +12,11 @@ import { Candidate } from '../../../../../../entities';
 
 type LackedFact = PresetsCode.MissingConstitution | PresetsCode.MissingName;
 
+// Why: a package's import name is its name with an underscore for each hyphen, as Python reads a
+// hyphen as a minus and a package named so imports by underscores.
+const NAME_SEPARATOR = '-';
+const IMPORT_NAME_SEPARATOR = '_';
+
 interface FileFacts {
   readonly copiedText: string | undefined;
   readonly isRepositoryRoot: boolean;
@@ -78,11 +83,15 @@ const namedValueOf = (input: ReadFactsInput, factName: FactName): string | undef
     return unit.name;
   }
 
+  if (factName === FactName.PackageImportName) {
+    return unit.name?.replaceAll(NAME_SEPARATOR, IMPORT_NAME_SEPARATOR);
+  }
+
   return factName === FactName.ConstitutionPath ? input.constitutionPath : undefined;
 };
 
 const lackOf = (fact: Fact): LackedFact | undefined => {
-  if (Fact.isNamed(fact, FactName.PackageName)) {
+  if (Fact.isNamed(fact, FactName.PackageName) || Fact.isNamed(fact, FactName.PackageImportName)) {
     return PresetsCode.MissingName;
   }
 

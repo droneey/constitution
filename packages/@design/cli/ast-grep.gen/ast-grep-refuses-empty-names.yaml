@@ -1,0 +1,78 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ast-grep-refuses-empty-names@typescript
+language: Tsx
+severity: error
+message: 'Name what it holds: an empty word says nothing'
+utils:
+  bound-identifier:
+    kind: identifier
+    any:
+      - inside:
+          kind: variable_declarator
+          field: name
+      - inside:
+          any:
+            - kind: required_parameter
+            - kind: optional_parameter
+          field: pattern
+      - inside:
+          kind: arrow_function
+          field: parameter
+      - inside:
+          kind: pair_pattern
+          field: value
+      - inside:
+          any:
+            - kind: array_pattern
+            - kind: rest_pattern
+      - inside:
+          kind: assignment_pattern
+          field: left
+      - inside:
+          kind: catch_clause
+          field: parameter
+      - inside:
+          kind: for_in_statement
+          field: left
+          has:
+            field: kind
+            regex: ^(?:const|let|var|using)$
+      - inside:
+          any:
+            - kind: function_declaration
+            - kind: generator_function_declaration
+            - kind: function_expression
+            - kind: generator_function
+            - kind: function_signature
+          field: name
+      - inside:
+          kind: import_clause
+      - inside:
+          kind: namespace_import
+      - inside:
+          kind: import_specifier
+          field: alias
+      - all:
+          - inside:
+              kind: import_specifier
+              field: name
+          - not:
+              inside:
+                kind: import_specifier
+                has:
+                  field: alias
+                  kind: identifier
+  bound-class-name:
+    kind: type_identifier
+    inside:
+      any:
+        - kind: class_declaration
+        - kind: class
+        - kind: abstract_class_declaration
+      field: name
+rule:
+  regex: ^(?:data|result|temp|info|item|value|obj|arr|stuff|thing)$
+  any:
+    - matches: bound-identifier
+    - matches: bound-class-name
+    - kind: shorthand_property_identifier_pattern

@@ -1,0 +1,9 @@
+python:
+  configuration-input-read-from-os-environ-only-by-the-provider:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/configuration-input-read-from-os-environ-only-by-the-provider.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/configuration-input-read-from-os-environ-only-by-the-provider.yaml

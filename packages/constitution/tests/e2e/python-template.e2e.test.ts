@@ -164,12 +164,9 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/kernel.py': longFunction,
         },
         finding: [
-          'src/shop/kernel.py:1',
-          'tally',
-          '103',
-          '100',
+          'function-within-its-limits@python',
         ],
-        task: 'check:code',
+        task: 'check:lint',
       },
       {
         condition: "a function's cognitive complexity passes 15",
@@ -228,7 +225,7 @@ describe('the files apply writes for a unit of Python', () => {
           'features/orders/domain',
           'pydantic',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: 'the kernel reads its settings through pydantic-settings',
@@ -240,7 +237,7 @@ describe('the files apply writes for a unit of Python', () => {
           'kernel',
           'pydantic_settings',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's domain imports logging",
@@ -282,7 +279,7 @@ describe('the files apply writes for a unit of Python', () => {
           'features/orders/presentation',
           'root',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's application layer imports httpx2",
@@ -296,7 +293,7 @@ describe('the files apply writes for a unit of Python', () => {
           'features/orders/presentation',
           'infrastructure, libs, shared, root',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's application layer imports a package no block gives a home",
@@ -309,7 +306,7 @@ describe('the files apply writes for a unit of Python', () => {
           'arrow',
           'features/orders/presentation',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: 'a shared adapter imports a feature',
@@ -502,7 +499,7 @@ describe('the files apply writes for a unit of Python', () => {
           'composition/checkout/domain',
           'attrs',
         ],
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: 'a feature imports the composition above it',
@@ -681,7 +678,7 @@ describe('the files apply writes for a unit of Python', () => {
             'from pydantic import BaseModel',
           ),
         },
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: 'the root configures structlog and reads the settings through pydantic-settings',
@@ -690,7 +687,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/root/logs.py': 'import structlog\n',
           'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
         },
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition: "the root reaches a feature's adapter through the adapter's own surface",
@@ -732,7 +729,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/features/orders/presentation/__init__.py': '',
           'src/shop/features/orders/presentation/orders_api.py': 'from fastapi import APIRouter\n',
         },
-        task: 'check:code',
+        task: 'check:architecture',
       },
       {
         condition:

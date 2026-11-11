@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: read-declared-once-as-query-options@typescript
+language: Tsx
+severity: error
+message: >-
+  Declare the read once as queryOptions in bindings/shared/cache.ts: an inline queryFn is a second
+  declaration of it
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'
+  - '**/${role.source}/${role.composition-root}/**'
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.tsx'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  query-fn-member:
+    any:
+      - kind: pair
+        has:
+          field: key
+          kind: property_identifier
+          regex: ^queryFn$
+      - kind: method_definition
+        inside:
+          kind: object
+        has:
+          field: name
+          kind: property_identifier
+          regex: ^queryFn$
+      - kind: shorthand_property_identifier
+        regex: ^queryFn$
+rule:
+  matches: query-fn-member

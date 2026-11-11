@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: file-within-500-lines@python
+language: Python
+severity: error
+message: 'A file of more than 500 lines: move each topic into a file of its own'
+ignores:
+  - '**/tests/**'
+  - '**/*_gen.py'
+  - '**/*_gen/**'
+rule:
+  kind: module
+  # Why: the module runs to the end of the file, so a file of more than 500 lines holds a character
+  # past its 500th line break.
+  regex: (?:[^\n]*\n){500}(?s:.)

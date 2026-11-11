@@ -1,0 +1,72 @@
+tailwind:
+  class-never-opens-with-a-max-variant:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/class-never-opens-with-a-max-variant.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/class-never-opens-with-a-max-variant.yaml
+  focus-shown-by-an-outline-utility:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/focus-shown-by-an-outline-utility.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/focus-shown-by-an-outline-utility.yaml
+  important-modifier-never-in-a-class-list:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/important-modifier-never-in-a-class-list.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/important-modifier-never-in-a-class-list.yaml
+  logical-utilities-for-direction:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/logical-utilities-for-direction.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/logical-utilities-for-direction.yaml
+  screen-height-class-never-used:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/screen-height-class-never-used.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/screen-height-class-never-used.yaml
+  screen-width-class-never-used:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/screen-width-class-never-used.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/screen-width-class-never-used.yaml
+  transition-all-never-used:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/transition-all-never-used.css.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/transition-all-never-used.yaml
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/transition-all-never-used.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/transition-all-never-used.yaml
+  theme-alias-block-written-inline:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/theme-alias-block-written-inline.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/theme-alias-block-written-inline.yaml

@@ -34,7 +34,7 @@ interface Agent {
 const skillPath = new RegExp(
   `^((?:[^./][^/]*\\/)+)[^./][^/]*\\/${RegExp.escape(SKILL_FILE_NAME)}$`,
 );
-const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
+const AGENT_FILE = /^ai\/agents\/([^./][^/]*)\.md$/;
 
 const directoryOf = (path: TreePath): string | undefined => skillPath.exec(path)?.[1];
 

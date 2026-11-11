@@ -3,7 +3,18 @@ yamllint:
     yaml:
       package.json:
         scripts:
-          check:yaml: yamllint --strict .
+          # Why: the unit's script reads only the files git keeps, and skips its members, each
+          # checked in its own run.
+          check:lint: !commands
+            - !words
+              - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+              - "'*.yaml'"
+              - "'*.yml'"
+              - --
+              - yamllint
+              - --strict
+              - --
+              - "'${workspace.members}'"
 js-runtime/bun:
   '*':
     yaml:

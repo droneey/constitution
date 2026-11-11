@@ -1,0 +1,10 @@
+observability:
+  logging-library-imported-only-by-the-root:
+    python: !whole
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=layer-imports-dependencies-by-its-role]:
+              homes:
+                structlog:
+                  - ${role.composition-root}

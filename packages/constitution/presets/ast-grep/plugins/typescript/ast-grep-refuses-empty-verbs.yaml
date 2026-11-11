@@ -1,0 +1,56 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ast-grep-refuses-empty-verbs@typescript
+language: Tsx
+severity: error
+message: 'Name what the function does and to what: a verb alone says nothing'
+utils:
+  function-name:
+    any:
+      - inside:
+          any:
+            - kind: function_declaration
+            - kind: generator_function_declaration
+          field: name
+      - inside:
+          kind: variable_declarator
+          field: name
+          has:
+            field: value
+            any:
+              - kind: arrow_function
+              - kind: function_expression
+              - kind: generator_function
+      - inside:
+          kind: method_definition
+          field: name
+          # Why: an accessor carries its `get` or `set` keyword as an unnamed child, beside its
+          # name.
+          not:
+            has:
+              regex: ^(?:get|set)$
+              not:
+                kind: property_identifier
+  proxy-handler:
+    any:
+      - kind: new_expression
+        has:
+          field: constructor
+          regex: ^Proxy$
+      - kind: variable_declarator
+        has:
+          field: type
+          has:
+            kind: generic_type
+            has:
+              field: name
+              regex: ^ProxyHandler$
+rule:
+  any:
+    - kind: identifier
+    - kind: property_identifier
+  regex: ^(?:${term.empty-verbs})$
+  matches: function-name
+  not:
+    inside:
+      stopBy: end
+      matches: proxy-handler

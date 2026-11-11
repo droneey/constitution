@@ -1,0 +1,38 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: effects-held-only-by-the-edge@typescript
+language: Tsx
+severity: error
+message: >-
+  An effect outside the edge: the clock, randomness and identifiers reach this code through a port
+files:
+  - '**/${role.source}/*/**'
+ignores:
+  - '**/${role.source}/${role.adapter}/**'
+  - '**/${role.source}/${role.bounded-context}/*/${role.adapter}/**'
+  - '**/${role.source}/${role.composition-module}/*/${role.adapter}/**'
+  - '**/${role.source}/${role.generic-library}/**'
+  - '**/${role.source}/${role.composition-root}/**'
+  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
+  - '**/${role.source}/${role.host-integration}/**'
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.tsx'
+rule:
+  any:
+    - pattern: Date.now()
+    - pattern: Date()
+    - pattern: new Date()
+    - pattern: randomUUID($$$)
+    - pattern: randomBytes($$$)
+    - pattern: randomInt($$$)
+    - pattern: randomFill($$$)
+    - pattern: randomFillSync($$$)
+    - pattern: generateKey($$$)
+    - pattern: generateKeySync($$$)
+    - pattern: generateKeyPair($$$)
+    - pattern: generateKeyPairSync($$$)
+    - pattern: generatePrime($$$)
+    - pattern: crypto.subtle.generateKey($$$)
+    - pattern: Math.random()
+    - pattern: crypto.randomUUID()
+    - pattern: crypto.getRandomValues($ARRAY)
+    - pattern: Temporal.Now.$METHOD($$$)

@@ -1,0 +1,33 @@
+# typescript
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: undefined-is-the-only-absence@typescript
+language: Tsx
+severity: error
+message: 'null outside the boundary: internal code spells absence as undefined; an adapter maps null to it'
+# Why: the rule's setting leaves markup files out, where React's API spells absence as null.
+files:
+  - '**/*.ts'
+ignores:
+  - '**/infrastructure/**'
+  - '**/dtos/**'
+rule:
+  kind: 'null'
+  not:
+    inside:
+      stopBy: end
+      any:
+        - pattern: $_ === null
+        - pattern: $_ !== null
+        - pattern: null === $_
+        - pattern: null !== $_
+        - kind: call_expression
+          has:
+            field: function
+            regex: ^useRef$
+        - kind: generic_type
+          has:
+            field: name
+            regex: ^RefObject$
+        - pattern: Object.create(null)
+        - pattern: JSON.stringify($_, null, $_)
+  matches: undefined-is-the-only-absence@typescript

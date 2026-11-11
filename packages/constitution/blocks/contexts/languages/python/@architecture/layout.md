@@ -34,7 +34,7 @@ from ...contracts.payment_gateway_port import PaymentGatewayPort
 from ....domain.order.entities.order_aggregate import DraftOrder
 ```
 
-### relative-imports-stay-in-the-module · SHOULD
+### relative-imports-stay-in-the-module · MUST
 
 Every import that leaves a file's own folder module, and every import by a file directly in its import package, is absolute. Such files include `main.py` and `__main__.py`. Every such import of the import package's own code starts from its name, and no relative import climbs out of a folder module. Exempt: the import package's own surface, whose `from .<module> import <Name>` lines `surface-is-init-with-sorted-all` gives.
 

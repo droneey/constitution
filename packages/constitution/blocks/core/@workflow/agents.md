@@ -8,8 +8,6 @@ A **submission** is an agent's work offered for acceptance into the project, to 
 
 An **accepted change** is one that whoever the project trusts with that decision has taken into what the project builds and ships from.
 
-A **review round** is one review of a change and the fixes it asks for.
-
 ## Design
 
 ### design-settled-with-its-person-first · SHOULD
@@ -99,52 +97,32 @@ Agent:  Saved carts need a sync
 
 ## Review
 
-### agent-review-stops-after-three-rounds · SHOULD
-
-Every review between agents of one change stops after three review rounds.
-
-#### Why
-
-Each round's fixes give the next round something new to find, so a loop between agents grows the change instead of settling it.
-
-#### Examples
-
-```mermaid title="Diagram"
-flowchart LR
-  r1[Round 1: review and fixes] --> r2[Round 2: review and fixes]
-  r2 --> r3[Round 3: review and fixes]
-  r3 -->|clean| done[Handed back]
-  r3 -->|still finds| person[To the person, with the fixes tried]
-```
-
 ### review-left-open-goes-to-the-person · MUST
 
-Everything the third round of a review between agents still finds goes to the agent's person, with the fixes tried.
+Everything a review between agents still finds when the change is handed back goes to the agent's person, with the fixes tried.
 
 #### Why
 
-What three rounds left open is a decision for the person, and a finding dropped when the review stops ships as a defect nobody chose.
+What the review left open is a decision for the person, and a finding dropped at the hand-back ships as a defect nobody chose.
 
 #### Examples
 
 ```text title="Avoid"
-Round 3: the reviewer still finds the
-refund can run twice on a retry.
+Last review: the reviewer still finds
+the refund can run twice on a retry.
 
-Agent:  Three rounds done; handing
-        back.
+Agent:  Review done; handing back.
 ```
 
 ```text title="Prefer"
-Round 3: the reviewer still finds the
-refund can run twice on a retry.
+Last review: the reviewer still finds
+the refund can run twice on a retry.
 
-Agent:  Three rounds done. Still
-        open: the refund can run
-        twice on a retry. Tried: a
-        lock (deadlocked the spec),
-        then a check before the
-        call (still races). Your call.
+Agent:  Still open: the refund can
+        run twice on a retry. Tried:
+        a lock (deadlocked the spec),
+        then a check before the call
+        (still races). Your call.
 ```
 
 ## Submission

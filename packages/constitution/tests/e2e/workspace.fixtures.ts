@@ -342,11 +342,12 @@ const reports: Files = {
     "from shop_tabula.features.sheets import sheet\n\n__all__ = ['sheet']\n",
   'packages/tabula/src/shop_tabula/features/__init__.py': '',
   'packages/tabula/src/shop_tabula/features/sheets/__init__.py':
-    "from .domain.entities import sheet\n\n__all__ = ['sheet']\n",
+    "from .domain.sheet.entities import sheet\n\n__all__ = ['sheet']\n",
   'packages/tabula/src/shop_tabula/features/sheets/domain/__init__.py': '',
-  'packages/tabula/src/shop_tabula/features/sheets/domain/entities/__init__.py':
+  'packages/tabula/src/shop_tabula/features/sheets/domain/sheet/__init__.py': '',
+  'packages/tabula/src/shop_tabula/features/sheets/domain/sheet/entities/__init__.py':
     "from .sheet_entity import sheet\n\n__all__ = ['sheet']\n",
-  'packages/tabula/src/shop_tabula/features/sheets/domain/entities/sheet_entity.py':
+  'packages/tabula/src/shop_tabula/features/sheets/domain/sheet/entities/sheet_entity.py':
     "def sheet(rows: list[str]) -> str:\n  return '\\n'.join(rows)\n",
   'packages/tabula/src/shop_tabula/py.typed': '',
   'apps/reports/pyproject.toml': pyprojectOf({
@@ -631,7 +632,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     ],
     implementations: [
       'uv',
-      'python-check',
+      'import-linter',
       'structlog',
     ],
     languages: [
@@ -676,7 +677,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     ],
     implementations: [
       'uv',
-      'python-check',
+      'import-linter',
       'fastapi',
       'fastmcp',
     ],
@@ -735,7 +736,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     ],
     implementations: [
       'uv',
-      'python-check',
+      'import-linter',
     ],
     languages: [
       'python',

@@ -2,11 +2,12 @@ import type { Scalar, ScalarTag, YAMLMap, YAMLSeq } from 'yaml';
 import { isAlias, isMap, isScalar, isSeq, LineCounter, parseDocument, Schema } from 'yaml';
 
 import { recognisedFailure } from '#/kernel/utils';
+import { YAML_READ_OPTIONS } from '#/libs/yaml-reading';
 
 import type { PresetFileParser, PresetFileRead } from '../../application/contracts';
 import { PresetFileReadStatus } from '../../application/contracts';
 import type { PresetValue, Setting } from '../../domain/setting/entities';
-import { PresetValue as Value, ValueKind } from '../../domain/setting/entities';
+import { Joining, PresetValue as Value, ValueKind } from '../../domain/setting/entities';
 import { SettingKey } from '../../domain/shared/value-objects';
 import type { PresetFileRefusal } from './errors';
 import { isPresetFileRefusal, PresetFileRefusal as Refusal } from './errors';
@@ -23,6 +24,11 @@ const marks: Readonly<Record<string, Mark>> = {
 };
 const SORTED = '!sorted';
 const WORDS = '!words';
+const COMMANDS = '!commands';
+const WHOLE = '!whole';
+// Why: a preset is keyed by block, rule and language, so a language's value, the settings that hold
+// its rule for that language, sits three maps below the document's.
+const LANGUAGE_VALUE_DEPTH = 3;
 const CORE_TAG = 'tag:yaml.org,2002:';
 const PLAIN_SCALAR = 'PLAIN';
 // Stryker disable next-line ObjectLiteral: a schema named by no option is the core schema
@@ -130,11 +136,23 @@ const settingOf = (node: ValueNode): Setting => {
   return contentOf(node);
 };
 
+// Why: a command whose words a block fills at its slots, such as the members a run skips, is a
+// list of words within the list of commands.
+/** @throws {PresetFileRefusal} when the node holds a tag or a mark but the words mark on a list */
+const commandOf = (node: ValueNode): Setting => {
+  const near = offsetOf(node);
+
+  return node.tag === WORDS && isSeq(node)
+    ? node.items.map((listed) => settingOf(nodeOf(listed, near)))
+    : settingOf(node);
+};
+
 /**
  * @throws {PresetFileRefusal} when the node holds a tag the grammar refuses, a key
- * `list[slot=<name>]` holds more than inserts, or a copy holds no text
+ * `list[slot=<name>]` holds more than inserts, a copy holds no text, or a mark of a whole hold
+ * tags anything but a language's map of settings
  */
-const presetOf = (node: ValueNode): PresetValue => {
+const presetOf = (node: ValueNode, depth: number): PresetValue => {
   const mark = markOf(node);
   const near = offsetOf(node);
 
@@ -144,7 +162,7 @@ const presetOf = (node: ValueNode): PresetValue => {
 
   if (mark !== undefined) {
     return {
-      isWords: false,
+      joining: Joining.None,
       kind: mark,
       setting: contentOf(node),
     };
@@ -152,13 +170,19 @@ const presetOf = (node: ValueNode): PresetValue => {
 
   const isSorted = node.tag === SORTED && isMap(node);
   const isWords = node.tag === WORDS && isSeq(node);
+  const isCommands = node.tag === COMMANDS && isSeq(node);
+  const isWhole = node.tag === WHOLE && isMap(node) && depth === LANGUAGE_VALUE_DEPTH;
 
-  if (!(isCoreTagged(node) || isSorted || isWords)) {
+  if (!(isCoreTagged(node) || isSorted || isWords || isCommands || isWhole)) {
     throw refusalAt(near);
   }
 
   if (isWords) {
     return Value.wordsOf(node.items.map((listed) => settingOf(nodeOf(listed, near))));
+  }
+
+  if (isCommands) {
+    return Value.commandsOf(node.items.map((listed) => commandOf(nodeOf(listed, near))));
   }
 
   if (!isMap(node)) {
@@ -167,7 +191,7 @@ const presetOf = (node: ValueNode): PresetValue => {
 
   const pairs = node.items.map((pair) => {
     const key = keyOf(pair.key, near);
-    const preset = presetOf(nodeOf(pair.value, near));
+    const preset = presetOf(nodeOf(pair.value, near), depth + 1);
 
     if (SettingKey.slotAddressOf(key) !== undefined && !Value.isInsertOnly(preset)) {
       throw refusalAt(offsetOf(nodeOf(pair.key, near)));
@@ -179,6 +203,10 @@ const presetOf = (node: ValueNode): PresetValue => {
     };
   });
 
+  if (isWhole) {
+    return Value.wholeMapOf(pairs);
+  }
+
   return isSorted ? Value.sortedMapOf(pairs) : Value.mapOf(pairs);
 };
 
@@ -186,6 +214,7 @@ const parse = (text: string): PresetFileRead => {
   const lineCounter = new LineCounter();
   const document = parseDocument(text, {
     lineCounter,
+    ...YAML_READ_OPTIONS,
     // Stryker disable next-line BooleanLiteral: the line comes from the error's offset, which pretty errors keep
     prettyErrors: false,
     // Stryker disable next-line StringLiteral: YAML 1.2 reads by the core schema where none is named
@@ -205,7 +234,8 @@ const parse = (text: string): PresetFileRead => {
   try {
     return {
       status: PresetFileReadStatus.Parsed,
-      value: document.contents === null ? Value.mapOf([]) : presetOf(nodeOf(document.contents, 0)),
+      value:
+        document.contents === null ? Value.mapOf([]) : presetOf(nodeOf(document.contents, 0), 0),
     };
   } catch (failure) {
     return {

@@ -1,11 +1,7 @@
-import { PATH_SEPARATOR, PRESETS_FOLDER_NAME, releaseFolderInProject } from '#/kernel/constants';
+import { PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import {
-  AbsolutePath,
-  BlockSource,
-  PackPath,
-  RepositoryRelativePath,
-} from '#/kernel/value-objects';
+import type { RepositoryRelativePath } from '#/kernel/value-objects';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import { checkPresetSets, PackRoleNaming } from '../../../../domain/check-preset-sets/services';
 import type { PresetsPlan } from '../../../../domain/presets-plan/entities';
@@ -17,7 +13,7 @@ import type {
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import { loadPresetSets } from '../load-preset-sets';
+import { loadProjectPresetSets, releaseFolderPathFromRepository } from '../load-preset-sets';
 import { readCheckInputs, releaseFilesOf } from '../read-check-inputs';
 
 interface ComputePresetsInput {
@@ -28,13 +24,15 @@ interface ComputePresetsInput {
   readonly project: PresetsProject;
 }
 
-const releaseFolderPathFromRepository = RepositoryRelativePath.create(releaseFolderInProject);
+interface ConstitutionPathsInput {
+  readonly candidates: readonly Candidate[];
+  readonly files: ProjectFiles;
+  readonly repositoryFolderPath: AbsolutePath;
+}
 
-const constitutionPathsOf = (input: {
-  candidates: readonly Candidate[];
-  files: ProjectFiles;
-  repositoryFolderPath: AbsolutePath;
-}): ReadonlyMap<RepositoryRelativePath, string> => {
+const constitutionPathsOf = (
+  input: ConstitutionPathsInput,
+): ReadonlyMap<RepositoryRelativePath, string> => {
   const naming = new Map(
     input.candidates
       .filter((candidate) => Candidate.namesConstitutionPath(candidate))
@@ -69,24 +67,11 @@ const constitutionPathsOf = (input: {
 const computePresets = (input: ComputePresetsInput): PresetsPlan => {
   const { files, parser, project } = input;
   const { model, units } = project;
-  const loaded = [
-    loadPresetSets({
-      files,
-      parser,
-      source: BlockSource.create(),
-      sourceFolderPath: project.releaseFolderPath,
-      sourceFolderPathFromRepository: releaseFolderPathFromRepository,
-    }),
-    ...project.packs.map((pack) =>
-      loadPresetSets({
-        files,
-        parser,
-        source: BlockSource.create(pack),
-        sourceFolderPath: AbsolutePath.join(project.repositoryFolderPath, PackPath.normalOf(pack)),
-        sourceFolderPathFromRepository: RepositoryRelativePath.create(PackPath.normalOf(pack)),
-      }),
-    ),
-  ];
+  const loaded = loadProjectPresetSets({
+    files,
+    parser,
+    project,
+  });
   const selected = presetsSelectedOf({
     entries: loaded.flatMap((one) => one.entries),
     model,
@@ -136,5 +121,5 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
   });
 };
 
-export type { ComputePresetsInput };
-export { computePresets };
+export type { ComputePresetsInput, ConstitutionPathsInput };
+export { computePresets, constitutionPathsOf };

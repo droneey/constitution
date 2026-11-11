@@ -2,6 +2,7 @@ import type { Document, Node, Pair, YAMLMap } from 'yaml';
 import { isMap, isNode, isScalar, isSeq, parseDocument, visit } from 'yaml';
 
 import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
+import { YAML_READ_OPTIONS } from '#/libs/yaml-reading';
 
 import type { ConfigurationWrite, HeldStep } from '../../domain/configuration-file/entities';
 import type { Setting } from '../../domain/setting/entities';
@@ -13,6 +14,7 @@ import { LINE_WIDTH, NEWLINE } from './text.constants';
 import { settingOfWire } from './wire-setting.utils';
 
 const OPTIONS = {
+  ...YAML_READ_OPTIONS,
   schema: 'core',
   version: '1.2',
 } as const;

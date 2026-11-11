@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: transition-all-never-used@typescript
+language: Tsx
+severity: error
+message: >-
+  Name what moves with transition, transition-colors, transition-opacity or transition-transform:
+  transition-all also animates layout and every colour of a theme switch
+utils:
+  class-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: identifier
+      regex: ^(?:cva|cn|clsx|twMerge)$
+  class-attribute-value:
+    any:
+      - kind: string
+      - kind: jsx_expression
+    inside:
+      kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: ^className$
+  class-list:
+    any:
+      - matches: class-attribute-value
+      - matches: class-call
+        not:
+          inside:
+            stopBy: end
+            any:
+              - matches: class-call
+              - matches: class-attribute-value
+rule:
+  matches: class-list
+  regex: '\btransition-all\b'

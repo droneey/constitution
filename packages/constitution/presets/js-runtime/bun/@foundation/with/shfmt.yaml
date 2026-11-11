@@ -4,12 +4,22 @@ shfmt:
       package.json:
         scripts:
           # Why: the unit's script skips its members, each checked in its own run.
-          check:shell-format: !words
-            - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -d --
-            - "'${workspace.members}'"
-          fix:shell-format: !words
-            - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -w --
-            - "'${workspace.members}'"
+          check:format: !commands
+            - !words
+              - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+              - "'*.sh'"
+              - "'*.bash'"
+              - --
+              - shfmt -d --
+              - "'${workspace.members}'"
+          fix:format: !commands
+            - !words
+              - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+              - "'*.sh'"
+              - "'*.bash'"
+              - --
+              - shfmt -w --
+              - "'${workspace.members}'"
 js-runtime/bun:
   '*':
     shell:

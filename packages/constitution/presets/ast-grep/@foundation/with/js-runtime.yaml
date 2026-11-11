@@ -1,0 +1,17 @@
+js-runtime:
+  child-process-started-without-a-shell:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/child-process-started-without-a-shell.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/child-process-started-without-a-shell.yaml
+  spawn-given-an-env-built-for-it:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/spawn-given-an-env-built-for-it.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/spawn-given-an-env-built-for-it.yaml

@@ -29,6 +29,7 @@ interface PartBody {
 
 interface EntryForm {
   readonly projectFolderPath?: AbsolutePath;
+  readonly withHeldStatements: boolean;
   readonly withWhy: boolean;
 }
 
@@ -141,6 +142,16 @@ const definitionEntryOf =
     },
   });
 
+const statementLines = (input: { form: EntryForm; rule: GatedRule }): readonly string[] =>
+  input.rule.isHeld === true && !input.form.withHeldStatements
+    ? []
+    : [
+        ...loweredLines(input.rule),
+        ...wrappedAtSpaces(input.rule.statement),
+        '',
+        ...whyLines(input),
+      ];
+
 const ruleEntryOf =
   (form: EntryForm) =>
   (rule: GatedRule): PartEntry => ({
@@ -154,10 +165,7 @@ const ruleEntryOf =
     lines: [
       headingOf(rule),
       '',
-      ...loweredLines(rule),
-      ...wrappedAtSpaces(rule.statement),
-      '',
-      ...whyLines({
+      ...statementLines({
         form,
         rule,
       }),
@@ -264,6 +272,7 @@ const partsOf = (input: PartsInput): readonly WrittenPart[] => {
     entries: entriesOf({
       form: {
         projectFolderPath: input.projectFolderPath,
+        withHeldStatements: false,
         withWhy: false,
       },
       reading: input.reading,
@@ -287,6 +296,7 @@ const readingTextOf = (input: ReadingTextInput): string =>
   bodiesOf({
     entries: entriesOf({
       form: {
+        withHeldStatements: true,
         withWhy: input.withWhy,
       },
       reading: input.reading,

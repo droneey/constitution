@@ -1,0 +1,63 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: sleep-or-call-later-only-at-the-edge@python
+language: Python
+severity: error
+message: 'A timer outside the edge and the binding units: the clock reaches it through a port'
+files:
+  - '**/src/*/**'
+ignores:
+  - '**/src/*/infrastructure/**'
+  - '**/src/*/libs/**'
+  - '**/src/*/root/**'
+  - '**/src/*/integrations/**'
+  - '**/src/*/main.py'
+  - '**/src/*/__main__.py'
+  - '**/src/*/presentation/bindings/**'
+  - '**/tests/**'
+rule:
+  any:
+    - kind: import_from_statement
+      all:
+        - has:
+            field: module_name
+            regex: ^(?:asyncio|threading)$
+        - has:
+            field: name
+            any:
+              - regex: ^(?:Timer|sleep)$
+              - has:
+                  field: name
+                  regex: ^(?:Timer|sleep)$
+    - kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^(?:Timer|sleep)$
+        - has:
+            field: object
+            kind: identifier
+            any:
+              - regex: ^(?:asyncio|threading)$
+              - all:
+                  - pattern: $MODULE
+                  - inside:
+                      kind: module
+                      stopBy: end
+                      has:
+                        kind: aliased_import
+                        stopBy: end
+                        all:
+                          - inside:
+                              kind: import_statement
+                          - has:
+                              field: name
+                              regex: ^(?:asyncio|threading)$
+                          - has:
+                              field: alias
+                              pattern: $MODULE
+    # Why: an event loop is reached in many ways, as asyncio.get_running_loop() or a loop handed in,
+    # so its timers are known by their names alone.
+    - kind: attribute
+      has:
+        field: attribute
+        regex: ^(?:call_at|call_later)$

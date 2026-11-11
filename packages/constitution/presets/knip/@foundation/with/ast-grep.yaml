@@ -1,0 +1,6 @@
+ast-grep:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - ast-grep

@@ -1,5 +1,5 @@
-from .mutation_run_entity import MutationRun, Ran, Stopped
-from .outcome_entity import Broken, Outcome, Passed, PassReason, Survived, outcome_of
+from .mutation_run_entity import Broken, MutationRun, Ran, Stopped
+from .outcome_entity import Outcome, Passed, PassReason, Survived, outcome_of
 
 __all__ = [
   'Broken',

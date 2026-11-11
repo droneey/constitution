@@ -1,0 +1,52 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: outside-value-unknown-until-parsed@typescript
+language: Tsx
+severity: error
+message: >-
+  A parsed outside value is unknown until a schema or a check narrows it; a type here is a cast
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  parsed-value:
+    any:
+      - pattern: JSON.parse($$$ARGUMENTS)
+      - pattern: await $CLIENT.json()
+      - pattern: $CLIENT.json()
+  wide-type:
+    any:
+      - kind: predefined_type
+        regex: ^unknown$
+      - kind: generic_type
+        regex: ^Promise<\s*unknown\s*>$
+  typed-declarator:
+    kind: variable_declarator
+    has:
+      field: type
+      kind: type_annotation
+      not:
+        has:
+          matches: wide-type
+constraints:
+  TYPE:
+    regex: '[\s\S]'
+    not:
+      matches: wide-type
+rule:
+  any:
+    - pattern: JSON.parse($$$ARGUMENTS) as $TYPE
+    - pattern: JSON.parse($$$ARGUMENTS) as unknown as $TYPE
+    - pattern: (await $CLIENT.json()) as $TYPE
+    - pattern: (await $CLIENT.json()) as unknown as $TYPE
+    - pattern: $CLIENT.json() as $TYPE
+    - pattern: $CLIENT.json() as unknown as $TYPE
+    - pattern: JSON.parse($$$ARGUMENTS) satisfies $TYPE
+    - pattern: (JSON.parse($$$ARGUMENTS)) satisfies $TYPE
+    - pattern: (await $CLIENT.json()) satisfies $TYPE
+    - pattern: $CLIENT.json() satisfies $TYPE
+    - pattern: ($CLIENT.json()) satisfies $TYPE
+    - pattern: $CLIENT.json<$TYPE>()
+    - matches: typed-declarator
+      has:
+        field: value
+        matches: parsed-value

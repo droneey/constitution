@@ -3,8 +3,14 @@ syncpack:
     json:
       package.json:
         scripts:
-          check:manifests: syncpack lint && syncpack format --check
-          fix:manifests: syncpack fix && syncpack format
+          check:lint: !commands
+            - syncpack lint
+          check:format: !commands
+            - syncpack format --check
+          fix:lint: !commands
+            - syncpack fix
+          fix:format: !commands
+            - syncpack format
 js-runtime/bun:
   '*':
     json:

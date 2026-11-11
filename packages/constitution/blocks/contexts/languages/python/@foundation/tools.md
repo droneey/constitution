@@ -6,7 +6,7 @@
 
 ### suppression-reason-in-a-second-comment → suppression-states-its-reason · MUST
 
-Every comment that silences a tool's findings by their codes gives its reason in a second comment after them. The second comment opens with `#`, as in `# type: ignore[attr-defined]  # <reason>`.
+Where its tool stops reading at a second `#`, every suppression comment gives its reason in a second comment after its codes. The second comment opens with `#`, as in `# type: ignore[attr-defined]  # <reason>`.
 
 #### Why
 

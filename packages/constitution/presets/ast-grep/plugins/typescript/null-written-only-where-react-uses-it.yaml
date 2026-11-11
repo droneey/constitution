@@ -1,0 +1,126 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: null-written-only-where-react-uses-it@typescript
+language: Tsx
+severity: error
+message: >-
+  null outside the boundary: internal code spells absence as undefined; an adapter maps null to it
+files:
+  - '**/*.tsx'
+utils:
+  markup:
+    any:
+      - kind: jsx_element
+      - kind: jsx_self_closing_element
+      - kind: parenthesized_expression
+        has:
+          any:
+            - kind: jsx_element
+            - kind: jsx_self_closing_element
+  function-like:
+    any:
+      - kind: function_declaration
+      - kind: function_expression
+      - kind: arrow_function
+      - kind: method_definition
+      - kind: function_signature
+      - kind: method_signature
+  react-element:
+    any:
+      - kind: type_identifier
+      - kind: nested_type_identifier
+      - kind: generic_type
+    regex: ^[\w$.]*ReactElement(?:<[\s\S]*>)?$
+    inside:
+      kind: union_type
+  rendering-return-type:
+    kind: type_annotation
+    inside:
+      field: return_type
+      matches: function-like
+    has:
+      kind: union_type
+      has:
+        stopBy: end
+        matches: react-element
+  rendered-nothing:
+    any:
+      - inside:
+          kind: return_statement
+      - inside:
+          stopBy: end
+          matches: rendering-return-type
+      - inside:
+          kind: arrow_function
+          field: body
+          has:
+            field: return_type
+            matches: rendering-return-type
+      - inside:
+          kind: ternary_expression
+          field: alternative
+          has:
+            field: consequence
+            matches: markup
+      - inside:
+          kind: ternary_expression
+          field: consequence
+          has:
+            field: alternative
+            matches: markup
+      - inside:
+          kind: arrow_function
+          field: body
+          any:
+            - inside:
+                kind: pair
+                field: value
+            - inside:
+                kind: jsx_expression
+                inside:
+                  kind: jsx_attribute
+  compared:
+    inside:
+      kind: binary_expression
+      any:
+        - pattern: $VALUE === null
+        - pattern: $VALUE !== null
+        - pattern: null === $VALUE
+        - pattern: null !== $VALUE
+  ref-object:
+    inside:
+      stopBy: end
+      any:
+        - kind: call_expression
+          has:
+            field: function
+            regex: ^(?:React\.)?useRef$
+        - kind: generic_type
+          has:
+            field: name
+            regex: ^(?:React\.)?RefObject$
+  api-argument:
+    any:
+      - nthChild: 1
+        inside:
+          kind: arguments
+          inside:
+            kind: call_expression
+            has:
+              field: function
+              regex: ^Object\.create$
+      - nthChild: 2
+        inside:
+          kind: arguments
+          inside:
+            kind: call_expression
+            has:
+              field: function
+              regex: ^JSON\.stringify$
+rule:
+  kind: 'null'
+  not:
+    any:
+      - matches: rendered-nothing
+      - matches: compared
+      - matches: ref-object
+      - matches: api-argument

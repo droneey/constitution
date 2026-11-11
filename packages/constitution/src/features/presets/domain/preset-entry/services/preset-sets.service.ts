@@ -2,8 +2,8 @@ import { PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
 import type { BlockSource } from '#/kernel/value-objects';
 import { BlockId, RepositoryRelativePath, RuleSlug } from '#/kernel/value-objects';
 
-import type { PresetPair, PresetValue } from '../../setting/entities';
-import { ValueKind } from '../../setting/entities';
+import type { PresetPair } from '../../setting/entities';
+import { PresetValue, ValueKind } from '../../setting/entities';
 import { EVERY } from '../../shared/constants';
 import type { PresetsFinding, PresetsProblem } from '../../shared/entities';
 import { PresetsCode } from '../../shared/entities';
@@ -140,6 +140,7 @@ const entriesIn = (input: EntriesInInput): PresetSetsLoaded => {
             ...EntryTarget.of(file.key),
             block,
             index: entries.length,
+            isWhole: PresetValue.isWhole(targets),
             language,
             rule,
             set,

@@ -1,2 +1,8 @@
-export type { PresetsPlanInput, PresetsSelected, PresetsSelectedInput } from './compute-presets';
-export { presetsPlanOf, presetsSelectedOf } from './compute-presets';
+export type {
+  PresetsGuardedInput,
+  PresetsPlanInput,
+  PresetsSelected,
+  PresetsSelectedInput,
+} from './compute-presets';
+export { guardedCandidatesOf, presetsPlanOf, presetsSelectedOf } from './compute-presets';
+export { heldRulesOf } from './held-rules';

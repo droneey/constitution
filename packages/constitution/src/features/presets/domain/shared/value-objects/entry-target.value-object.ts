@@ -4,6 +4,7 @@ import { Fact } from './fact.value-object';
 
 enum FileFormat {
   Jsonc = 'jsonc',
+  Text = 'text',
 }
 
 interface Guard {

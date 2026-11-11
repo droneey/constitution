@@ -1,0 +1,59 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: child-process-started-without-a-shell@typescript
+language: Tsx
+severity: error
+message: >-
+  Start the process with an argument array (execFile, spawn), never exec, execSync or a shell option
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  child-process-module:
+    kind: string
+    regex: ^["'](?:node:)?child_process["']$
+  shell-start-imported:
+    kind: import_statement
+    regex: (?s)^import\s.*\b(?:exec|execSync)\b
+    has:
+      field: source
+      matches: child-process-module
+  shell-option:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^["'`]?shell["'`]?$
+      - has:
+          field: value
+          any:
+            - kind: 'true'
+            - kind: string
+            - kind: template_string
+      - inside:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: (?:^|\.\s*)(?:spawn|spawnSync|execFile|execFileSync|fork)$
+  shell-start-of-the-namespace:
+    all:
+      - any:
+          - pattern: $MODULE.exec($$$)
+          - pattern: $MODULE.execSync($$$)
+      - inside:
+          stopBy: end
+          kind: program
+          has:
+            kind: import_statement
+            all:
+              - has:
+                  field: source
+                  matches: child-process-module
+              - any:
+                  - pattern: import * as $MODULE from $SOURCE
+                  - pattern: import $MODULE from $SOURCE
+rule:
+  any:
+    - matches: shell-start-imported
+    - matches: shell-option
+    - matches: shell-start-of-the-namespace

@@ -1,0 +1,17 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ids-from-use-id@typescript
+language: Tsx
+severity: error
+message: 'Take an id from useId: a random one differs between server and client'
+rule:
+  kind: jsx_expression
+  inside:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: ^id$
+  has:
+    stopBy: end
+    any:
+      - pattern: crypto.randomUUID()
+      - pattern: Math.random()

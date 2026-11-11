@@ -14,6 +14,7 @@ interface RuleLowered {
 }
 
 interface RuleStanding {
+  readonly isHeld?: boolean;
   readonly level: Level;
   readonly lowered?: RuleLowered;
 }
@@ -43,9 +44,16 @@ interface GatedRuleInput {
 const levelOf = (input: { declared: Level | undefined; wording: RuleWording }): Level =>
   input.declared ?? input.wording.statedLevel ?? unstatedLevel;
 
-// Why: a rule is given without its Why, so a Why rewritten alone asks for no reading again.
+// Why: a rule is given without its Why, so a Why rewritten alone asks for no reading again; a
+// rule a tool holds is given as its heading alone, so its statement is asked for once none does,
+// and a rule no tool holds keeps the hash it had before tools were told apart.
 const hashedTextOf = (rule: RuleText & RuleStanding): string =>
   JSON.stringify([
+    ...(rule.isHeld === true
+      ? [
+          rule.isHeld,
+        ]
+      : []),
     rule.slug,
     rule.tightens ?? '',
     rule.level,

@@ -50,7 +50,8 @@ function RootComponent(): ReactElement {
                 translations: TRANSLATIONS,
               }}
               search={{
-                // biome-ignore lint/plugin/compound-part-keyed-in-pascal-case: Fumadocs' root provider names the search dialog's slot SearchDialog
+                // Why: Fumadocs' root provider names the search dialog's slot SearchDialog.
+                // ast-grep-ignore: compound-part-keyed-in-pascal-case@typescript
                 SearchDialog: DocsSearchWidget,
               }}
               theme={{

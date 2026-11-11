@@ -12,7 +12,7 @@ import {
 } from '#/kernel/value-objects';
 
 import { presetsModel } from '../../../../__tests__/presets.fixtures';
-import { PresetValue, ValueKind } from '../../../setting/entities';
+import { Joining, PresetValue, ValueKind } from '../../../setting/entities';
 import { EVERY } from '../../../shared/constants';
 import { EntryTarget } from '../../../shared/value-objects';
 import type { PresetEntry as Entry, LanguageKey } from '../preset-entry.entity';
@@ -22,6 +22,7 @@ const entryOf = (input: { index: number; key?: string; pack?: string }): Entry =
   ...EntryTarget.of(input.key ?? 'biome.json'),
   block: BlockId.create('biome'),
   index: input.index,
+  isWhole: false,
   language: EVERY,
   rule: EVERY,
   set: {
@@ -415,7 +416,7 @@ describe('PresetEntry of a copy', () => {
       key: 'biome.gen/rule.grit',
     }),
     value: {
-      isWords: false,
+      joining: Joining.None,
       kind: ValueKind.Copy,
       setting,
     },

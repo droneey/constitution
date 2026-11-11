@@ -352,7 +352,7 @@ describe('constitution run', () => {
       ],
       condition: 'with its Why when asked',
       whys: [
-        "  Why: A naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
+        '  Why: An `any` switches the checks off for whatever it touches and spreads to every value derived from it, so one written in a corner reaches code that never named it.',
         '  Why: A debug print left in code that reaches its users leaks what it prints to whoever reads the output, and a breakpoint halts the program for a user who has no debugger.',
       ],
     },
@@ -376,12 +376,12 @@ describe('constitution run', () => {
       writeFiles({
         files: {
           'src/doubled.ts': linesOf(
-            'export const doubled = (count: number): number => {',
-            '  const data = count + count;',
+            'export const doubled = (count: any): number => {',
+            '  const twice = count + count;',
             '',
             '  debugger;',
             '',
-            '  return data;',
+            '  return twice;',
             '};',
           ),
         },
@@ -413,7 +413,7 @@ describe('constitution run', () => {
       }).toStrictEqual({
         exitCode: 1,
         named: [
-          "biome-refuses-empty-names · MUST — Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only by one of the empty names fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.",
+          'any-never-written · MUST — In a typed file, no code spells `any` or leaves the compiler to infer it. No annotation, assertion or type argument spells it, such as `: any`, `as any`, `Record<string, any>` or `Promise<any>`, and no parameter is left without a type for the compiler to read as `any`.',
           ...whys.slice(0, 1),
           "debug-output-never-ships · MUST — All code that reaches its users is free of every debug output and breakpoint. Debug output is output written only to follow a run while the code is developed, such as a printed value or a dump. Exempt: a diagnostic written through the diagnostic handles at a level the program's settings can turn off.",
           ...whys.slice(1),

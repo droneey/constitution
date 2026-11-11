@@ -11,7 +11,7 @@ import { ManifestReadCode } from '../../../../../manifest/entities';
 import type { HooksDetails } from '../hooks';
 import { HooksCode, hooksCheck } from '../hooks';
 
-const HOOKS = 'hooks/hooks.json';
+const HOOKS = 'ai/hooks/hooks.json';
 const SESSION_START_HOOK =
   '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}';
 

@@ -48,7 +48,8 @@ describe('translations', () => {
     );
 
     // Assert
-    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden case of a label the root provider relabels
+    // Why: The one golden case of a label the root provider relabels.
+    // ast-grep-ignore: case-pins-meaning-never-wording@typescript
     expect(screen.getByRole('link').textContent).toBe('Back to home');
   });
 });

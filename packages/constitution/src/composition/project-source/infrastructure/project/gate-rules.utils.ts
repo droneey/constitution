@@ -1,12 +1,14 @@
 import { basename } from 'node:path';
 
+import type { PresetFileParser, ReadHeldRulesInput } from '#/features/presets';
+import { readHeldRules } from '#/features/presets';
 import type { ProjectPorts } from '#/features/project';
 import { isProjectError, readDeclaration, readRelease } from '#/features/project';
 import type { ActiveRead, ChapterRules } from '#/features/session';
 import { ActiveReadStatus } from '#/features/session';
 import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectPlace } from '#/kernel/entities';
+import type { ProjectPlace, WholeHolds } from '#/kernel/entities';
 import { ConfigReadStatus, FileReadStatus, ReleaseStatus, StatedRule } from '#/kernel/entities';
 import { splitFrontMatter, vocabularyOf } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
@@ -27,7 +29,21 @@ const realPathOf = (files: ProjectFiles, path: AbsolutePath): AbsolutePath => {
   return path;
 };
 
-const readActiveOf = (project: ProjectPorts, place: ProjectPlace): ActiveRead => {
+interface GateRulesPorts extends ProjectPorts {
+  readonly presetFiles: PresetFileParser;
+}
+
+const heldRulesOrNoneOf = (input: ReadHeldRulesInput): WholeHolds => {
+  try {
+    return readHeldRules(input);
+  } catch {
+    // Why: the boundary of an optional part: any failure of the presets, a defect included, costs
+    // the gate only the trimming of held rules, so every rule is given in full.
+    return new Map();
+  }
+};
+
+const readActiveOf = (project: GateRulesPorts, place: ProjectPlace): ActiveRead => {
   const release = readRelease({
     files: project.files,
     manifestParser: project.manifestParser,
@@ -59,6 +75,18 @@ const readActiveOf = (project: ProjectPorts, place: ProjectPlace): ActiveRead =>
       rules: {
         active: resolution.active,
         core: resolution.core,
+        held: heldRulesOrNoneOf({
+          files: project.files,
+          parser: project.presetFiles,
+          project: {
+            ...place,
+            lowerings: resolution.lowerings,
+            model: resolution.model,
+            packs: declaration.packs,
+            units: resolution.units,
+            warnings: resolution.warnings,
+          },
+        }),
         levels: new Map(
           resolution.model.rules.map((rule) => [
             rule.slug,
@@ -98,4 +126,5 @@ const rulesInOf = (files: ProjectFiles, file: AbsolutePath): ChapterRules | unde
   };
 };
 
+export type { GateRulesPorts };
 export { readActiveOf, realPathOf, rulesInOf };

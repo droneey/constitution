@@ -40,6 +40,28 @@ lint settings
   max-function-lines: error, at most 40
 ```
 
+### own-check-proven-on-each-side-of-its-rule · MUST
+
+Every lint rule or plugin the project writes for a rule is proven by code it fails on and code it passes. Such a plugin is one a preset ships, and the cases it passes include each exemption of the rule that code can show.
+
+#### Why
+
+A lint rule proven only by the code it fails on can fail on what its rule allows, and one proven only by what it passes can miss every breach; either way it holds a rule other than the one written, and one that skips an exemption forces a suppression on code that keeps the rule.
+
+#### Examples
+
+```text title="Avoid"
+check of absence-spelled-by-one-value
+  fails on: a field set to an empty string to say it is absent
+```
+
+```text title="Prefer"
+check of absence-spelled-by-one-value
+  fails on: a field set to an empty string to say it is absent
+  passes:   a field left absent
+  passes:   the spelling of absence an outside format imposes, which the rule exempts
+```
+
 ### one-check-runs-every-tool · MUST
 
 One check runs every tool that holds a rule and fails on any violation.

@@ -1,0 +1,7 @@
+ast-grep:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          check:lint: !commands
+            - ast-grep scan

@@ -60,7 +60,7 @@ typescript:
                 nursery:
                   useExplicitReturnType: 'off'
   equality-never-loose:
-    typescript:
+    typescript: !whole
       biome.jsonc:
         linter:
           rules:
@@ -84,7 +84,7 @@ typescript:
             suspicious:
               noTsIgnore: error
   enum-never-declared-const:
-    typescript:
+    typescript: !whole
       biome.jsonc:
         linter:
           rules:
@@ -98,10 +98,6 @@ typescript:
             style:
               useNamingConvention:
                 level: error
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
         overrides:
           - includes:
               - '**/*.d.ts'
@@ -140,11 +136,6 @@ typescript:
           rules:
             style:
               useEnumInitializers: error
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-            - slot: left-out
   time-held-as-a-temporal-value:
     typescript:
       biome.jsonc:
@@ -181,7 +172,7 @@ typescript:
                 options:
                   style: separatedType
   namespace-never-written:
-    typescript:
+    typescript: !whole
       biome.jsonc:
         linter:
           rules:
@@ -228,11 +219,6 @@ typescript:
           rules:
             complexity:
               noUselessUndefined: error
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.${role.grit-rule}]:
-          includes:
-            - '**'
-            - slot: left-out
-            - '!**/*.tsx'
   promise-awaited-returned-or-handed-to-a-scope:
     typescript:
       biome.jsonc:
@@ -287,47 +273,6 @@ typescript:
           rules:
             nursery:
               noMisleadingReturnType: error
-  entity-value-or-event-typed-readonly:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.${role.grit-rule}]:
-          includes:
-            - slot: business-types
-  module-level-variable-declared-const:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-variable-declared-const.${role.grit-rule}]:
-          includes:
-            - '**'
-            - '!**/*.${role.spec-file}.ts'
-            - '!**/*.${role.spec-file}.tsx'
-  parameter-object-has-a-named-type:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/parameter-object-has-a-named-type.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-  tsx-only-where-markup-is-written:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.${role.grit-rule}]:
-          includes:
-            - '**/*.tsx'
-  outside-value-unknown-until-parsed:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-  duration-measured-by-performance-now:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/duration-measured-by-performance-now.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
 core:
   async-work-awaited-or-held-by-a-scope:
     typescript:
@@ -337,11 +282,6 @@ core:
             nursery:
               noFloatingPromises: error
               noMisusedPromises: error
-  type-name-undecorated:
-    typescript:
-      biome.jsonc:
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/type-name-undecorated.${role.grit-rule}
   spec-folder-file-carries-its-kinds-mark:
     typescript:
       biome.jsonc:

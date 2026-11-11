@@ -63,6 +63,7 @@ const formatByMark: Readonly<Record<FileFormat, Format>> = {
     read: readJson,
     write: writeCommentedJson,
   },
+  [FileFormat.Text]: wholeTextFormat,
 };
 
 const keySortingWriters: ReadonlySet<Format['write']> = new Set([

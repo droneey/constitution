@@ -1,0 +1,23 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: undefined-is-the-only-absence@typescript
+language: Tsx
+rule:
+  kind: 'null'
+  not:
+    inside:
+      stopBy: end
+      any:
+        - pattern: $_ === null
+        - pattern: $_ !== null
+        - pattern: null === $_
+        - pattern: null !== $_
+        - kind: call_expression
+          has:
+            field: function
+            regex: ^useRef$
+        - kind: generic_type
+          has:
+            field: name
+            regex: ^RefObject$
+        - pattern: Object.create(null)
+        - pattern: JSON.stringify($_, null, $_)

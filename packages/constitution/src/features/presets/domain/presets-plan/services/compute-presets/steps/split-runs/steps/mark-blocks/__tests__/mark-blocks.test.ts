@@ -5,7 +5,7 @@ import { BlockId, BlockSource, coreBlockId, RepositoryRelativePath } from '#/ker
 
 import type { Contribution } from '../../../../../../../../merged-file/entities';
 import type { PresetEntry } from '../../../../../../../../preset-entry/entities';
-import { PresetValue, ValueKind } from '../../../../../../../../setting/entities';
+import { Joining, PresetValue, ValueKind } from '../../../../../../../../setting/entities';
 import { EVERY } from '../../../../../../../../shared/constants';
 import type { TargetFile } from '../../../../../../../../shared/value-objects';
 import { TargetKind } from '../../../../../../../../shared/value-objects';
@@ -14,6 +14,7 @@ import { markBlocks } from '../mark-blocks';
 const entryOf = (input: { file: string; reader: BlockId }): PresetEntry & TargetFile => ({
   block: coreBlockId,
   index: 0,
+  isWhole: false,
   kind: TargetKind.File,
   language: EVERY,
   rule: EVERY,
@@ -98,7 +99,7 @@ describe('markBlocks', () => {
         'starter',
         PresetValue.mapOf([
           pair('notes', {
-            isWords: false,
+            joining: Joining.None,
             kind: ValueKind.Default,
             setting: 'kept',
           }),
@@ -225,12 +226,12 @@ describe('markBlocks', () => {
         'ci',
         PresetValue.mapOf([
           pair('level', {
-            isWords: false,
+            joining: Joining.None,
             kind: ValueKind.Replace,
             setting: 2,
           }),
           pair('paths', {
-            isWords: false,
+            joining: Joining.None,
             kind: ValueKind.Replace,
             setting: 'all',
           }),

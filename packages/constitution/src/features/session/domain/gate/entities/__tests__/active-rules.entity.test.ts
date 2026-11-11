@@ -173,3 +173,30 @@ describe('ActiveRules.loweringOf', () => {
     expect(given).toStrictEqual(lowering);
   });
 });
+
+describe('ActiveRules.governingBlocksOf', () => {
+  it.each([
+    {
+      condition: 'a file, its language among them',
+      kind: TargetKind.File,
+      blocks: [
+        'ui',
+        'typescript',
+      ],
+    },
+    {
+      condition: 'a folder, which a rule of a language never reaches',
+      kind: TargetKind.Folder,
+      blocks: [],
+    },
+  ])('should give the blocks that govern $condition', ({ blocks, kind }) => {
+    // Act
+    const given = ActiveRules.governingBlocksOf(activeRulesOf(), {
+      kind,
+      path: RepositoryRelativePath.create('src/a.ts'),
+    });
+
+    // Assert
+    expect<readonly string[]>(given).toStrictEqual(blocks);
+  });
+});

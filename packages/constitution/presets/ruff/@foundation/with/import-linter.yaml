@@ -1,0 +1,10 @@
+import-linter:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            # Why: the folder holds the contracts the presets copy for import-linter to load, which
+            # the presets' own checks hold and no package imports.
+            extend-exclude:
+              - import_linter_${role.generated-file}

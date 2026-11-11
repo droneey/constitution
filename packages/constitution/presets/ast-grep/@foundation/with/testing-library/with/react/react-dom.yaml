@@ -1,0 +1,9 @@
+testing-library:
+  spec-never-selects-from-the-document:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/spec-never-selects-from-the-document.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/spec-never-selects-from-the-document.yaml

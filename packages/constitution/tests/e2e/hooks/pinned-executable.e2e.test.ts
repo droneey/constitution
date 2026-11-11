@@ -146,7 +146,7 @@ const runIn = (input: {
   const run = spawnSync(
     hookShell,
     [
-      join(root, 'hooks', 'hook.sh'),
+      join(root, 'ai', 'hooks', 'hook.sh'),
       input.hookEvent,
     ],
     {

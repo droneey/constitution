@@ -1,0 +1,15 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: type-name-undecorated@typescript
+language: Tsx
+severity: error
+message: 'A type is a noun, undecorated: no I prefix, no Type or Interface suffix'
+rule:
+  kind: type_identifier
+  regex: ^(?:I[A-Z].*|.*Type|.*Interface)$
+  any:
+    - inside:
+        kind: interface_declaration
+        field: name
+    - inside:
+        kind: type_alias_declaration
+        field: name

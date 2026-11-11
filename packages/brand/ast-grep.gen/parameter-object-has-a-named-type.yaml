@@ -1,0 +1,139 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: parameter-object-has-a-named-type@typescript
+language: Tsx
+severity: error
+message: 'Type the object an exported function takes by a named type, declared beside it'
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  listed-in-an-export-clause:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: export_statement
+        not:
+          has:
+            field: source
+            kind: string
+        has:
+          kind: export_clause
+          has:
+            kind: export_specifier
+            has:
+              field: name
+              pattern: $NAME
+  published-declaration:
+    any:
+      - inside:
+          kind: export_statement
+      - inside:
+          kind: ambient_declaration
+          inside:
+            kind: export_statement
+      - all:
+          - has:
+              field: name
+              pattern: $NAME
+          - any:
+              - inside:
+                  kind: program
+              - inside:
+                  kind: ambient_declaration
+                  inside:
+                    kind: program
+          - matches: listed-in-an-export-clause
+  published-type-body:
+    any:
+      - kind: interface_body
+        inside:
+          kind: interface_declaration
+          matches: published-declaration
+      - kind: object_type
+        inside:
+          kind: type_alias_declaration
+          matches: published-declaration
+      - kind: class_body
+        inside:
+          any:
+            - kind: class_declaration
+            - kind: abstract_class_declaration
+          matches: published-declaration
+  public-member:
+    not:
+      any:
+        - has:
+            kind: accessibility_modifier
+            regex: ^private$
+        - has:
+            field: name
+            kind: private_property_identifier
+  published-function:
+    any:
+      - all:
+          - any:
+              - kind: function_declaration
+              - kind: generator_function_declaration
+              - kind: function_signature
+          - matches: published-declaration
+      - all:
+          - any:
+              - kind: arrow_function
+              - kind: function_expression
+          - any:
+              - inside:
+                  kind: export_statement
+              - inside:
+                  kind: variable_declarator
+                  has:
+                    field: name
+                    pattern: $NAME
+                  inside:
+                    all:
+                      - any:
+                          - kind: lexical_declaration
+                          - kind: variable_declaration
+                      - any:
+                          - inside:
+                              kind: export_statement
+                          - all:
+                              - inside:
+                                  kind: program
+                              - matches: listed-in-an-export-clause
+      - all:
+          - any:
+              - kind: method_signature
+              - kind: method_definition
+              - kind: abstract_method_signature
+          - matches: public-member
+          - inside:
+              matches: published-type-body
+      - all:
+          - kind: function_type
+          - any:
+              - inside:
+                  kind: type_alias_declaration
+                  matches: published-declaration
+              - inside:
+                  kind: type_annotation
+                  inside:
+                    kind: property_signature
+                    matches: public-member
+                    inside:
+                      matches: published-type-body
+rule:
+  kind: object_type
+  inside:
+    kind: type_annotation
+    stopBy:
+      not:
+        kind: intersection_type
+    inside:
+      any:
+        - kind: required_parameter
+        - kind: optional_parameter
+      inside:
+        kind: formal_parameters
+        inside:
+          matches: published-function

@@ -1,0 +1,10 @@
+ast-grep:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:lint:
+                shell: !commands
+                  - ast-grep scan

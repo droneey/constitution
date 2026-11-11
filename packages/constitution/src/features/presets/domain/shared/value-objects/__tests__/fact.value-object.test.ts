@@ -275,6 +275,11 @@ describe('Fact', () => {
       expected: '`data`, `info` in src of app',
       text: '`${term.empty-names}` in ${role.source} of ${package.name}',
     },
+    {
+      condition: "as the alternatives of a regular expression's group",
+      expected: 'regex: ^(?:data|info)$',
+      text: 'regex: ^(?:${term.empty-names})$',
+    },
   ])("should fill a text with a term's members, $condition", ({ expected, text }) => {
     // Act
     const filled = Facts.filledIn({
@@ -287,10 +292,29 @@ describe('Fact', () => {
     expect(filled).toBe(expected);
   });
 
+  it("should escape a member's own pattern syntax when a regular expression's group names the term", () => {
+    // Act
+    const filled = Facts.filledIn({
+      membersOf: () => [
+        'a.b',
+        'c+',
+      ],
+      text: 'regex: ^(?:${term.patterns})$',
+      valueOf: valueOfFact,
+    });
+
+    // Assert
+    expect(filled).toBe(String.raw`regex: ^(?:a\.b|c\+)$`);
+  });
+
   it.each([
     {
       condition: 'no block lists the term',
       text: 'or { `${term.hollow-words}` }',
+    },
+    {
+      condition: "no block lists the term a regular expression's group names",
+      text: 'regex: ^(?:${term.hollow-words})$',
     },
     {
       condition: 'a fact it names has no value',

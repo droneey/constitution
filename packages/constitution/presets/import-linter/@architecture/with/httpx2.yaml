@@ -1,0 +1,13 @@
+integrations:
+  transport-library-home-is-its-systems-client:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=layer-imports-dependencies-by-its-role]:
+              homes:
+                httpx2:
+                  - ${role.adapter}
+                  - ${role.generic-library}
+                  - ${role.shared-code}
+                  - ${role.composition-root}

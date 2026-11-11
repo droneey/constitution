@@ -1,6 +1,6 @@
 bun-test:
   coverage-gate-on-the-unit-alone:
-    typescript:
+    typescript: !whole
       bunfig.integration.toml ? !${workspace.isRoot}:
         test:
           coveragePathIgnorePatterns:

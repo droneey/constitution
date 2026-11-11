@@ -18,10 +18,6 @@ const SHOP_PACKAGE: Files = {
 
 const tools = [
   {
-    module: 'droneey_python_check',
-    tool: 'python-check',
-  },
-  {
     module: 'droneey_mutation_check_python',
     tool: 'mutmut-check',
   },

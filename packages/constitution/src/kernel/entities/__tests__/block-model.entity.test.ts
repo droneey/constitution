@@ -337,6 +337,40 @@ describe('BlockModel.reachedRoleOf', () => {
       expect(role?.term).toBe(expected);
     },
   );
+
+  it('should give the term the model lists first when two blocks of one rank the readers reach define it', () => {
+    // Arrange
+    const model = BlockModel.create({
+      blocks: [
+        ...modelOf([]).blocks,
+        languageOf('python'),
+        languageOf('typescript'),
+      ],
+      roles: [
+        folderOf({
+          block: BlockId.create('typescript'),
+          term: 'useCases/',
+        }),
+        folderOf({
+          block: python,
+          term: 'use_cases/',
+        }),
+      ],
+      rules: [],
+    });
+
+    // Act
+    const role = BlockModel.reachedRoleOf(model, {
+      id: 'use-case',
+      readers: [
+        python,
+        BlockId.create('typescript'),
+      ],
+    });
+
+    // Assert
+    expect(role?.term).toBe('useCases/');
+  });
 });
 
 describe('BlockModel.reachedRoleOf of a role a seam defines', () => {

@@ -1,6 +1,6 @@
 import { PresetEntry } from '../../../../../preset-entry/entities';
 import type { PresetValue } from '../../../../../setting/entities';
-import { Setting, ValueKind } from '../../../../../setting/entities';
+import { MapForm, Setting, ValueKind } from '../../../../../setting/entities';
 import type { PresetsProblem } from '../../../../../shared/entities';
 import { PresetsCode } from '../../../../../shared/entities';
 import { TargetKind } from '../../../../../shared/value-objects';
@@ -16,7 +16,7 @@ const sortedPathsOf = (
 ): readonly (readonly string[])[] =>
   given.kind === ValueKind.Map
     ? [
-        ...(given.isSorted
+        ...(given.form === MapForm.Sorted
           ? [
               keyPath,
             ]

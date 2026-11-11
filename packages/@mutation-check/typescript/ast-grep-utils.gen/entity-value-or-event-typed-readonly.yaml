@@ -1,0 +1,23 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: entity-value-or-event-typed-readonly@typescript
+language: Tsx
+rule:
+  any:
+    - kind: property_signature
+    - kind: index_signature
+      not:
+        has:
+          kind: mapped_type_clause
+  not:
+    any:
+      - regex: ^readonly\s
+      - inside:
+          stopBy: end
+          any:
+            - kind: generic_type
+              has:
+                field: name
+                regex: ^Readonly$
+            - kind: required_parameter
+            - kind: optional_parameter
+            - kind: function_type

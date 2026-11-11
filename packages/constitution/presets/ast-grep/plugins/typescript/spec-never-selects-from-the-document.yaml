@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: spec-never-selects-from-the-document@typescript
+language: Tsx
+severity: error
+message: >-
+  Find an element as a person does, by role, label or text, and one no person perceives by its
+  data-testid
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: member_expression
+    has:
+      field: property
+      regex: ^(?:querySelector|querySelectorAll)$

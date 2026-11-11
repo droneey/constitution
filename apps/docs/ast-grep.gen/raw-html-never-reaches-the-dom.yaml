@@ -1,0 +1,62 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: raw-html-never-reaches-the-dom@typescript
+language: Tsx
+severity: error
+message: Render markup through the element interfaces or a sanitising renderer, never as raw HTML
+utils:
+  markup-property:
+    any:
+      - kind: member_expression
+        has:
+          field: property
+          regex: ^(?:innerHTML|outerHTML|srcdoc)$
+      - kind: subscript_expression
+        has:
+          field: index
+          regex: ^['"`](?:innerHTML|outerHTML|srcdoc)['"`]$
+  markup-assignment:
+    any:
+      - kind: assignment_expression
+      - kind: augmented_assignment_expression
+    has:
+      field: left
+      matches: markup-property
+  markup-parsing-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^(?:insertAdjacentHTML|setHTMLUnsafe|parseHTMLUnsafe|parseFromString|createContextualFragment)$
+  document-write:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:(?:window|globalThis)\.)?document\.(?:write|writeln)$
+  srcdoc-attribute-set:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          kind: member_expression
+          has:
+            field: property
+            regex: ^setAttribute$
+      - has:
+          field: arguments
+          has:
+            nthChild: 1
+            regex: '^[''"`](?i:srcdoc)[''"`]$'
+  srcdoc-jsx-attribute:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: ^(?i:srcdoc)$
+rule:
+  any:
+    - matches: markup-assignment
+    - matches: markup-parsing-call
+    - matches: document-write
+    - matches: srcdoc-attribute-set
+    - matches: srcdoc-jsx-attribute

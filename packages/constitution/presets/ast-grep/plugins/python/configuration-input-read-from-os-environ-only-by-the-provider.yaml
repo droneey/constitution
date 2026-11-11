@@ -1,0 +1,51 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: configuration-input-read-from-os-environ-only-by-the-provider@python
+language: Python
+severity: error
+message: 'The environment read outside the configuration provider: take the value the root hands in'
+files:
+  - '**/${role.source}/**'
+ignores:
+  - '**/${role.source}/*/${role.configuration-provider-folder}/**'
+  - '**/${role.package-suites}/**'
+rule:
+  any:
+    - kind: import_from_statement
+      all:
+        - has:
+            field: module_name
+            regex: ^os$
+        - has:
+            field: name
+            any:
+              - regex: ^(?:environ|environb|getenv|getenvb)$
+              - has:
+                  field: name
+                  regex: ^(?:environ|environb|getenv|getenvb)$
+    - kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^(?:environ|environb|getenv|getenvb)$
+        - has:
+            field: object
+            kind: identifier
+            any:
+              - regex: ^os$
+              - all:
+                  - pattern: $MODULE
+                  - inside:
+                      kind: module
+                      stopBy: end
+                      has:
+                        kind: aliased_import
+                        stopBy: end
+                        all:
+                          - inside:
+                              kind: import_statement
+                          - has:
+                              field: name
+                              regex: ^os$
+                          - has:
+                              field: alias
+                              pattern: $MODULE

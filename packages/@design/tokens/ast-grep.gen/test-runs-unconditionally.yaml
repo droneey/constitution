@@ -1,0 +1,15 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: test-runs-unconditionally@typescript
+language: Tsx
+severity: error
+message: 'Write the case so it runs every time: no todo, conditional or expected-failure case'
+files:
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+rule:
+  kind: member_expression
+  regex: ^(?:test|it|describe)(?:\s*\.\s*(?:concurrent|serial|each))*\s*\.\s*(?:todo|if|skipIf|todoIf|failing)(?:\s*\.\s*each)?$
+  inside:
+    kind: call_expression
+    field: function

@@ -1,0 +1,104 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: effects-held-only-by-the-edge@python
+language: Python
+severity: error
+message: 'An effect outside the edge: this code reaches the clock, files and streams through a port'
+files:
+  - '**/${role.source}/*/**'
+ignores:
+  - '**/${role.source}/*/${role.adapter}/**'
+  - '**/${role.source}/*/${role.generic-library}/**'
+  - '**/${role.source}/*/${role.composition-root}/**'
+  - '**/${role.source}/*/${role.host-integration}/**'
+  - '**/${role.source}/*/${role.entry}.py'
+  - '**/${role.source}/*/__main__.py'
+  - '**/${role.package-suites}/**'
+# Why: each name below is an effect of a module listed beside it, and no listed module offers a
+# listed name that holds none, so one list of modules and one of names pair them all safely.
+rule:
+  any:
+    - kind: import_statement
+      has:
+        field: name
+        any:
+          - regex: ^(?:asyncio\.subprocess|http\.client|http\.server|importlib\.metadata|urllib\.request)$
+          - has:
+              field: name
+              regex: ^(?:asyncio\.subprocess|http\.client|http\.server|importlib\.metadata|urllib\.request)$
+    - kind: import_from_statement
+      has:
+        field: module_name
+        regex: ^(?:asyncio\.subprocess|http\.client|http\.server|importlib\.metadata|urllib\.request)$
+    - kind: import_from_statement
+      all:
+        - has:
+            field: module_name
+            regex: ^(?:asyncio|bz2|codecs|gzip|http|importlib|io|locale|lzma|sys|tarfile|urllib|uuid|zipfile)$
+        - has:
+            field: name
+            any:
+              - regex: ^(?:ZipFile|argv|client|create_subprocess_exec|create_subprocess_shell|exit|getnode|metadata|open|open_connection|open_unix_connection|request|server|setlocale|start_server|stderr|stdin|stdout|subprocess|uuid1|uuid4|uuid6|uuid7|uuid8)$
+              - has:
+                  field: name
+                  regex: ^(?:ZipFile|argv|client|create_subprocess_exec|create_subprocess_shell|exit|getnode|metadata|open|open_connection|open_unix_connection|request|server|setlocale|start_server|stderr|stdin|stdout|subprocess|uuid1|uuid4|uuid6|uuid7|uuid8)$
+    - kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^(?:ZipFile|argv|client|create_subprocess_exec|create_subprocess_shell|exit|getnode|metadata|open|open_connection|open_unix_connection|request|server|setlocale|start_server|stderr|stdin|stdout|subprocess|uuid1|uuid4|uuid6|uuid7|uuid8)$
+        - has:
+            field: object
+            kind: identifier
+            any:
+              - regex: ^(?:asyncio|bz2|codecs|gzip|http|importlib|io|locale|lzma|sys|tarfile|urllib|uuid|zipfile)$
+              - all:
+                  - pattern: $MODULE
+                  - inside:
+                      kind: module
+                      stopBy: end
+                      has:
+                        kind: aliased_import
+                        stopBy: end
+                        all:
+                          - inside:
+                              kind: import_statement
+                          - has:
+                              field: name
+                              regex: ^(?:asyncio|bz2|codecs|gzip|http|importlib|io|locale|lzma|sys|tarfile|urllib|uuid|zipfile)$
+                          - has:
+                              field: alias
+                              pattern: $MODULE
+    # Why: a class imported from its module is called bare, as datetime.now for
+    # datetime.datetime.now, so the class is named however its module is reached.
+    - kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^(?:cwd|home|now|today|utcnow)$
+        - has:
+            field: object
+            any:
+              - regex: (?:^|\.)(?:Path|date|datetime)$
+              - all:
+                  - kind: identifier
+                  - pattern: $CLASS
+                  - inside:
+                      kind: module
+                      stopBy: end
+                      has:
+                        kind: aliased_import
+                        stopBy: end
+                        all:
+                          - inside:
+                              kind: import_from_statement
+                          - has:
+                              field: name
+                              regex: ^(?:Path|date|datetime)$
+                          - has:
+                              field: alias
+                              pattern: $CLASS
+    - kind: call
+      has:
+        field: function
+        kind: identifier
+        regex: ^(?:input|open)$

@@ -1,0 +1,33 @@
+css:
+  full-width-leaves-out-the-scrollbar:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/full-width-leaves-out-the-scrollbar.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/full-width-leaves-out-the-scrollbar.yaml
+  viewport-height-leaves-out-the-browsers-toolbars:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/viewport-height-leaves-out-the-browsers-toolbars.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/viewport-height-leaves-out-the-browsers-toolbars.yaml
+  web-font-served-as-woff2:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/web-font-served-as-woff2.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/web-font-served-as-woff2.yaml
+  web-font-shows-its-text-while-it-loads:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/web-font-shows-its-text-while-it-loads.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/web-font-shows-its-text-while-it-loads.yaml

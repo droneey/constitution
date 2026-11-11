@@ -1,0 +1,20 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: web-font-served-as-woff2@css
+language: Css
+severity: error
+message: Serve a web font as WOFF2 alone
+files:
+  - '**/*.css'
+utils:
+  # Why: a source is no WOFF2 by its file's extension, or by a format() hint where its address has
+  # none.
+  serves-another-format:
+    any:
+      - regex: '(?i)url\(\s*["'']?[^"'')]*\.(?:ttf|otf|eot|svg|woff|ttc)(?:["'')?#\s]|$)'
+      - regex: '(?i)format\(\s*["'']?(?:woff|truetype|opentype|embedded-opentype|svg|collection)["'')\s]'
+rule:
+  kind: at_rule
+  has:
+    kind: at_keyword
+    regex: '(?i)^@font-face$'
+  matches: serves-another-format

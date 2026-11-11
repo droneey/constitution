@@ -3,8 +3,12 @@ tombi:
     toml:
       package.json:
         scripts:
-          check:toml: tombi format --check && tombi lint
-          fix:toml: tombi format
+          check:lint: !commands
+            - tombi lint
+          check:format: !commands
+            - tombi format --check
+          fix:format: !commands
+            - tombi format
 js-runtime/bun:
   '*':
     toml:

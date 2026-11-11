@@ -1,0 +1,17 @@
+schema/zod:
+  schema-builds-values-through-their-constructor:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/schema-builds-values-through-their-constructor.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/schema-builds-values-through-their-constructor.yaml
+  zod-four-forms-only:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/zod-four-forms-only.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/zod-four-forms-only.yaml

@@ -139,7 +139,8 @@ const docsWrapperOf = (
       >
         <RootProvider
           search={{
-            // biome-ignore lint/plugin/compound-part-keyed-in-pascal-case: Fumadocs' root provider names the search dialog's slot SearchDialog
+            // Why: Fumadocs' root provider names the search dialog's slot SearchDialog.
+            // ast-grep-ignore: compound-part-keyed-in-pascal-case@typescript
             SearchDialog: DocsSearchWidget,
           }}
           theme={{
@@ -193,7 +194,8 @@ const hydrateInDocs = async (
   const container = document.createElement('div');
   const recoverableErrors: unknown[] = [];
 
-  // biome-ignore lint/plugin/raw-html-never-reaches-the-dom: the server's own rendering, which hydration takes as markup
+  // Why: The server's own rendering, which hydration takes as markup.
+  // ast-grep-ignore: raw-html-never-reaches-the-dom@typescript
   container.innerHTML = renderToString(<Wrapper>{server}</Wrapper>);
   document.body.append(container);
 

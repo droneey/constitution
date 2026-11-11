@@ -24,3 +24,4 @@ export type { Bold, RoleKind, SpelledKind, TermsRead } from './term.entity';
 export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';
+export type { WholeHold, WholeHolds } from './whole-hold.entity';

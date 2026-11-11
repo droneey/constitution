@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { PROJECT, projectPlace } from '#/__tests__/project-place.fixtures';
 import type { Level } from '#/kernel/constants';
-import type { CoreFiles, Lowering, RuleWording } from '#/kernel/entities';
+import type { CoreFiles, Lowering, RuleWording, WholeHolds } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { RuleSlug as Slug, SourceKind, UnitPath } from '#/kernel/value-objects';
 
@@ -40,6 +40,7 @@ const coreOf = (unit = ''): CoreFiles => ({
 });
 
 interface ActiveRulesFixture {
+  readonly held?: WholeHolds;
   readonly levels?: ReadonlyMap<RuleSlug, Level>;
   readonly lowerings?: ReadonlyMap<RuleSlug, readonly Lowering[]>;
 }
@@ -73,6 +74,7 @@ const activeRulesOf = (input: ActiveRulesFixture = {}): ActiveRules => ({
     coreOf(),
     coreOf('web'),
   ],
+  held: input.held ?? new Map(),
   levels: input.levels ?? new Map(),
   lowerings: input.lowerings ?? new Map(),
   releaseFolderPath: projectPlace.releaseFolderPath,

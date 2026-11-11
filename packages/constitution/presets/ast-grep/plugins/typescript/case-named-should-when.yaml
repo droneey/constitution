@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: case-named-should-when@typescript
+language: Tsx
+severity: error
+message: A case reads 'should <behaviour>', with 'when <condition>' where it has one
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  case-runner:
+    any:
+      - pattern: test
+      - pattern: it
+      - pattern: test.concurrent
+      - pattern: it.concurrent
+      - pattern: test.each($TABLE)
+      - pattern: it.each($TABLE)
+      - pattern: test.concurrent.each($TABLE)
+      - pattern: it.concurrent.each($TABLE)
+rule:
+  any:
+    - kind: string
+    - kind: template_string
+  nthChild: 1
+  inside:
+    kind: arguments
+    has:
+      nthChild: 2
+    inside:
+      kind: call_expression
+      has:
+        field: function
+        matches: case-runner
+  not:
+    regex: ^['"`]should ..

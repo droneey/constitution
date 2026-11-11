@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { projectPlace } from '#/__tests__/project-place.fixtures';
 import { Level } from '#/kernel/constants';
-import type { Lowering, ProjectPlace } from '#/kernel/entities';
-import { AbsolutePath, RuleSlug, UnitPath } from '#/kernel/value-objects';
+import type { Lowering, ProjectPlace, WholeHolds } from '#/kernel/entities';
+import { AbsolutePath, BlockId, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import { createFakeActiveRulesSource } from '../../../../../__tests__/active-rules-source.fake';
 import {
@@ -44,10 +44,14 @@ const oweOf = (input: {
     workingTree: input.workingTree ?? createFakeWorkingTree(),
   })(input.target ?? projectFolder);
 
-const sourceWithLowerings = (lowerings: readonly Lowering[]): ActiveRulesSource =>
+const sourceWithLowerings = (
+  lowerings: readonly Lowering[],
+  held: WholeHolds = new Map(),
+): ActiveRulesSource =>
   createFakeActiveRulesSource({
     active: {
       rules: activeRulesOf({
+        held,
         lowerings: new Map([
           [
             slug,
@@ -66,9 +70,28 @@ const sourceWithLowerings = (lowerings: readonly Lowering[]): ActiveRulesSource 
           why: 'More is clearer.',
         },
       ],
+      [typescriptPassport]: [],
       [uiPassport]: [],
     },
   });
+
+const holdsOf = (input: { isEveryLanguage: boolean; unit: string }): WholeHolds =>
+  new Map([
+    [
+      UnitPath.create(input.unit),
+      new Map([
+        [
+          slug,
+          {
+            isEveryLanguage: input.isEveryLanguage,
+            languages: new Set([
+              BlockId.create('typescript'),
+            ]),
+          },
+        ],
+      ]),
+    ],
+  ]);
 
 const notingReadsOf = (
   source: ActiveRulesSource,
@@ -173,7 +196,9 @@ describe('rulesOwedBy', () => {
   it.each<{
     condition: string;
     expected: GatedRule;
+    held?: WholeHolds;
     lowerings: readonly Lowering[];
+    target: GateTarget;
   }>([
     {
       condition: 'no override lowers it and it tightens no rule',
@@ -186,6 +211,7 @@ describe('rulesOwedBy', () => {
         why: 'More is clearer.',
       },
       lowerings: [],
+      target: projectFolder,
     },
     {
       condition: 'its unit lowers it directly',
@@ -208,6 +234,77 @@ describe('rulesOwedBy', () => {
           unit: UnitPath.create(''),
         },
       ],
+      target: projectFolder,
+    },
+    {
+      condition: 'a tool of its unit holds it whole in every language',
+      expected: {
+        file: AbsolutePath.create(coreChapter),
+        hash: RuleHash.create('2d4fe8ba4ac343c8'),
+        isHeld: true,
+        level: Level.Must,
+        slug,
+        statement: 'A name says more.',
+        why: 'More is clearer.',
+      },
+      held: holdsOf({
+        isEveryLanguage: true,
+        unit: '',
+      }),
+      lowerings: [],
+      target: projectFolder,
+    },
+    {
+      condition: 'a tool holds it whole only in a language the folder has none of',
+      expected: {
+        file: AbsolutePath.create(coreChapter),
+        hash: RuleHash.create('607e61bb22833467'),
+        level: Level.Must,
+        slug,
+        statement: 'A name says more.',
+        why: 'More is clearer.',
+      },
+      held: holdsOf({
+        isEveryLanguage: false,
+        unit: '',
+      }),
+      lowerings: [],
+      target: projectFolder,
+    },
+    {
+      condition: 'a tool holds it in another unit alone',
+      expected: {
+        file: AbsolutePath.create(coreChapter),
+        hash: RuleHash.create('607e61bb22833467'),
+        level: Level.Must,
+        slug,
+        statement: 'A name says more.',
+        why: 'More is clearer.',
+      },
+      held: holdsOf({
+        isEveryLanguage: true,
+        unit: 'web',
+      }),
+      lowerings: [],
+      target: projectFolder,
+    },
+    {
+      condition: 'a tool holds it whole in the language of the file',
+      expected: {
+        file: AbsolutePath.create(coreChapter),
+        hash: RuleHash.create('2d4fe8ba4ac343c8'),
+        isHeld: true,
+        level: Level.Must,
+        slug,
+        statement: 'A name says more.',
+        why: 'More is clearer.',
+      },
+      held: holdsOf({
+        isEveryLanguage: false,
+        unit: '',
+      }),
+      lowerings: [],
+      target: sourceFile,
     },
     {
       condition: 'another unit lowers it',
@@ -226,13 +323,15 @@ describe('rulesOwedBy', () => {
           unit: UnitPath.create('web'),
         },
       ],
+      target: projectFolder,
     },
   ])(
     'should give a rule with only the fields that hold when $condition',
-    ({ expected, lowerings }) => {
+    ({ expected, held, lowerings, target }) => {
       // Act
       const owed = oweOf({
-        source: sourceWithLowerings(lowerings),
+        source: sourceWithLowerings(lowerings, held),
+        target,
       });
 
       // Assert

@@ -1,0 +1,30 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: bun-spec-mocks-no-module@typescript
+language: Tsx
+severity: error
+message: Fake an effect through its port, not by replacing a module or spying on one
+files:
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  module-replaced:
+    any:
+      - pattern: mock.module($$$)
+      - pattern: vi.mock($$$)
+      - pattern: jest.mock($$$)
+  module-spied-on:
+    all:
+      - any:
+          - pattern: spyOn($MODULE, $$$)
+          - pattern: $SPIES.spyOn($MODULE, $$$)
+      - inside:
+          stopBy: end
+          kind: program
+          has:
+            kind: import_statement
+            pattern: import * as $MODULE from $SOURCE
+rule:
+  any:
+    - matches: module-replaced
+    - matches: module-spied-on

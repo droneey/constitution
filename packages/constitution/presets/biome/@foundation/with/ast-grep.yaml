@@ -1,0 +1,10 @@
+biome:
+  '*':
+    '*':
+      biome.jsonc:
+        files:
+          includes:
+            # Why: Biome reads the patterns in order, so the folders ast-grep's rules are copied
+            # into are left out after the pattern that takes every file.
+            - '!!**/ast-grep.${role.generated-file}'
+            - '!!**/ast-grep-utils.${role.generated-file}'

@@ -9,6 +9,13 @@ ruff:
             run: >-
               uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked
               ruff format --force-exclude {staged_files}
+    python:
+      lefthook.yaml:
+        pre-commit:
+          # Why: the root's job skips the members, each checked in its own run.
+          jobs[name=ruff]:
+            exclude:
+              - ${workspace.members}/**
 version-control:
   hook-rewrites-only-staged-files:
     '*':

@@ -6,8 +6,6 @@ react/react-dom:
           rules:
             correctness:
               useUniqueElementIds: error
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/ids-from-use-id.${role.grit-rule}
   dangerously-set-inner-html-never-used:
     typescript:
       biome.jsonc:
@@ -37,11 +35,6 @@ react/react-dom:
           rules:
             suspicious:
               noUnknownAttribute: error
-  inline-style-holds-only-custom-properties:
-    typescript:
-      biome.jsonc:
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/inline-style-holds-only-custom-properties.${role.grit-rule}
 core:
   deprecated-form-never-used:
     typescript:
@@ -92,8 +85,6 @@ html:
           rules:
             a11y:
               useValidAutocomplete: error
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
   viewport-never-blocks-zoom:
     typescript:
       biome.jsonc:
@@ -148,10 +139,3 @@ presentation:
             a11y:
               useFocusableInteractive: error
               useKeyWithClickEvents: error
-react:
-  component-module-exports-only-components:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/component-module-exports-only-components.${role.grit-rule}]:
-          includes:
-            - '**/*.tsx'

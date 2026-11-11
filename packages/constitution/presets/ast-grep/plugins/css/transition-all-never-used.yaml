@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: transition-all-never-used@css
+language: Css
+severity: error
+message: >-
+  Name what moves with transition, transition-colors, transition-opacity or transition-transform:
+  transition-all also animates layout and every colour of a theme switch
+files:
+  - '**/*.css'
+rule:
+  # Why: the grammar reads an @apply inside a style rule as a postcss_statement and one elsewhere as
+  # an at_rule.
+  any:
+    - kind: postcss_statement
+    - kind: at_rule
+  has:
+    kind: at_keyword
+    regex: '^@apply$'
+  regex: '(?:^|[\s:!])transition-all(?:[!\s;]|$)'

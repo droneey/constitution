@@ -5,11 +5,21 @@ shfmt:
         tool:
           poe:
             tasks:
-              check:shell-format:
-                shell: !words
-                  - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -d --
-                  - "'${workspace.members}'"
-              fix:shell-format:
-                shell: !words
-                  - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shfmt -w --
-                  - "'${workspace.members}'"
+              check:format:
+                shell: !commands
+                  - !words
+                    - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+                    - "'*.sh'"
+                    - "'*.bash'"
+                    - --
+                    - shfmt -d --
+                    - "'${workspace.members}'"
+              fix:format:
+                shell: !commands
+                  - !words
+                    - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+                    - "'*.sh'"
+                    - "'*.bash'"
+                    - --
+                    - shfmt -w --
+                    - "'${workspace.members}'"

@@ -23,8 +23,8 @@ A `<block>` and a `<partner>` are block ids, so one may run over folders, as in 
 
 Beside its settings, a preset ships three kinds of file, each run by the tool alone, none depending on the Constitution's code:
 
-- a **plugin** in the tool's own format, such as Biome's GritQL, in `presets/<tool>/plugins/<language>/` and named after the rule it holds, as `biome/plugins/typescript/case-holds-no-logic.grit`;
-- a **shell script** a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. It sits in `presets/<reader>/plugins/shell/` of the tool whose work it does, named after the rule it holds, as `lefthook/plugins/shell/commit-body-left-empty.sh`, or `osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh`, which the runners' tasks run. One that serves any tool and holds no rule sits in `presets/plugins/<language>/`, as `plugins/shell/run-on-shell-scripts.sh`, which hands a command the unit's shell scripts;
+- a **plugin** in the tool's own format, such as an ast-grep rule, in `presets/<tool>/plugins/<language>/` and named after the rule it holds, as `ast-grep/plugins/typescript/case-holds-no-logic.yaml`;
+- a **shell script** a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. It sits in `presets/<reader>/plugins/shell/` of the tool whose work it does, named after the rule it holds, as `lefthook/plugins/shell/commit-body-left-empty.sh`, or `osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh`, which the runners' tasks run. One that serves any tool and holds no rule sits in `presets/plugins/<language>/`, as `plugins/shell/run-on-files.sh`, which hands a command the unit's files that match the patterns it is given;
 - a **program** too large for a script, built from a package of its own that imports nothing of the Constitution and shipped in the release's `tools/`, as `${constitution.path}/tools/mutation-check/dist/main.js`, the mutation gate Stryker's preset runs.
 
 `plugins` is a reserved word, so no block's id turns `presets/plugins/` into a reader's folder.
@@ -54,6 +54,8 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
 | `<file>: !copy ${constitution.path}/presets/<reader>/plugins/…` | the file holds a plugin of the release whole, its facts filled in: written again by each apply, so a later release's plugin replaces the copy, and checked as a whole text |
 | `!words` | on a list: written as one text, its items joined by spaces |
+| `!commands` | on a list: written as one command line, its items joined by ` && `; an item marked `!words` is one command whose words the entries fill at its slots |
+| `!whole` | on a language's map of settings, the value under a rule and a language: those settings hold the rule whole there, so the hand-back gate gives an agent the rule's heading alone in a file of that language; `setting-marked-whole-only-where-it-holds-its-rule-whole` says when it may be set |
 | `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group; in a file of another format, whose writer keeps no order of its keys, the check of the presets reports it (`sorted-in-unsortable-file`) |
 | `<path>: !inherits <path>` | no setting but a declaration: the value at each path its key names starts, once the entries have joined, from the value at the path its text names, both paths read from the map that holds it, step by step at each `.` — `*` every item or key, `<name>` every key, which the text may then name; the inheriting value lies over the inherited one, maps joined key by key, lists holding the inherited items and then those not yet held, any other value the inheriting one's. A path that holds nothing changes nothing, and a declaration whose paths cannot be followed is `inheritance-malformed`, each flaw named. Biome's preset declares `overrides.*.linter.rules.<group>.<rule>.options: !inherits linter.rules.<group>.<rule>.options`, since Biome replaces a rule's options in an override instead of joining them |
 
@@ -63,10 +65,11 @@ Within a value, a fact stands for what `constitution` knows of the unit:
 |---|---|
 | `${constitution.path}` | the path from the file to the release's folder |
 | `${package.name}` | the unit's `name` in `constitution.yaml` |
+| `${package.importName}` | that name with an underscore for each hyphen, as Python imports the package |
 | `${unit.parent}` | the folder at the repository's root that holds the unit, `apps` or `packages`, however deep the unit lies in it; nothing for the repository's own unit |
 | `${unit.depth}` | how many folders the unit lies below that folder, `1` for `apps/web`, `2` for `apps/<group>/web`; nothing where `${unit.parent}` is nothing |
 | `${role.<id>}` | the spelling of the folder, the suffix or the file whose term carries that id, a file's without its extension, so `${role.entry}` is `main` where TypeScript's `main.ts` carries the id, as the most specific block the entry's language reaches spells it — for an entry of every language, the blocks of its key and its preset file's path; nothing where only a placeholder such as core's `<entry>` names the file |
-| `${term.<id>}` | in a copied plugin only: the words the concept carrying that id lists, as the same block spells them, each in the quotes around the fact and joined by `, `, so a GritQL snippet of `${term.empty-names}` in backticks becomes one snippet for each empty name |
+| `${term.<id>}` | in a copied plugin only: the words the concept carrying that id lists, as the same block spells them, each in the quotes around the fact and joined by `, `, so a GritQL snippet of `${term.empty-names}` in backticks becomes one snippet for each empty name; written as the group `(?:${term.<id>})` of a regular expression, the words are escaped and joined by `|`, as an ast-grep rule's `^(?:${term.empty-names})$` |
 | `${workspace.members}` | each member's folder, one item each, at the root of a workspace; nothing elsewhere |
 
 In the place of a file, an entry of a runner's block may give `${constitution.run}`: what `constitution run` runs in the unit, a list of commands for each entry point, `check`, `test` and `fix`, which no file holds and `constitution` reads. The lists join as a file's do, so two runners of one unit both run, each by its unit's own `check`:
@@ -88,22 +91,19 @@ A tool's block gives its scripts or tasks through its pairing with the runner, `
 
 A guard writes the file only where it holds: `${file.isTop}`, in the unit no unit above gets the same entry for; `${unit.isRepositoryRoot}`, in the repository's own unit, the root of a workspace or a repository of one unit; `${workspace.isRoot}`, at the root of a workspace; or a fact of a text compared with a text, its facts resolved, `${unit.parent} = ${role.deployed-unit}`, in a unit of `apps/`, where both resolve and are the same; each with `!` before its fact for its opposite.
 
-A plugin that names the project's words is copied rather than named by its path, so that it runs with its tool alone: Biome's entry for `biome-refuses-empty-names` writes `biome.gen/biome-refuses-empty-names.grit` from the release's plugin, the empty names core's `names` chapter lists filled in, names that copy in `plugins`, and leaves `biome.gen/` out of the files Biome checks, so no fix reformats it.
+A plugin that names the project's words is copied rather than named by its path, so that it runs with its tool alone: ast-grep's entry for `ast-grep-refuses-empty-names` writes `ast-grep.gen/ast-grep-refuses-empty-names.yaml` from the release's plugin, the empty names core's `names` chapter lists filled in, and names the folder in `ruleDirs`; Biome's pairing with ast-grep leaves `ast-grep.gen/` out of the files Biome checks, so no fix reformats it.
 
 ```yaml
-biome:
-  biome-refuses-empty-names:
+ast-grep:
+  ast-grep-refuses-empty-names:
     typescript:
-      biome.jsonc:
-        files:
-          includes:
-            - '!!**/biome.${role.generated-file}'
-        plugins:
-          - ./biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}
-      biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      ast-grep.${role.generated-file}/ast-grep-refuses-empty-names.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ast-grep-refuses-empty-names.yaml
 ```
 
-A mark after the file's path names the format of its text where the name does not: `tsconfig.json !jsonc` writes JSON with comments under a `.json` name, for a tool that reads them there, its commas as plain JSON has them.
+A mark after the file's path names the format of its text where the name does not: `tsconfig.json !jsonc` writes JSON with comments under a `.json` name, for a tool that reads them there, its commas as plain JSON has them, and `!text` writes a copy whole, as its plugin is written, though its name says YAML.
 
 ## What a unit takes
 
@@ -144,7 +144,7 @@ extend-select = [
 ]
 
 # ruff
-extend-ignore = ["D1"]
+ignore = ["D1"]
 
 # vulture
 [tool.vulture]

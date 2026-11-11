@@ -1,12 +1,15 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
+import { PresetFileReadStatus } from '#/features/presets';
 import type { ProjectPorts } from '#/features/project';
 import { ManifestReadStatus } from '#/features/project';
 import { REQUIRED_CONFIG_KEYS } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
+
+import type { GateRulesPorts } from '../gate-rules.utils';
 
 const chapterPath = `${releaseFolderPath}/blocks/core/@foundation/names.md`;
 const chapterText = [
@@ -115,10 +118,20 @@ const projectPortsOf = (tree: FakeTree = projectTreeOf()): ProjectPorts => ({
   },
 });
 
+const gateRulesPortsOf = (ports: ProjectPorts = projectPortsOf()): GateRulesPorts => ({
+  ...ports,
+  presetFiles: {
+    parse: () => ({
+      status: PresetFileReadStatus.Unparsed,
+    }),
+  },
+});
+
 export {
   CORE_TEXT,
   chapterPath,
   chapterText,
+  gateRulesPortsOf,
   projectPortsOf,
   projectTreeOf,
   UNPARSED_CONFIG,

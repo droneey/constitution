@@ -143,7 +143,7 @@ const runHook = (call: HookCall): HookRun => {
   const hookRun = spawnSync(
     shell,
     [
-      join(call.root, 'hooks', HOOK),
+      join(call.root, 'ai', 'hooks', HOOK),
       'session-start',
     ],
     {
@@ -363,7 +363,7 @@ const runScript = (call: ScriptCall): HookRun => {
   const hookRun = spawnSync(
     shell,
     [
-      join(call.root, 'hooks', HOOK),
+      join(call.root, 'ai', 'hooks', HOOK),
       call.script.replace(/\.sh$/u, ''),
     ],
     {

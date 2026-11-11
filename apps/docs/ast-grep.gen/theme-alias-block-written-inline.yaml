@@ -1,0 +1,21 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: theme-alias-block-written-inline@css
+language: Css
+severity: error
+message: 'Write every @theme block but the reset, which holds --*: initial, as inline'
+files:
+  - '**/*.css'
+rule:
+  kind: at_rule
+  has:
+    kind: at_keyword
+    regex: '^@theme$'
+  not:
+    any:
+      - has:
+          kind: keyword_query
+          regex: '^inline$'
+      - has:
+          stopBy: end
+          kind: declaration
+          regex: '^--\*\s*:\s*initial\b'

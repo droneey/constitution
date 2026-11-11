@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, assert_never
 
 from ...mutant.entities import is_killed
 from ...mutation_targets.entities import covers
-from .mutation_run_entity import Ran, Stopped
+from .mutation_run_entity import Broken, Ran, Stopped
 
 if TYPE_CHECKING:
   from ...mutant.entities import Mutant
@@ -27,11 +27,6 @@ class Passed:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Survived:
   mutants: tuple[Mutant, ...]
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class Broken:
-  output: str
 
 
 type Outcome = Passed | Survived | Broken

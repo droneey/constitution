@@ -384,8 +384,6 @@ react:
               rules:
                 suspicious:
                   noReactStringRefs: error
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/modern-react-api-only.${role.grit-rule}
   function-components-only:
     typescript:
       biome.jsonc:
@@ -446,18 +444,6 @@ react:
                           formats:
                             - camelCase
                             - PascalCase
-  null-written-only-where-react-uses-it:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/null-written-only-where-react-uses-it.${role.grit-rule}]:
-          includes:
-            - '**/*.tsx'
-  compound-part-keyed-in-pascal-case:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/compound-part-keyed-in-pascal-case.${role.grit-rule}]:
-          includes:
-            - '**/*.tsx'
   react-compiler-on:
     typescript:
       biome.jsonc:
@@ -478,7 +464,3 @@ react:
               rules:
                 nursery:
                   useReactCompiler: error
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/react-compiler-on.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'

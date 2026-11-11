@@ -5,4 +5,8 @@ hadolint:
         tool:
           poe:
             tasks:
-              check:dockerfile: hadolint Dockerfile
+              check:lint:
+                shell: !commands
+                  - slot: dockerfile
+                shell@dockerfile:
+                  - hadolint Dockerfile

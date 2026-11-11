@@ -17,8 +17,8 @@ Two formatters of TOML undo each other's work at every run.
 ```json title="Avoid"
 {
   "scripts": {
-    "check:toml": "taplo format --check",
-    "fix:toml": "taplo format"
+    "check:format": "taplo format --check",
+    "fix:format": "taplo format"
   }
 }
 ```
@@ -26,8 +26,8 @@ Two formatters of TOML undo each other's work at every run.
 ```json title="Prefer"
 {
   "scripts": {
-    "check:toml": "tombi format --check && tombi lint",
-    "fix:toml": "tombi format"
+    "check:format": "tombi format --check",
+    "fix:format": "tombi format"
   }
 }
 ```

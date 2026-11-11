@@ -5,7 +5,13 @@ shellcheck:
         tool:
           poe:
             tasks:
-              check:shell:
-                shell: !words
-                  - ${constitution.path}/presets/plugins/shell/run-on-shell-scripts.sh shellcheck --
-                  - "'${workspace.members}'"
+              check:lint:
+                shell: !commands
+                  - !words
+                    - ${constitution.path}/presets/plugins/shell/run-on-files.sh
+                    - "'*.sh'"
+                    - "'*.bash'"
+                    - --
+                    - shellcheck
+                    - --
+                    - "'${workspace.members}'"

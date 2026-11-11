@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
   from ...mutant.entities import Mutant
-  from .outcome_entity import Broken
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -16,6 +15,11 @@ class Ran:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Stopped:
   mutants: tuple[Mutant, ...]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Broken:
+  output: str
 
 
 type MutationRun = Ran | Stopped | Broken

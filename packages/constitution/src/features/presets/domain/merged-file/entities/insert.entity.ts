@@ -8,6 +8,9 @@ import { SettingKey } from '../../shared/value-objects';
 interface Insert {
   readonly items: readonly (readonly Setting[])[];
   readonly list: readonly string[];
+  // Why: the source of the insert marked to replace, which then stands for every other insert of
+  // the slot.
+  readonly replacer?: string;
   readonly slot: string;
 }
 
@@ -44,9 +47,12 @@ const slotFilled = (held: Setting | undefined, insert: Insert): Filled => {
     };
   }
 
-  const at = held.findIndex((listed) => PresetValue.slotOf(listed) === slot);
+  const filled = itemsPlacedAtSlot(held, {
+    items: items.flat(1),
+    slot,
+  });
 
-  return at < 0
+  return filled === undefined
     ? {
         problem: {
           code: PresetsCode.MissingSlot,
@@ -54,8 +60,32 @@ const slotFilled = (held: Setting | undefined, insert: Insert): Filled => {
         },
       }
     : {
-        setting: held.toSpliced(at + 1, 0, ...items.flat(1)),
+        setting: filled,
       };
+};
+
+// Why: a list of commands holds each command's words as a list of its own, whose slot is filled
+// as one in the list itself is.
+const itemsPlacedAtSlot = (
+  list: readonly Setting[],
+  insert: {
+    items: readonly Setting[];
+    slot: string;
+  },
+): Setting[] | undefined => {
+  const at = list.findIndex((listed) => PresetValue.slotOf(listed) === insert.slot);
+
+  if (at >= 0) {
+    return list.toSpliced(at + 1, 0, ...insert.items);
+  }
+
+  const placed = list.map((listed) =>
+    Setting.isList(listed) ? itemsPlacedAtSlot(listed, insert) : undefined,
+  );
+  const index = placed.findIndex((filled) => filled !== undefined);
+  const nested = placed[index];
+
+  return nested === undefined ? undefined : list.with(index, nested);
 };
 
 const elementReached = (input: {

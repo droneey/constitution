@@ -5,9 +5,16 @@ import { ActiveReadStatus } from '#/features/session';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
 import { createActiveRulesSource } from '../active-rules-source.adapter';
-import { chapterPath, chapterText, projectPortsOf, projectTreeOf } from './project-ports.fixtures';
+import {
+  chapterPath,
+  chapterText,
+  gateRulesPortsOf,
+  projectPortsOf,
+  projectTreeOf,
+} from './project-ports.fixtures';
 
-const sourceOf = (tree = projectTreeOf()) => createActiveRulesSource(projectPortsOf(tree));
+const sourceOf = (tree = projectTreeOf()) =>
+  createActiveRulesSource(gateRulesPortsOf(projectPortsOf(tree)));
 
 describe('createActiveRulesSource', () => {
   it('should find the project around the folder through the project feature', () => {
@@ -37,6 +44,7 @@ describe('createActiveRulesSource', () => {
       rules: {
         active: [],
         core: [],
+        held: new Map(),
         levels: new Map(),
         lowerings: new Map(),
         releaseFolderPath: projectPlace.releaseFolderPath,

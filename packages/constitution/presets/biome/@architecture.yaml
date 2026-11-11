@@ -106,16 +106,3 @@ core:
                         window: >-
                           Outside the edge, input and output reach this code through a port.
                         sessionStorage: Outside the edge, storage reaches this code through a port.
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/effects-held-only-by-the-edge.${role.grit-rule}]:
-          includes:
-            - '**/${role.source}/**'
-            - '!**/${role.source}/${role.adapter}/**'
-            - '!**/${role.source}/${role.bounded-context}/*/${role.adapter}/**'
-            - '!**/${role.source}/${role.composition-module}/*/${role.adapter}/**'
-            - '!**/${role.source}/${role.generic-library}/**'
-            - '!**/${role.source}/${role.composition-root}/**'
-            - '!**/${role.source}/*.ts'
-            - '!**/${role.source}/*.tsx'
-            - '!**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
-            - '!**/${role.source}/${role.host-integration}/**'
-            - '!**/${role.colocated-specs}/**'

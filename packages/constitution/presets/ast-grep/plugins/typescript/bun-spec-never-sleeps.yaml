@@ -1,0 +1,53 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: bun-spec-never-sleeps@typescript
+language: Tsx
+severity: error
+message: Wait for a condition or advance a fake clock, never a fixed delay
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  timers-module:
+    kind: string
+    regex: ^["'](?:node:)?timers/promises["']$
+  bun-sleep:
+    any:
+      - pattern: Bun.sleep($$$)
+      - pattern: Bun.sleepSync($$$)
+  timer-in-a-promise:
+    kind: new_expression
+    all:
+      - has:
+          field: constructor
+          regex: ^Promise$
+      - has:
+          stopBy: end
+          pattern: setTimeout($$$)
+  timers-set-timeout-imported:
+    kind: import_statement
+    regex: \bsetTimeout\b
+    has:
+      field: source
+      matches: timers-module
+  timers-module-set-timeout-called:
+    all:
+      - pattern: $TIMERS.setTimeout($$$)
+      - inside:
+          stopBy: end
+          kind: program
+          has:
+            kind: import_statement
+            all:
+              - has:
+                  field: source
+                  matches: timers-module
+              - any:
+                  - pattern: import * as $TIMERS from $SOURCE
+                  - pattern: import $TIMERS from $SOURCE
+rule:
+  any:
+    - matches: bun-sleep
+    - matches: timer-in-a-promise
+    - matches: timers-set-timeout-imported
+    - matches: timers-module-set-timeout-called

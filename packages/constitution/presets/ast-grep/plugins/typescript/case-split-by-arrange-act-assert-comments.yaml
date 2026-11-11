@@ -1,0 +1,111 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: case-split-by-arrange-act-assert-comments@typescript
+language: Tsx
+severity: error
+message: >-
+  Open the sections of a case with // Arrange where it sets anything up, then // Act and // Assert,
+  each on a line of its own and in that order
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  runner:
+    any:
+      - pattern: test
+      - pattern: it
+      - pattern: test.concurrent
+      - pattern: it.concurrent
+      - pattern: test.each($TABLE)
+      - pattern: it.each($TABLE)
+      - pattern: test.concurrent.each($TABLE)
+      - pattern: it.concurrent.each($TABLE)
+  section:
+    kind: comment
+    regex: ^// (?:Arrange|Act|Assert)$
+  arrange:
+    kind: comment
+    regex: ^// Arrange$
+  act:
+    kind: comment
+    regex: ^// Act$
+  assert:
+    kind: comment
+    regex: ^// Assert$
+  # Why: a block's braces are its unnamed children, beside its statements and its comments.
+  brace:
+    regex: ^[{}]$
+  # Why: each step follows the one before it, Act and Assert repeated in a lifecycle or an
+  # end-to-end case, and none is left empty.
+  out-of-step:
+    any:
+      - all:
+          - not:
+              kind: comment
+          - not:
+              matches: brace
+          - not:
+              follows:
+                stopBy: end
+                matches: section
+      - all:
+          - matches: arrange
+          - follows:
+              stopBy: end
+              matches: section
+      - all:
+          - matches: act
+          - follows:
+              stopBy:
+                matches: section
+              matches: act
+      - all:
+          - matches: assert
+          - not:
+              follows:
+                stopBy:
+                  matches: section
+                matches: act
+      - all:
+          - matches: section
+          - not:
+              matches: assert
+          - not:
+              precedes:
+                stopBy: end
+                matches: section
+      - all:
+          - matches: section
+          - precedes:
+              any:
+                - matches: section
+                - matches: brace
+  split-body:
+    has:
+      field: body
+      kind: statement_block
+      all:
+        - has:
+            matches: section
+        - not:
+            has:
+              matches: out-of-step
+rule:
+  any:
+    - kind: string
+    - kind: template_string
+    - kind: identifier
+    - kind: member_expression
+    - kind: binary_expression
+  nthChild: 1
+  inside:
+    kind: arguments
+    has:
+      nthChild: 2
+      not:
+        matches: split-body
+    inside:
+      kind: call_expression
+      has:
+        field: function
+        matches: runner

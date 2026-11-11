@@ -1,0 +1,17 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: full-width-leaves-out-the-scrollbar@css
+language: Css
+severity: error
+message: 'Use 100% for a full width: 100vw counts the scrollbar'
+files:
+  - '**/*.css'
+rule:
+  any:
+    - kind: integer_value
+    - kind: float_value
+  regex: '(?i)^\+?100(?:\.0*)?vw$'
+  # Why: a media, container or supports query measures the viewport rather than sizing a box by it,
+  # and only a declaration sizes one.
+  inside:
+    stopBy: end
+    kind: declaration

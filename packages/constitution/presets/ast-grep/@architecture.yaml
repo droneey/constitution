@@ -1,0 +1,16 @@
+core:
+  effects-held-only-by-the-edge:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/effects-held-only-by-the-edge.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/effects-held-only-by-the-edge.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/effects-held-only-by-the-edge.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/effects-held-only-by-the-edge.yaml

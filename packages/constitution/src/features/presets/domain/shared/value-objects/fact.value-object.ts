@@ -1,6 +1,7 @@
 enum FactName {
   ConstitutionPath = 'constitution.path',
   PackageName = 'package.name',
+  PackageImportName = 'package.importName',
   FileIsTop = 'file.isTop',
   UnitIsRepositoryRoot = 'unit.isRepositoryRoot',
   UnitParent = 'unit.parent',
@@ -47,6 +48,12 @@ const listedTerm = new RegExp(
   'g',
 );
 const MEMBER_SEPARATOR = ', ';
+const alternedTerm = new RegExp(
+  `\\(\\?:\\$\\{${RegExp.escape(TERM_PREFIX)}([A-Za-z0-9_-]+)\\}\\)`,
+  'g',
+);
+const ALTERNATIVE_SEPARATOR = '|';
+const REGEX_SYNTAX = /[.*+?^${}()|[\]\\]/g;
 const factNames: readonly FactName[] = Object.values(FactName);
 const truthFacts: readonly FactName[] = [
   FactName.FileIsTop,
@@ -128,9 +135,23 @@ const listedIn = (input: FillInput): string =>
         .join(MEMBER_SEPARATOR) ?? written,
   );
 
+// Why: a term named inside a regular expression's group, `(?:${term.<id>})`, stands for its
+// members as the group's alternatives, each matched as the text it is.
+const alternedIn = (input: FillInput): string =>
+  input.text.replaceAll(alternedTerm, (written, term: string) => {
+    const members = input.membersOf(term);
+
+    return members === undefined
+      ? written
+      : `(?:${members.map((member) => member.replaceAll(REGEX_SYNTAX, '\\$&')).join(ALTERNATIVE_SEPARATOR)})`;
+  });
+
 const filledIn = (input: FillInput): string | undefined =>
   resolvedIn({
-    text: listedIn(input),
+    text: listedIn({
+      ...input,
+      text: alternedIn(input),
+    }),
     valueOf: input.valueOf,
   });
 

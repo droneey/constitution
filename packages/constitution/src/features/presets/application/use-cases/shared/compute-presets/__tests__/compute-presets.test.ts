@@ -91,7 +91,7 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
           'bun',
           'typescript',
         ],
-        name: 'app',
+        name: 'shop-app',
         path: 'packages/app',
       }),
       unitOf({
@@ -550,6 +550,35 @@ describe('computePresets', () => {
         },
       },
     },
+    {
+      condition: 'as commands that run one after another',
+      lines: [
+        '        command: !commands',
+        '          - biome lint ${package.name}',
+        '          - slot: more',
+        '        command@more:',
+        '          - ast-grep scan',
+      ],
+      written: {
+        command: 'biome lint kit && ast-grep scan',
+      },
+    },
+    {
+      condition: 'as a command among commands, its slot filled by another entry',
+      lines: [
+        '        command: !commands',
+        '          - biome lint ${package.name}',
+        '          - !words',
+        '            - run.sh',
+        '            - slot: files',
+        '        command@files:',
+        '          - "*.sh"',
+        '          - "*.bash"',
+      ],
+      written: {
+        command: 'biome lint kit && run.sh *.sh *.bash',
+      },
+    },
   ])(
     'should write a list marked as words $condition as one text, the items inserted at its slots among them',
     ({ lines, written }) => {
@@ -584,6 +613,61 @@ describe('computePresets', () => {
       ]);
     },
   );
+
+  it("should put a slot's replacing insert in place of every other insert of that slot, whatever its order", () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'biome/@foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        command: !commands',
+          '          - biome check',
+          '          - slot: images',
+          '        command@images:',
+          '          - hadolint Dockerfile',
+        ].join('\n'),
+        'bun/@foundation.yaml': [
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        command@images: !replace',
+          '          - hadolint docker/app.Dockerfile',
+        ].join('\n'),
+        'mise/@foundation.yaml': [
+          'mise:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        command@images:',
+          '          - hadolint other.Dockerfile',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+            'bun',
+            'mise',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(plan.files.map(({ merged }) => merged.value)).toStrictEqual([
+      {
+        command: 'biome check && hadolint docker/app.Dockerfile',
+      },
+    ]);
+  });
 
   it('should report a clash and join nothing when another entry gives a list marked as words a text', () => {
     // Arrange
@@ -1226,7 +1310,28 @@ describe('computePresets', () => {
         {
           file: 'packages/app/package.json',
           value: {
-            name: 'app',
+            name: 'shop-app',
+          },
+        },
+      ],
+    },
+    {
+      condition: "the fact is the unit's import name, its name with an underscore for each hyphen",
+      lines: [
+        '      package.json:',
+        '        name: ${package.importName}',
+      ],
+      written: [
+        {
+          file: 'package.json',
+          value: {
+            name: 'repo',
+          },
+        },
+        {
+          file: 'packages/app/package.json',
+          value: {
+            name: 'shop_app',
           },
         },
       ],
@@ -2336,10 +2441,19 @@ describe('computePresets', () => {
     },
   );
 
-  it("should find the name a unit lacks where an entry's guard names it", () => {
+  it.each([
+    {
+      condition: 'its name',
+      guard: '${package.name} = kit',
+    },
+    {
+      condition: 'the name it is imported by',
+      guard: '${package.importName} = kit',
+    },
+  ])("should find the name a unit lacks where an entry's guard names $condition", ({ guard }) => {
     // Act
     const plan = factsPlanOf([
-      '      named.json ? ${package.name} = kit:',
+      `      named.json ? ${guard}:`,
       '        named: true',
     ]);
 

@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: function-within-its-limits@python
+language: Python
+severity: error
+message: 'A function of more than 100 lines: split it into functions named for their steps'
+ignores:
+  - '**/${role.package-suites}/**'
+  - '**/*_${role.generated-file}.py'
+  - '**/*_${role.generated-file}/**'
+rule:
+  kind: function_definition
+  # Why: a function of more than 100 lines runs from its first line to its last across at least
+  # 100 line breaks.
+  regex: (?:[^\n]*\n){100}

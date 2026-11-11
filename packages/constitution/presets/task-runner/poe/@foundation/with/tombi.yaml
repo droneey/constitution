@@ -5,6 +5,12 @@ tombi:
         tool:
           poe:
             tasks:
-              check:toml:
-                shell: tombi format --check && tombi lint
-              fix:toml: tombi format
+              check:lint:
+                shell: !commands
+                  - tombi lint
+              check:format:
+                shell: !commands
+                  - tombi format --check
+              fix:format:
+                shell: !commands
+                  - tombi format

@@ -3,7 +3,10 @@ dclint:
     yaml:
       package.json:
         scripts:
-          check:compose: dclint compose.yaml
+          check:lint: !commands
+            - slot: compose
+          check:lint@compose:
+            - dclint compose.yaml
 js-runtime/bun:
   '*':
     yaml:

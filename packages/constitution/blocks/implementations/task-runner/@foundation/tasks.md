@@ -6,6 +6,8 @@
 
 An action is one of the three kinds of task `constitution run` runs in every unit: check, test and fix. A **group task** is a task named by its action alone, such as `check`. Its prefix is its name and a colon, such as `check:`, and its group is the tasks named under that prefix.
 
+A **kind of check** is what a check task finds, or a fix task fixes, whatever tool runs it, such as `lint`, a broken rule; `format`, a file left unformatted; `types`, a type error; `unused`, dead code; `architecture`, a crossed layer; and `duplicates`, a copy.
+
 ## General
 
 ### task-group-run-by-its-prefix → one-check-runs-every-tool · MUST
@@ -22,9 +24,9 @@ A list kept by hand misses the next task added under its prefix, which then neve
 {
   "scripts": {
     "check": "bun run check:types && bun run check:lint",
-    "check:lint": "biome ci .",
-    "check:types": "tsc --noEmit",
-    "check:manifests": "syncpack lint"
+    "check:format": "biome format",
+    "check:lint": "biome check --formatter-enabled=false --error-on-warnings",
+    "check:types": "tsc --noEmit"
   }
 }
 ```
@@ -33,8 +35,8 @@ A list kept by hand misses the next task added under its prefix, which then neve
 {
   "scripts": {
     "check": "bun run --sequential 'check:*'",
-    "check:lint": "biome ci .",
-    "check:manifests": "syncpack lint",
+    "check:format": "biome format",
+    "check:lint": "biome check --formatter-enabled=false --error-on-warnings",
     "check:types": "tsc --noEmit"
   }
 }
@@ -63,9 +65,63 @@ A task named otherwise, such as `lint-all`, falls under no prefix, so the group 
 ```json title="Prefer"
 {
   "scripts": {
-    "check:lint": "biome ci .",
+    "check:lint": "biome check --formatter-enabled=false --error-on-warnings",
     "check:types": "tsc --noEmit",
     "fix:lint": "biome check --write ."
+  }
+}
+```
+
+### task-named-for-its-kind-of-check · SHOULD
+
+Every check or fix task run alone is named for its kind of check, never for a tool or a language. It is `check:<kind>` or `fix:<kind>`.
+
+#### Why
+
+A task named for its tool or its language splits one kind of check across tasks a reader has to know by heart, and a project that swaps a tool or adds a language renames its tasks; a task named for its kind says what fails, a broken rule or a file left unformatted, whatever runs it.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "scripts": {
+    "check:biome": "biome check --formatter-enabled=false --error-on-warnings",
+    "check:toml": "tombi lint"
+  }
+}
+```
+
+```json title="Prefer"
+{
+  "scripts": {
+    "check:lint": "biome check --formatter-enabled=false --error-on-warnings && tombi lint"
+  }
+}
+```
+
+### tools-of-one-kind-run-in-one-task · SHOULD
+
+Every tool of one kind of check runs in that kind's one task, never in a task of its own.
+
+#### Why
+
+Two tasks of one kind make a reader run both to know whether the kind passes, and a tool added in a task of its own is missed by whoever runs the one they know; one task per kind answers for the kind whole.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "scripts": {
+    "check:format": "biome format",
+    "check:format-toml": "tombi format --check"
+  }
+}
+```
+
+```json title="Prefer"
+{
+  "scripts": {
+    "check:format": "biome format && tombi format --check"
   }
 }
 ```

@@ -93,6 +93,21 @@ const presetsSelectedOf = (input: PresetsSelectedInput): PresetsSelected => {
   };
 };
 
+interface PresetsGuardedInput {
+  readonly candidates: readonly Candidate[];
+  readonly constitutionPaths: ReadonlyMap<RepositoryRelativePath, string>;
+  readonly model: BlockModel;
+  readonly units: readonly ProjectUnit[];
+}
+
+// Why: a guard reads only the facts of its file and its unit, so no copied plugin's text is needed
+// to tell which entries a unit takes.
+const guardedCandidatesOf = (input: PresetsGuardedInput): readonly Candidate[] =>
+  resolveFacts({
+    ...input,
+    copiedTexts: new Map(),
+  }).candidates;
+
 const presetsPlanOf = (input: PresetsPlanInput): PresetsPlan => {
   const { candidates, entries, model, units } = input;
   const resolved = resolveFacts({
@@ -129,5 +144,5 @@ const presetsPlanOf = (input: PresetsPlanInput): PresetsPlan => {
   };
 };
 
-export type { PresetsPlanInput, PresetsSelected, PresetsSelectedInput };
-export { presetsPlanOf, presetsSelectedOf };
+export type { PresetsGuardedInput, PresetsPlanInput, PresetsSelected, PresetsSelectedInput };
+export { guardedCandidatesOf, presetsPlanOf, presetsSelectedOf };

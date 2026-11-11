@@ -1,0 +1,35 @@
+html:
+  field-declares-its-autocomplete:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/field-declares-its-autocomplete.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/field-declares-its-autocomplete.yaml
+react/react-dom:
+  ids-from-use-id:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ids-from-use-id.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ids-from-use-id.yaml
+  inline-style-holds-only-custom-properties:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/inline-style-holds-only-custom-properties.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/inline-style-holds-only-custom-properties.yaml
+react:
+  component-module-exports-only-components:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/component-module-exports-only-components.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/component-module-exports-only-components.yaml

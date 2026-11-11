@@ -1,7 +1,7 @@
 import { CONFIG_FILE_NAME, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectPlace, RuleWording } from '#/kernel/entities';
 import { memoised } from '#/kernel/utils';
-import type { UnitPath } from '#/kernel/value-objects';
+import type { BlockId, UnitPath } from '#/kernel/value-objects';
 import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type {
@@ -80,6 +80,7 @@ const loweredOf = (input: {
 };
 
 const standingOf = (input: {
+  blocks: readonly BlockId[];
   rules: ActiveRules;
   unit: UnitPath;
   wording: RuleWording;
@@ -92,6 +93,15 @@ const standingOf = (input: {
   });
 
   return {
+    ...(ActiveRules.isHeld(input.rules, {
+      blocks: input.blocks,
+      slug: wording.slug,
+      unit: input.unit,
+    })
+      ? {
+          isHeld: true,
+        }
+      : {}),
     level: GatedRule.levelOf({
       declared: input.rules.levels.get(wording.slug),
       wording,
@@ -198,10 +208,12 @@ const rulesOf = (input: {
 
   const { rules } = read;
   const unit = ActiveBlocks.unitHolding(rules, path);
-  const files = ActiveRules.ruleFilesOf(rules, {
+  const ruleTarget = {
     kind: input.target.kind,
     path,
-  }).map((file) => ({
+  };
+  const blocks = ActiveRules.governingBlocksOf(rules, ruleTarget);
+  const files = ActiveRules.ruleFilesOf(rules, ruleTarget).map((file) => ({
     chapter: readers.chapterOf(file),
     file,
   }));
@@ -232,6 +244,7 @@ const rulesOf = (input: {
           file,
           hashOf: readers.hasher.hashOf,
           standing: standingOf({
+            blocks,
             rules,
             unit,
             wording,

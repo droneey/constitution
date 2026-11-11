@@ -1,5 +1,5 @@
 import type { PresetPair, PresetValue } from '../../setting/entities';
-import { Setting, PresetValue as Value } from '../../setting/entities';
+import { Setting, PresetValue as Value, ValueKind } from '../../setting/entities';
 import type { MergeProblem } from '../../shared/entities';
 import { PresetsCode } from '../../shared/entities';
 import { Inheritance } from './inheritance.entity';
@@ -226,11 +226,44 @@ const inheritanceDeclared = (state: MergeState, placed: PlacedSetting): MergeSta
       };
 };
 
+// Why: a slot's insert marked to replace stands for every other insert of that slot, as a replace of
+// a key stands for every other value of it, so a project respells what a block puts in a slot.
+const insertWith = (input: {
+  isKnown: boolean;
+  items: readonly Setting[];
+  record: Insert;
+  replacer: string | undefined;
+}): Insert => {
+  const { record } = input;
+
+  if (input.replacer !== undefined) {
+    return {
+      ...record,
+      items: [
+        input.items,
+      ],
+      replacer: input.replacer,
+    };
+  }
+
+  return input.isKnown || record.replacer !== undefined
+    ? record
+    : {
+        ...record,
+        items: [
+          ...record.items,
+          input.items,
+        ],
+      };
+};
+
 const inserted = (
   state: MergeState,
   input: {
+    keyPath: readonly string[];
     list: readonly string[];
     slot: string;
+    source: string;
     value: PresetValue;
   },
 ): MergeState => {
@@ -238,28 +271,39 @@ const inserted = (
     ...input.list,
     input.slot,
   ]);
-  const record = state.inserts.get(key) ?? {
+  const record: Insert = state.inserts.get(key) ?? {
     items: [],
     list: input.list,
     slot: input.slot,
   };
   const items = Value.itemsOf(input.value);
   const isKnown = record.items.some((known) => Setting.same(known, items));
+  const isReplacing = input.value.kind === ValueKind.Replace;
+
+  if (isReplacing && record.replacer !== undefined && !isKnown) {
+    return withProblem(state, {
+      code: PresetsCode.TwoReplacers,
+      details: {
+        settingPath: Setting.pathTextOf(input.keyPath),
+        sources: [
+          record.replacer,
+          input.source,
+        ],
+      },
+    });
+  }
 
   return {
     ...state,
     inserts: withEntryKeepingItsPlace(
       state.inserts,
       key,
-      isKnown
-        ? record
-        : {
-            ...record,
-            items: [
-              ...record.items,
-              items,
-            ],
-          },
+      insertWith({
+        isKnown,
+        items,
+        record,
+        replacer: isReplacing ? input.source : undefined,
+      }),
     ),
   };
 };

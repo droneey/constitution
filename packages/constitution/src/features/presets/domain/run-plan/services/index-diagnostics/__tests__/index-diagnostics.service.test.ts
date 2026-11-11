@@ -14,7 +14,7 @@ import {
 
 import type { PresetEntry } from '../../../../preset-entry/entities';
 import type { PresetPair } from '../../../../setting/entities';
-import { PresetValue, ValueKind } from '../../../../setting/entities';
+import { Joining, PresetValue, ValueKind } from '../../../../setting/entities';
 import { EVERY } from '../../../../shared/constants';
 import { TargetKind } from '../../../../shared/value-objects';
 import type { DiagnosticIndex } from '../../../entities';
@@ -51,6 +51,7 @@ const pair = (key: string, given: PresetValue): PresetPair => ({
 const entryOf = (input: { rule: string; value: PresetValue }): PresetEntry => ({
   block: coreBlockId,
   index: 0,
+  isWhole: false,
   kind: TargetKind.File,
   language: EVERY,
   rule: input.rule === EVERY ? EVERY : RuleSlug.create(input.rule),
@@ -116,7 +117,7 @@ describe('indexDiagnostics', () => {
             entryOf({
               rule: NAMES,
               value: {
-                isWords: false,
+                joining: Joining.None,
                 kind: ValueKind.Copy,
                 setting:
                   '${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}',

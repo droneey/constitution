@@ -1,6 +1,4 @@
 [global]
-force_exclude = true
-
 # rumdl
 extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD045", "MD051", "MD057", "MD059", "MD040"]
 
@@ -13,8 +11,7 @@ exclude = [
   "packages/@mutation-check/python/**",
   "packages/@mutation-check/typescript/**",
   "packages/brand/**",
-  "packages/constitution/**",
-  "packages/python-check/**"
+  "packages/constitution/**"
 ]
 
 # rumdl

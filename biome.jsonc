@@ -359,181 +359,10 @@
       "preset": "recommended",
     },
   },
+
+  // biome
   "plugins": [
-    // biome
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-named-should-when.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-holds-no-logic.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/tests/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/effects-held-only-by-the-edge.grit",
-      "includes": [
-        "**/src/**",
-        "!**/src/infrastructure/**",
-        "!**/src/features/*/infrastructure/**",
-        "!**/src/composition/*/infrastructure/**",
-        "!**/src/libs/**",
-        "!**/src/root/**",
-        "!**/src/*.ts",
-        "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.ts",
-        "!**/src/integrations/**",
-        "!**/__tests__/**",
-      ],
-    },
-
-    // typescript
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.grit",
-      "includes": [
-        "**/domain/**",
-        "**/kernel/**",
-        "!**/__tests__/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-        "!**/infrastructure/**",
-        "!**/dtos/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/surface-only-re-exports.grit",
-      "includes": [
-        "**/index.ts",
-        "**/index.tsx",
-        "!**/src/root/**/index.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
-      "includes": [
-        "**",
-        "!**/infrastructure/**",
-        "!**/dtos/**",
-        "!**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-variable-declared-const.grit",
-      "includes": [
-        "**",
-        "!**/*.test.ts",
-        "!**/*.test.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/set-timeout-called-only-at-the-edge.grit",
-      "includes": [
-        "**/src/**",
-        "!**/src/infrastructure/**",
-        "!**/src/features/*/infrastructure/**",
-        "!**/src/composition/*/infrastructure/**",
-        "!**/src/libs/**",
-        "!**/src/root/**",
-        "!**/src/*.ts",
-        "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.ts",
-        "!**/src/integrations/**",
-        "!**/src/features/*/presentation/bindings/**",
-        "!**/src/composition/*/presentation/bindings/**",
-        "!**/src/presentation/bindings/**",
-        "!**/__tests__/**",
-      ],
-    },
-
-    // js-runtime
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spawn-given-an-env-built-for-it.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
-    // biome
-    "./.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
     "./.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
-
-    // typescript
-    "./.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
-
-    // biome
-    "./biome.gen/biome-refuses-empty-verbs.grit",
-    "./biome.gen/biome-refuses-empty-names.grit",
   ],
   "overrides": [
     // biome
@@ -1031,7 +860,6 @@
       // biome
       "**",
       "!!**/.droneey",
-      "!!**/biome.gen",
 
       // workspace
       "!!apps/docs",
@@ -1042,7 +870,6 @@
       "!!packages/@mutation-check/typescript",
       "!!packages/brand",
       "!!packages/constitution",
-      "!!packages/python-check",
 
       // mise
       "!!**/.mise/locks",

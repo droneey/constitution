@@ -18,6 +18,8 @@ export { planPresets } from './application/use-cases/queries/plan';
 export type { PlanApplyInput } from './application/use-cases/queries/plan-apply';
 export { planApply } from './application/use-cases/queries/plan-apply';
 export { planRun } from './application/use-cases/queries/plan-run';
+export type { ReadHeldRulesInput } from './application/use-cases/queries/read-held-rules';
+export { readHeldRules } from './application/use-cases/queries/read-held-rules';
 export { checkProject } from './application/use-cases/shared/check-project';
 export type { AppliedFiles, ApplyPlan, ApplyReport } from './domain/apply-plan/entities';
 export { ApplyError, ApplyFailure, isApplyError } from './domain/apply-plan/errors';

@@ -33,8 +33,8 @@ rules:
     max: 1
 extends: default
 ignore-from-file:
+  # ast-grep
+  - .yamlignore
+
   # git
   - .gitignore
-
-  # mise
-  - .yamlignore

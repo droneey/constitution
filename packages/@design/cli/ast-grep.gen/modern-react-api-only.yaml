@@ -1,0 +1,42 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: modern-react-api-only@typescript
+language: Tsx
+severity: error
+message: >-
+  Legacy form: read a context with use(Context), render the context itself as its provider, <Context
+  value>, give a prop its default in the parameter, and hold a ref with useRef or a ref callback
+utils:
+  context-read:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:React\.)?useContext$
+  context-provider-name:
+    kind: member_expression
+    regex: \.Provider$
+    any:
+      - inside:
+          kind: jsx_opening_element
+          field: name
+      - inside:
+          kind: jsx_self_closing_element
+          field: name
+  default-props-assignment:
+    kind: assignment_expression
+    has:
+      field: left
+      kind: member_expression
+      has:
+        field: property
+        regex: ^defaultProps$
+  ref-object-created:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:React\.)?createRef$
+rule:
+  any:
+    - matches: context-read
+    - matches: context-provider-name
+    - matches: default-props-assignment
+    - matches: ref-object-created

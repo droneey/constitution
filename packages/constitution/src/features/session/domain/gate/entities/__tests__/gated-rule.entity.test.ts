@@ -104,6 +104,35 @@ describe('GatedRule.create', () => {
         why: base.why,
       },
     },
+    {
+      condition: 'a tool holds it',
+      expected: {
+        ...base,
+        file,
+        hash,
+        isHeld: true,
+      },
+      fields: [
+        true,
+        'name-reveals-intent',
+        '',
+        Level.Must,
+        '',
+        '',
+        '',
+        'A name reveals intent.',
+      ],
+      standing: {
+        isHeld: true,
+        level: Level.Must,
+      },
+      wording: {
+        examples: [],
+        slug: base.slug,
+        statement: base.statement,
+        why: base.why,
+      },
+    },
   ] as const)(
     'should give the rule, hashed from every field in its place but its Why, when $condition',
     ({ expected, fields, standing, wording }) => {

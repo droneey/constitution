@@ -1,0 +1,76 @@
+ast-grep:
+  '*':
+    '*':
+      sgconfig.yaml: !sorted
+        ruleDirs: []
+      # Why: a generated file changes only by being generated again, so no finding in it can be
+      # fixed by hand; ast-grep leaves out what the ignore file of the tree it scans names.
+      .ignore:
+        - '*.${role.generated-file}.*'
+        - '*.${role.generated-file}/'
+    typescript:
+      sgconfig.yaml:
+        # Why: one grammar reads every TypeScript file, so each rule is written once for the files
+        # with markup and those without.
+        languageGlobs:
+          tsx:
+            - '*.ts'
+            - '*.mts'
+            - '*.cts'
+core:
+  case-holds-no-logic:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/case-holds-no-logic.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/case-holds-no-logic.yaml
+  case-named-should-when:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/case-named-should-when.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/case-named-should-when.yaml
+  case-pins-meaning-never-wording:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/case-pins-meaning-never-wording.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/case-pins-meaning-never-wording.yaml
+  case-split-by-arrange-act-assert-comments:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/case-split-by-arrange-act-assert-comments.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/case-split-by-arrange-act-assert-comments.yaml
+  failure-never-dropped-unread:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/failure-never-dropped-unread.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/failure-never-dropped-unread.yaml
+  function-within-its-limits:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/function-within-its-limits.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/function-within-its-limits.yaml
+  file-within-500-lines:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/file-within-500-lines.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/file-within-500-lines.yaml

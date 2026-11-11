@@ -1,0 +1,31 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: bun-test-retries-no-case@typescript
+language: Tsx
+severity: error
+message: Fix or delete a flaky case; never retry it
+files:
+  - '**/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  retry-option:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?retry["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^retry$
+  case-options:
+    kind: object
+    inside:
+      kind: arguments
+      inside:
+        kind: call_expression
+        has:
+          field: function
+          regex: ^(?:test|it|describe)\b
+rule:
+  matches: retry-option
+  inside:
+    matches: case-options

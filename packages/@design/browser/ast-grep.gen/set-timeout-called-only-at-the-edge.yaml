@@ -1,0 +1,37 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: set-timeout-called-only-at-the-edge@typescript
+language: Tsx
+severity: error
+message: >-
+  A timer outside the edge and the binding units: the clock reaches this code through a port
+files:
+  - '**/src/*/**'
+ignores:
+  - '**/src/infrastructure/**'
+  - '**/src/features/*/infrastructure/**'
+  - '**/src/composition/*/infrastructure/**'
+  - '**/src/libs/**'
+  - '**/src/root/**'
+  - '**/src/entrypoints/*/main.ts'
+  - '**/src/integrations/**'
+  - '**/src/features/*/presentation/bindings/**'
+  - '**/src/composition/*/presentation/bindings/**'
+  - '**/src/presentation/bindings/**'
+  - '**/__tests__/**'
+  - '**/src/entrypoints/*/main.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    any:
+      - regex: ^(?:setTimeout|setInterval|setImmediate)$
+        kind: identifier
+      - kind: member_expression
+        all:
+          - has:
+              field: object
+              kind: identifier
+              regex: ^(?:globalThis|window|self|global)$
+          - has:
+              field: property
+              regex: ^(?:setTimeout|setInterval|setImmediate)$

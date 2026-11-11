@@ -1,0 +1,97 @@
+# typescript
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: closed-name-set-is-a-string-enum@typescript
+language: Tsx
+severity: error
+message: A closed set of named values is a string enum, not a union of string literals or a type
+  taken from an as-const array
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/infrastructure/**'
+  - '**/dtos/**'
+utils:
+  string-literal-type:
+    kind: literal_type
+    has:
+      kind: string
+  key-utility:
+    kind: generic_type
+    has:
+      field: name
+      regex: ^(?:Omit|Pick|Exclude|Extract)$
+  enum-subset-list:
+    kind: variable_declarator
+    inside:
+      kind: lexical_declaration
+      regex: ^const\s
+    all:
+      - has:
+          field: name
+          pattern: $NAME
+      - has:
+          field: value
+          kind: as_expression
+          regex: \bas\s+const$
+          has:
+            kind: array
+            not:
+              has:
+                not:
+                  any:
+                    - kind: member_expression
+                    - regex: ^[\[\],]$
+  type-of-a-name:
+    any:
+      - kind: type_query
+        has:
+          pattern: $NAME
+      - kind: parenthesized_type
+        has:
+          kind: type_query
+          has:
+            pattern: $NAME
+
+# typescript
+rule:
+  any:
+    - kind: union_type
+      not:
+        any:
+          - inside:
+              kind: union_type
+          - has:
+              stopBy:
+                not:
+                  kind: union_type
+              all:
+                - not:
+                    kind: union_type
+                - not:
+                    regex: ^\|$
+                - not:
+                    matches: string-literal-type
+          - inside:
+              stopBy: end
+              matches: key-utility
+    - kind: lookup_type
+      all:
+        - has:
+            nthChild: 1
+            matches: type-of-a-name
+        - has:
+            nthChild: 2
+            any:
+              - kind: index_type_query
+              - all:
+                  - kind: predefined_type
+                    regex: ^number$
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: program
+                        has:
+                          stopBy: end
+                          matches: enum-subset-list
+  matches: closed-name-set-is-a-string-enum@typescript

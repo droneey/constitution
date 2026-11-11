@@ -5,4 +5,8 @@ dclint:
         tool:
           poe:
             tasks:
-              check:compose: dclint compose.yaml
+              check:lint:
+                shell: !commands
+                  - slot: compose
+                shell@compose:
+                  - dclint compose.yaml

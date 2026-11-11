@@ -12,6 +12,7 @@ languages:
 implementations:
   - js-runtime/bun
   - task-runner
+  - ast-grep
   - biome
   - git
 packs: []

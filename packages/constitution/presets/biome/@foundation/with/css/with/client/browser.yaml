@@ -6,21 +6,3 @@ css:
           rules:
             suspicious:
               useBaseline: error
-  web-font-served-as-woff2:
-    css:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/web-font-served-as-woff2.${role.grit-rule}]:
-          includes:
-            - '**/*.css'
-  viewport-height-leaves-out-the-browsers-toolbars:
-    css:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/viewport-height-leaves-out-the-browsers-toolbars.${role.grit-rule}]:
-          includes:
-            - '**/*.css'
-  full-width-leaves-out-the-scrollbar:
-    css:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/full-width-leaves-out-the-scrollbar.${role.grit-rule}]:
-          includes:
-            - '**/*.css'

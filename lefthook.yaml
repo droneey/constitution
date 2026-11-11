@@ -22,6 +22,15 @@ pre-commit:
       run: >-
         uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked ruff
         format --force-exclude {staged_files}
+      exclude:
+        - apps/docs/**
+        - packages/@design/browser/**
+        - packages/@design/cli/**
+        - packages/@design/tokens/**
+        - packages/@mutation-check/python/**
+        - packages/@mutation-check/typescript/**
+        - packages/brand/**
+        - packages/constitution/**
 
     # rumdl
     - name: rumdl
@@ -43,7 +52,6 @@ pre-commit:
         - packages/@mutation-check/typescript/**
         - packages/brand/**
         - packages/constitution/**
-        - packages/python-check/**
 
     # tombi
     - name: tombi
@@ -64,116 +72,38 @@ pre-commit:
         - packages/@mutation-check/typescript/**
         - packages/brand/**
         - packages/constitution/**
-        - packages/python-check/**
-    - name: biome apps/docs
+    - name: check apps/docs
       root: apps/docs/
-      stage_fixed: true
-      run: &unit-lint bun run fix:lint --no-errors-on-unmatched {staged_files}
-    - name: biome packages/constitution
+      glob: '*'
+      run: &unit-check bun run check:lint && bun run check:format
+    - name: check packages/constitution
       root: packages/constitution/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/@design/cli
+      glob: '*'
+      run: *unit-check
+    - name: check packages/@design/cli
       root: packages/@design/cli/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/@design/tokens
+      glob: '*'
+      run: *unit-check
+    - name: check packages/@design/tokens
       root: packages/@design/tokens/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/@design/browser
+      glob: '*'
+      run: *unit-check
+    - name: check packages/@design/browser
       root: packages/@design/browser/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/brand
+      glob: '*'
+      run: *unit-check
+    - name: check packages/brand
       root: packages/brand/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/@mutation-check/typescript
+      glob: '*'
+      run: *unit-check
+    - name: check packages/@mutation-check/typescript
       root: packages/@mutation-check/typescript/
-      stage_fixed: true
-      run: *unit-lint
-    - name: biome packages/@mutation-check/python
+      glob: '*'
+      run: *unit-check
+    - name: check packages/@mutation-check/python
       root: packages/@mutation-check/python/
-      stage_fixed: true
-      run: &python-unit-lint bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
-    - name: biome packages/python-check
-      root: packages/python-check/
-      stage_fixed: true
-      run: *python-unit-lint
-    - name: rumdl apps/docs
-      root: apps/docs/
-      glob: '*.md'
-      stage_fixed: true
-      run: &unit-markdown bun run fix:markdown {staged_files}
-    - name: rumdl packages/constitution
-      root: packages/constitution/
-      glob: '*.md'
-      stage_fixed: true
-      run: *unit-markdown
-    - name: rumdl packages/@design/cli
-      root: packages/@design/cli/
-      glob: '*.md'
-      stage_fixed: true
-      run: *unit-markdown
-    - name: rumdl packages/@design/tokens
-      root: packages/@design/tokens/
-      glob: '*.md'
-      stage_fixed: true
-      run: *unit-markdown
-    - name: rumdl packages/@design/browser
-      root: packages/@design/browser/
-      glob: '*.md'
-      stage_fixed: true
-      run: *unit-markdown
-    - name: shell apps/docs
-      root: apps/docs/
-      glob: '*.{sh,bash}'
-      run: &unit-shell bun run check:shell
-    - name: shell packages/constitution
-      root: packages/constitution/
-      glob: '*.{sh,bash}'
-      run: *unit-shell
-    - name: tombi apps/docs
-      root: apps/docs/
-      glob: '*.toml'
-      stage_fixed: true
-      run: &unit-toml ../../scripts/format-toml.sh {staged_files}
-    - name: tombi packages/constitution
-      root: packages/constitution/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *unit-toml
-    - name: tombi packages/@design/cli
-      root: packages/@design/cli/
-      glob: '*.toml'
-      stage_fixed: true
-      run: &scoped-unit-toml ../../../scripts/format-toml.sh {staged_files}
-    - name: tombi packages/@design/tokens
-      root: packages/@design/tokens/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *scoped-unit-toml
-    - name: tombi packages/@design/browser
-      root: packages/@design/browser/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *scoped-unit-toml
-    - name: tombi packages/@mutation-check/typescript
-      root: packages/@mutation-check/typescript/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *scoped-unit-toml
-    - name: tombi packages/@mutation-check/python
-      root: packages/@mutation-check/python/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *scoped-unit-toml
-    - name: tombi packages/python-check
-      root: packages/python-check/
-      glob: '*.toml'
-      stage_fixed: true
-      run: *unit-toml
+      glob: '*'
+      run: uv run --locked poe check:lint && uv run --locked poe check:format
 
   # lefthook
   parallel: true

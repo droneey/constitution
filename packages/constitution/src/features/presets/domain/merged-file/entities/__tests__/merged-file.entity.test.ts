@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Setting, WholeDefault } from '../../../setting/entities';
-import { PresetValue, ValueKind, WholeKind } from '../../../setting/entities';
+import { Joining, PresetValue, ValueKind, WholeKind } from '../../../setting/entities';
 import type { PlacedFlaw } from '../../../shared/entities';
 import { InheritanceFlaw, PathSide, PresetsCode } from '../../../shared/entities';
 import type { Contribution } from '../merged-file.entity';
@@ -23,7 +23,7 @@ const markedOf = (
   kind: ValueKind.Copy | ValueKind.Default | ValueKind.Inherit | ValueKind.Replace,
   setting: Setting,
 ): PresetValue => ({
-  isWords: false,
+  joining: Joining.None,
   kind,
   setting,
 });
@@ -150,6 +150,65 @@ describe('MergedFile.merge', () => {
           check: 'all',
           lint: 'biome',
         },
+      },
+    });
+  });
+
+  it("should report two replacing inserts of one slot that differ, and keep the first's", () => {
+    // Arrange
+    const contributions = [
+      from(
+        'owner',
+        map({
+          jobs: plain([
+            'first',
+            {
+              slot: 'checks',
+            },
+          ]),
+        }),
+      ),
+      from(
+        'a',
+        map({
+          'jobs@checks': markedOf(ValueKind.Replace, [
+            'lint',
+          ]),
+        }),
+      ),
+      from(
+        'b',
+        map({
+          'jobs@checks': markedOf(ValueKind.Replace, [
+            'types',
+          ]),
+        }),
+      ),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged).toStrictEqual({
+      defaults: [],
+      problems: [
+        {
+          code: PresetsCode.TwoReplacers,
+          details: {
+            settingPath: 'jobs@checks',
+            sources: [
+              'a',
+              'b',
+            ],
+          },
+        },
+      ],
+      value: {
+        jobs: [
+          'first',
+          'lint',
+        ],
       },
     });
   });
