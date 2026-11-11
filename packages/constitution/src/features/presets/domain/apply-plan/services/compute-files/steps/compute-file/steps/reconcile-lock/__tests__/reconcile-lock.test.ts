@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { RepositoryRelativePath } from '#/kernel/value-objects';
+
 import { Lock } from '../../../../../../../../lock/entities';
 import { Leaf } from '../../../../../../../../setting/entities';
 import { FileFormat } from '../../../../../../../../shared/value-objects';
@@ -22,7 +24,10 @@ describe('recordOf', () => {
       fields: [
         'name',
       ],
-      file: {},
+      file: {
+        filePath: RepositoryRelativePath.create('biome.json'),
+        text: '',
+      },
       heldBefore: new Set(Leaf.leavesOf(ours).map(Leaf.keyOf)),
       isCreatedByApply: false,
       lock: Lock.emptyRecord,
@@ -39,7 +44,9 @@ describe('recordOf', () => {
       everMetDefaults: [],
       fields: [],
       file: {
+        filePath: RepositoryRelativePath.create('rules/no-data.yml'),
         format: FileFormat.Text,
+        text: COPIED_TEXT,
       },
       heldBefore: new Set(Leaf.leavesOf(COPIED_TEXT).map(Leaf.keyOf)),
       isCreatedByApply: true,
