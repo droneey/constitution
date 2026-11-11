@@ -31,10 +31,11 @@ import {
 
 // Why: the files the hooks write for their sessions are never a change, or what the gate writes
 // would hold the hand-back it guards.
+const sessionFilesExcluded = `:(exclude)${sessionsFolderInProject}`;
 const PROJECT_BUT_SESSION_FILES = [
   '--',
   '.',
-  `:(exclude)${sessionsFolderInProject}`,
+  sessionFilesExcluded,
 ] as const;
 const GIT_FOLDER_NAME = '.git';
 
@@ -450,7 +451,7 @@ const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
 
     // Stryker disable next-line ConditionalExpression,BlockStatement: a failed run keeps no output, and no output names a main checkout either way
     if (run.status === GitRunStatus.Failed) {
-      return undefined;
+      return;
     }
 
     const common = new TextDecoder().decode(run.output).trimEnd();

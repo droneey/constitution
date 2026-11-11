@@ -49,7 +49,7 @@ const listedTerm = new RegExp(
 );
 const MEMBER_SEPARATOR = ', ';
 const alternedTerm = new RegExp(
-  `\\(\\?:\\$\\{${RegExp.escape(TERM_PREFIX)}([A-Za-z0-9_-]+)\\}\\)`,
+  String.raw`\(\?:\$\{${RegExp.escape(TERM_PREFIX)}([A-Za-z0-9_-]+)\}\)`,
   'g',
 );
 const ALTERNATIVE_SEPARATOR = '|';
@@ -143,7 +143,7 @@ const alternedIn = (input: FillInput): string =>
 
     return members === undefined
       ? written
-      : `(?:${members.map((member) => member.replaceAll(REGEX_SYNTAX, '\\$&')).join(ALTERNATIVE_SEPARATOR)})`;
+      : `(?:${members.map((member) => member.replaceAll(REGEX_SYNTAX, String.raw`\$&`)).join(ALTERNATIVE_SEPARATOR)})`;
   });
 
 const filledIn = (input: FillInput): string | undefined =>

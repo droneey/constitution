@@ -1,0 +1,34 @@
+integrations/remote-data:
+  remote-data-failure-reaches-one-handler:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/remote-data-failure-reaches-one-handler.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/remote-data-failure-reaches-one-handler.yaml
+tanstack-query:
+  in-flight-reads-cancelled-by-on-mutate:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/in-flight-reads-cancelled-by-on-mutate.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/in-flight-reads-cancelled-by-on-mutate.yaml
+  query-result-returned-as-status-union:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/query-result-returned-as-status-union.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/query-result-returned-as-status-union.yaml
+  query-retry-delay-spread-at-random:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/query-retry-delay-spread-at-random.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/query-retry-delay-spread-at-random.yaml

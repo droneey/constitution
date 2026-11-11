@@ -1,0 +1,16 @@
+biome:
+  biome-suppression-names-one-rule:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/biome-suppression-names-one-rule.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/biome-suppression-names-one-rule.yaml
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/biome-suppression-names-one-rule.css.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/biome-suppression-names-one-rule.yaml

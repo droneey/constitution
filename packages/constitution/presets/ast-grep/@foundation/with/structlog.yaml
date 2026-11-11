@@ -1,0 +1,9 @@
+structlog:
+  extra-field-named-apart-from-record-attributes:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/extra-field-named-apart-from-record-attributes.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/extra-field-named-apart-from-record-attributes.yaml

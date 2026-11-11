@@ -1,0 +1,21 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: int-enum-member-number-never-left-to-auto@python
+language: Python
+severity: error
+message: "Write out the number the other system sends: `auto()` follows the member's place"
+rule:
+  kind: assignment
+  has:
+    field: right
+    regex: ^(?:enum\.)?auto\(\)$
+  inside:
+    kind: expression_statement
+    inside:
+      kind: block
+      inside:
+        kind: class_definition
+        field: body
+        has:
+          field: superclasses
+          has:
+            regex: ^(?:enum\.)?IntEnum$

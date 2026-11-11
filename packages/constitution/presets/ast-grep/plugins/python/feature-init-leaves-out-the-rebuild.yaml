@@ -1,0 +1,42 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: feature-init-leaves-out-the-rebuild@python
+language: Python
+severity: error
+message: >-
+  A feature's surface never offers its aggregates' rebuild from storage: its adapters import it by
+  its module
+# Why: a glob's star crosses folders, so a feature's own `__init__.py` is told from those of its
+# layers by leaving out each one a folder deeper.
+files:
+  - '**/${role.source}/*/{${role.bounded-context},${role.composition-module}}/*/${role.surface}.py'
+ignores:
+  - '**/{${role.bounded-context},${role.composition-module}}/*/*/${role.surface}.py'
+utils:
+  rebuild-name:
+    regex: ^restore(?:_|$)
+rule:
+  any:
+    - kind: dotted_name
+      matches: rebuild-name
+      any:
+        - inside:
+            kind: import_from_statement
+            field: name
+        - inside:
+            kind: aliased_import
+            field: name
+            inside:
+              kind: import_from_statement
+    - kind: string_content
+      matches: rebuild-name
+      inside:
+        kind: string
+        inside:
+          any:
+            - kind: list
+            - kind: tuple
+          inside:
+            kind: assignment
+            has:
+              field: left
+              regex: ^__all__$

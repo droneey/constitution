@@ -1,0 +1,25 @@
+fastmcp:
+  program-raises-no-tool-error:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/program-raises-no-tool-error.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/program-raises-no-tool-error.yaml
+  tool-defect-masked-by-mask-error-details:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/tool-defect-masked-by-mask-error-details.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/tool-defect-masked-by-mask-error-details.yaml
+  parameter-described-by-its-field:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/parameter-described-by-its-field.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/parameter-described-by-its-field.yaml

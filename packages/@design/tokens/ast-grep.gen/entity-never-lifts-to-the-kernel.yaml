@@ -1,0 +1,16 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: entity-never-lifts-to-the-kernel@typescript
+language: Tsx
+severity: error
+message: >-
+  An entity in the kernel: keep it in the feature that owns its life, and give the others a narrow
+  view of it or its identifier
+files:
+  - '**/kernel/**/*.entity.ts'
+  - '**/kernel/**/*.aggregate.ts'
+  - '**/kernel/**/entities/**/*.ts'
+  - '**/kernel/**/*.entity.tsx'
+  - '**/kernel/**/*.aggregate.tsx'
+  - '**/kernel/**/entities/**/*.tsx'
+rule:
+  kind: program

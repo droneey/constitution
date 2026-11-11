@@ -1259,6 +1259,136 @@ const blockViolations = [
     ],
     rule: 'root-reached-only-from-entries',
   },
+  {
+    condition: "a feature's domain imports the catalogue library",
+    files: {
+      'src/features/orders/domain/order/errors/cart-full.error.ts': importing({
+        from: '@lingui/core',
+        name: 'value',
+      }),
+    },
+    blocks: [
+      'localization',
+      'lingui',
+    ],
+    rule: 'catalogue-library-never-imported-by-the-domain-lingui',
+  },
+  {
+    condition: 'the kernel imports the catalogue library',
+    files: {
+      'src/kernel/errors/base.error.ts': importing({
+        from: '@lingui/core',
+        name: 'value',
+      }),
+    },
+    blocks: [
+      'localization',
+      'lingui',
+    ],
+    rule: 'catalogue-library-never-imported-by-the-domain-lingui',
+  },
+  {
+    condition: "a subcommand's binding unit imports the terminal's renderer",
+    files: {
+      'src/features/orders/presentation/bindings/queries/show-order/show-order.tsx': importing({
+        from: 'ink',
+        name: 'value',
+      }),
+    },
+    blocks: [
+      'presentation',
+      'client/cli',
+      'react/ink',
+    ],
+    rule: 'subcommand-renders-through-a-renderer-the-root-hands-ink',
+  },
+  {
+    condition: "a binding unit of the program's presentation imports the terminal's renderer",
+    files: {
+      'src/presentation/bindings/commands/sync/sync.tsx': importing({
+        from: 'ink',
+        name: 'value',
+      }),
+    },
+    blocks: [
+      'presentation',
+      'client/cli',
+      'react/ink',
+    ],
+    rule: 'subcommand-renders-through-a-renderer-the-root-hands-ink',
+  },
+  {
+    condition: 'a widget imports shared code beyond the ui',
+    files: {
+      'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
+        from: '../../../../../shared/format',
+        name: 'format',
+      }),
+      'src/shared/format/index.ts': exported('format'),
+    },
+    blocks: [
+      'presentation',
+    ],
+    rule: 'feature-ui-imports-only-ui-shared-layers',
+  },
+  {
+    condition: 'a component imports a port of the kernel',
+    files: {
+      'src/features/orders/presentation/components/order-card/order-card.tsx': importing({
+        from: '../../../../../kernel/contracts',
+        name: 'clock',
+      }),
+      'src/kernel/contracts/index.ts': exported('clock'),
+    },
+    blocks: [
+      'presentation',
+    ],
+    rule: 'feature-ui-imports-only-ui-shared-layers',
+  },
+  {
+    condition: "a component imports the program's presentation",
+    files: {
+      'src/features/orders/presentation/components/order-card/order-card.tsx': importing({
+        from: '../../../../../presentation/shell',
+        name: 'shell',
+      }),
+      'src/presentation/shell/index.ts': exported('shell'),
+    },
+    blocks: [
+      'presentation',
+    ],
+    rule: 'feature-ui-imports-only-ui-shared-layers',
+  },
+  {
+    condition: "a feature's module imports another feature's module through its surface",
+    files: {
+      'src/features/orders/presentation/module/orders.module.ts': importing({
+        from: '../../../payments',
+        name: 'PaymentsModule',
+      }),
+      'src/features/payments/index.ts':
+        "export { PaymentsModule } from './presentation/module/payments.module';\n",
+      'src/features/payments/presentation/module/payments.module.ts': exported('PaymentsModule'),
+    },
+    blocks: [
+      'nestjs',
+    ],
+    rule: 'feature-module-imports-no-other-features-module',
+  },
+  {
+    condition: "a feature's module imports the module of an adapter",
+    files: {
+      'src/features/orders/presentation/module/orders.module.ts': importing({
+        from: '../../../../infrastructure/db/db.module',
+        name: 'DbModule',
+      }),
+      'src/infrastructure/db/db.module.ts': exported('DbModule'),
+    },
+    blocks: [
+      'nestjs',
+    ],
+    rule: 'feature-module-imports-no-other-features-module',
+  },
 ];
 
 const workspaceViolations = [
@@ -1500,6 +1630,144 @@ describe('the dependency-cruiser layer set', () => {
     },
   );
 
+  it.each([
+    {
+      blocks: [
+        'presentation',
+        'tanstack-router',
+      ],
+      condition: "a widget imports a router primitive and an override lowers the router's own rule",
+      files: {
+        'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
+          from: '@tanstack/react-router',
+          name: 'value',
+        }),
+      },
+      lowered: [
+        'router-primitives-only-in-the-root',
+      ],
+      rule: 'router-only-in-its-home',
+    },
+    {
+      blocks: [
+        'presentation',
+        'react/react-native/expo',
+      ],
+      condition: "a screen imports Expo Router and an override lowers Expo's own rule",
+      files: {
+        'src/presentation/screens/orders-screen/orders-screen.tsx': importing({
+          from: 'expo-router',
+          name: 'value',
+        }),
+      },
+      lowered: [
+        'navigation-library-includes-every-expo-router-subpath',
+      ],
+      rule: 'ui-imports-no-expo-router',
+    },
+  ])('should report $rule when $condition', async ({ blocks, files, lowered, rule }) => {
+    // Arrange
+    const project = {
+      blocks,
+      files,
+      lowered,
+    };
+
+    // Act
+    const { violations } = await cruise(project);
+
+    // Assert
+    expect(violations).toContain(rule);
+  });
+
+  it.each([
+    {
+      blocks: [
+        'localization',
+        'lingui',
+      ],
+      condition: 'the root and a spec of the domain import the catalogue library',
+      files: {
+        'src/root/messages.ts': importing({
+          from: '@lingui/core',
+          name: 'value',
+        }),
+        'src/features/orders/domain/order/errors/__tests__/cart-full.error.test.ts': importing({
+          from: '@lingui/core',
+          name: 'value',
+        }),
+      },
+    },
+    {
+      blocks: [
+        'presentation',
+        'client/cli',
+        'react/ink',
+      ],
+      condition: "a screen imports the terminal's renderer and a binding unit takes only its types",
+      files: {
+        'src/presentation/screens/order-screen/order-screen.tsx': importing({
+          from: 'ink',
+          name: 'value',
+        }),
+        'src/features/orders/presentation/bindings/queries/show-order/show-order.ts':
+          "import type { Instance } from 'ink';\nexport type Shown = Instance;\n",
+      },
+    },
+    {
+      blocks: [
+        'presentation',
+      ],
+      condition:
+        "a widget and a component import their own feature, the ui of the shared layers, the kernel's values and an asset",
+      files: {
+        'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx':
+          "import { orderCard } from '../../components';\nimport { Table } from '../../../../../libs/ui';\nimport { MoneyText } from '../../../../../shared/ui';\nexport const ordersWidget = [orderCard, Table, MoneyText];\n",
+        'src/features/orders/presentation/components/index.ts':
+          "export { orderCard } from './order-card';\n",
+        'src/features/orders/presentation/components/order-card/index.ts':
+          "export { orderCard } from './order-card';\n",
+        'src/features/orders/presentation/components/order-card/order-card.tsx':
+          "import type { Money } from '../../../../../kernel/values';\nimport logo from '../../../../../presentation/assets/logo.svg';\nexport const orderCard = (money: Money): unknown => [money, logo];\n",
+        'src/presentation/assets/logo.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>\n',
+        'src/kernel/values/index.ts': 'export type Money = number;\n',
+        'src/libs/ui/index.ts': exported('Table'),
+        'src/shared/ui/index.ts': exported('MoneyText'),
+      },
+    },
+    {
+      blocks: [
+        'nestjs',
+      ],
+      condition: "a feature's module imports its own controller and a module of shared code",
+      files: {
+        'src/features/orders/presentation/module/orders.module.ts':
+          "import { OrdersController } from '../bindings';\nimport { DbModule } from '../../../../shared/db';\nexport const OrdersModule = [OrdersController, DbModule];\n",
+        'src/features/orders/presentation/bindings/index.ts':
+          "export { OrdersController } from './orders.controller';\n",
+        'src/features/orders/presentation/bindings/orders.controller.ts':
+          exported('OrdersController'),
+        'src/shared/db/index.ts': "export { DbModule } from './db.module';\n",
+        'src/shared/db/db.module.ts': exported('DbModule'),
+      },
+    },
+  ])('should report no violation when $condition', async ({ blocks, files }) => {
+    // Arrange
+    const project = {
+      blocks,
+      files,
+    };
+
+    // Act
+    const cruised = await cruise(project);
+
+    // Assert
+    expect(cruised).toStrictEqual({
+      isCruised: true,
+      violations: [],
+    });
+  });
+
   it("should report no violation when a feature's surface re-exports its widget and a project extends the ui part", async () => {
     // Arrange
     const project = {
@@ -1626,8 +1894,8 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/domain/order/entities/index.ts':
           'export type Order = { id: string };\n',
         'src/features/orders/presentation/widgets/orders.tsx':
-          "import type { Order } from '../../domain/order/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
-        'src/shared/sinks/index.ts': exported('track'),
+          "import type { Order } from '../../domain/order/entities';\nimport { track } from '../../../../shared/ui';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
+        'src/shared/ui/index.ts': exported('track'),
         'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts':
           importing({
             from: '@bunli/core',

@@ -1,0 +1,26 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: page-exit-work-runs-when-the-page-hides@typescript
+language: Tsx
+severity: error
+message: >-
+  Run a page's exit work on pagehide or when visibilitychange reports hidden, never on unload, which
+  browsers no longer fire reliably
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: '(?:^|\.)addEventListener$'
+      all:
+        - has:
+            field: arguments
+            has:
+              nthChild: 1
+              regex: '^[''"`]unload[''"`]$'
+    - kind: assignment_expression
+      has:
+        field: left
+        regex: '(?:^|\.)onunload$'

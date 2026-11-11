@@ -1,0 +1,22 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: boolean-attribute-written-by-presence@html
+language: Html
+severity: error
+message: >-
+  Leave a false boolean attribute out: the browser reads any value of it, "false" included, as true
+files:
+  - '**/*.html'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+rule:
+  kind: attribute
+  all:
+    - has:
+        kind: attribute_name
+        regex: '(?i)^(?:allowfullscreen|async|autofocus|autoplay|checked|controls|default|defer|disabled|formnovalidate|hidden|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected|shadowrootclonable|shadowrootdelegatesfocus|shadowrootserializable)$'
+    - has:
+        stopBy: end
+        kind: attribute_value
+        regex: '(?i)^\s*(?:false|off|no|0)\s*$'

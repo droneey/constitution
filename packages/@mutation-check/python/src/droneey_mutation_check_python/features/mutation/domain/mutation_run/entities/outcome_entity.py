@@ -48,8 +48,8 @@ def outcome_of(run: MutationRun, targets: MutationTargets) -> Outcome:
     case Stopped(mutants=mutants):
       not_killed = _targeted(mutants, targets)
       reason = PassReason.NOTHING_TO_MUTATE
-    case _:  # pragma: no mutate -- no run reaches it
-      assert_never(run)  # pragma: no mutate -- no run reaches it
+    case _:  # pragma: no mutate  # Why: no run reaches it
+      assert_never(run)  # pragma: no mutate  # Why: no run reaches it
 
   if not_killed:
     return Survived(mutants=not_killed)

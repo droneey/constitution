@@ -1,0 +1,17 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: providers-folder-holds-only-providers@typescript
+language: Tsx
+severity: error
+message: >-
+  ${role.framework-provider}/ holds only .${role.nest-provider}, .${role.nest-pipe} and
+  .${role.nest-interceptor} files and its surface: move this file to the folder of its role
+files:
+  - '**/${role.framework-provider}/**'
+ignores:
+  - '**/${role.framework-provider}/**/*.${role.nest-provider}'
+  - '**/${role.framework-provider}/**/*.${role.nest-pipe}'
+  - '**/${role.framework-provider}/**/*.${role.nest-interceptor}'
+  - '**/${role.framework-provider}/${role.surface}.ts'
+  - '**/${role.framework-provider}/${role.colocated-specs}/**'
+rule:
+  kind: program

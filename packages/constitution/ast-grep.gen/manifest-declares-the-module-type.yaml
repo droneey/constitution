@@ -1,0 +1,21 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: manifest-declares-the-module-type@json
+language: Json
+severity: error
+message: 'A package.json with no "type": "module": the runtime loads its .js files as CommonJS'
+files:
+  - '**/package.json'
+rule:
+  kind: object
+  inside:
+    kind: document
+  not:
+    has:
+      kind: pair
+      all:
+        - has:
+            field: key
+            regex: ^"type"$
+        - has:
+            field: value
+            regex: ^"module"$

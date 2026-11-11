@@ -1,0 +1,13 @@
+# typescript
+id: invariant-value-is-plain-readonly-data@typescript
+language: Tsx
+severity: error
+message: >-
+  A class in a file of values equal by their data: make the value plain readonly data, with its
+  rules on its companion
+files:
+  - '**/*.value-object.ts'
+ignores:
+  - '**/__tests__/**'
+rule:
+  matches: invariant-value-is-plain-readonly-data@typescript

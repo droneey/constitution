@@ -1,0 +1,25 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: global-module-never-declared@typescript
+language: Tsx
+severity: error
+message: >-
+  A module of the program is never @Global(): the root's module imports what each module takes,
+  so its imports show what it depends on
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: decorator
+  has:
+    any:
+      - kind: identifier
+        regex: ^Global$
+      - kind: call_expression
+        has:
+          field: function
+          regex: ^Global$

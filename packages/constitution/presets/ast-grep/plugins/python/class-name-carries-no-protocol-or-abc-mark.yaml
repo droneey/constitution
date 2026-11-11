@@ -1,0 +1,31 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: class-name-carries-no-protocol-or-abc-mark@python
+language: Python
+severity: error
+message: >-
+  A class is named for what it is: no I, Abstract or Base prefix, no Protocol, Interface, ABC or
+  Type suffix
+utils:
+  protocol-or-abc:
+    kind: class_definition
+    has:
+      field: superclasses
+      has:
+        any:
+          - regex: ^(?:(?:typing|typing_extensions|abc)\.)?(?:Protocol|ABC)$
+          - kind: subscript
+            regex: ^(?:(?:typing|typing_extensions)\.)?Protocol\[
+          - kind: keyword_argument
+            regex: ^metaclass\s*=\s*(?:abc\.)?ABCMeta$
+rule:
+  kind: identifier
+  inside:
+    kind: class_definition
+    field: name
+  any:
+    - regex: ^.+(?:Protocol|Interface|ABC|Type)$
+    # Why: an `I`, `Abstract` or `Base` opening a concrete class's name may be a word of its own, as
+    # in `IPv4Address`, while on a protocol or an abstract class it marks the construct.
+    - regex: ^(?:I[A-Z][a-z]|Abstract[A-Z]|Base[A-Z])
+      inside:
+        matches: protocol-or-abc

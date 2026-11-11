@@ -1,0 +1,23 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: boolean-attribute-written-by-presence@typescript
+language: Tsx
+severity: error
+message: >-
+  Pass a false boolean attribute as {false} or leave it out: the browser reads any text of it,
+  "false" included, as true
+files:
+  - '**/*.tsx'
+rule:
+  kind: jsx_attribute
+  inside:
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+    # Why: an element of the document, whose attributes the browser reads, is named in lower case.
+    has:
+      field: name
+      regex: '^[a-z][a-z0-9]*$'
+  has:
+    kind: property_identifier
+    regex: '^(?:allowFullScreen|async|autoFocus|autoPlay|checked|controls|default|defer|disabled|formNoValidate|hidden|inert|itemScope|loop|multiple|muted|noModule|noValidate|open|playsInline|readOnly|required|reversed|selected)$'
+  regex: '=\s*\{?\s*[''"`](?:false|off|no|0)[''"`]\s*\}?$'

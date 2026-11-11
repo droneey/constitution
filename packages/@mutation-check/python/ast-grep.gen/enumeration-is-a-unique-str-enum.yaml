@@ -1,0 +1,82 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: enumeration-is-a-unique-str-enum@python
+language: Python
+severity: error
+message: >-
+  A closed set of named values is an `enum.StrEnum` marked `@unique`, never a union of `Literal`
+  strings
+files:
+  - '**/*.py'
+# Why: another party's codes keep that party's spelling where the program meets it, which the data
+# chapter governs.
+ignores:
+  - '**/infrastructure/**'
+  - '**/dtos/**'
+utils:
+  literal-name:
+    regex: ^(?:(?:typing|typing_extensions)\.)?Literal$
+  str-enum-class:
+    kind: class_definition
+    has:
+      field: superclasses
+      has:
+        regex: ^(?:enum\.)?StrEnum$
+  marked-unique:
+    inside:
+      kind: decorated_definition
+      has:
+        kind: decorator
+        regex: ^@(?:enum\.)?unique$
+  plain-enum-of-strings:
+    kind: class_definition
+    all:
+      - has:
+          field: superclasses
+          has:
+            regex: ^(?:enum\.)?Enum$
+      - has:
+          field: body
+          has:
+            kind: expression_statement
+            has:
+              kind: assignment
+              has:
+                field: right
+                kind: string
+rule:
+  any:
+    - matches: str-enum-class
+      not:
+        matches: marked-unique
+    # Why: an `Enum` whose members hold strings is a set of named strings, while the sentinel's one
+    # member holds no string.
+    - matches: plain-enum-of-strings
+    - kind: subscript
+      all:
+        - has:
+            field: value
+            matches: literal-name
+        - has:
+            kind: string
+            nthChild: 2
+        - has:
+            kind: string
+            nthChild: 3
+    - kind: generic_type
+      all:
+        - has:
+            kind: identifier
+            matches: literal-name
+        - has:
+            kind: type_parameter
+            all:
+              - has:
+                  kind: type
+                  nthChild: 1
+                  has:
+                    kind: string
+              - has:
+                  kind: type
+                  nthChild: 2
+                  has:
+                    kind: string

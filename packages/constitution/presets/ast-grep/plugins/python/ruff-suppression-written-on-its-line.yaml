@@ -1,0 +1,16 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ruff-suppression-written-on-its-line@python
+language: Python
+severity: error
+message: >-
+  Silence one Ruff code on its line: `# noqa: <code>` or `# ruff: ignore[<code>]`, never a bare
+  noqa, a range or a file-level form
+# Why: Ruff finds a suppression anywhere in a comment, in any case, so each form is read so too.
+rule:
+  kind: comment
+  any:
+    - regex: (?i)#\s*noqa(?:\s*$|\s*[^:\s])
+    - regex: (?i:#\s*noqa\s*:)\s*[A-Z]+[0-9]+(?:\s*,\s*|\s+)[A-Z]+[0-9]+\b
+    - regex: (?i)#\s*ruff\s*:\s*(?:disable|enable|file-ignore|noqa)\b
+    - regex: (?i)#\s*flake8\s*:\s*noqa\b
+    - regex: (?i)#\s*ruff\s*:\s*ignore\[[^\]]*,

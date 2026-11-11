@@ -231,7 +231,7 @@ const placeOf = (path: string): PlaceFields | undefined => {
   const folder = layerFolders.find((candidate) => path.startsWith(candidate.prefix));
 
   if (folder === undefined) {
-    return undefined;
+    return;
   }
 
   const segments = path.slice(folder.prefix.length).split(PATH_SEPARATOR);

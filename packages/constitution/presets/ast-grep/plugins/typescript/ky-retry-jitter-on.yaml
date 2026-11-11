@@ -1,0 +1,82 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ky-retry-jitter-on@typescript
+language: Tsx
+severity: error
+message: >-
+  Spread the backoff of a ky instance that retries at random: set retry.jitter, or turn its
+  retries off with retry: 0
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  instance-built:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^ky\s*\.\s*(?:create|extend)$
+  retry-key:
+    regex: ^["'`]?retry["'`]?$
+  retries-off:
+    kind: pair
+    all:
+      - has:
+          field: key
+          matches: retry-key
+      - has:
+          field: value
+          any:
+            - kind: number
+              regex: ^0$
+            - kind: object
+              has:
+                kind: pair
+                all:
+                  - has:
+                      field: key
+                      regex: ^["'`]?limit["'`]?$
+                  - has:
+                      field: value
+                      kind: number
+                      regex: ^0$
+  jitter-on:
+    kind: pair
+    all:
+      - has:
+          field: key
+          matches: retry-key
+      - has:
+          field: value
+          kind: object
+          has:
+            any:
+              - kind: pair
+                all:
+                  - has:
+                      field: key
+                      regex: ^["'`]?jitter["'`]?$
+                  - not:
+                      has:
+                        field: value
+                        kind: 'false'
+              - kind: shorthand_property_identifier
+                regex: ^jitter$
+              - kind: method_definition
+                has:
+                  field: name
+                  regex: ^jitter$
+rule:
+  matches: instance-built
+  has:
+    field: arguments
+    any:
+      - not:
+          has:
+            nthChild: 1
+      - has:
+          nthChild: 1
+          kind: object
+          not:
+            has:
+              any:
+                - matches: retries-off
+                - matches: jitter-on

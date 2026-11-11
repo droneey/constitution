@@ -45,5 +45,5 @@ def is_killed(status: MutantStatus) -> bool:
       | MutantStatus.UNKNOWN
     ):
       return False
-    case _:  # pragma: no mutate -- no status reaches it
-      assert_never(status)  # pragma: no mutate -- no status reaches it
+    case _:  # pragma: no mutate  # Why: no status reaches it
+      assert_never(status)  # pragma: no mutate  # Why: no status reaches it

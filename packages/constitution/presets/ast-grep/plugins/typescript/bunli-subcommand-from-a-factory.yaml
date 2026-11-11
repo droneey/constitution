@@ -1,0 +1,115 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: bunli-subcommand-from-a-factory@typescript
+language: Tsx
+severity: error
+message: >-
+  A subcommand's factory returns defineCommand({ name, description, options, handler })
+files:
+  - '**/${role.presentation-layer}/${role.binding}/**'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  command-defined:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^defineCommand$
+  scope:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  named:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?name["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^name$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^name$
+  described:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?description["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^description$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^description$
+  optioned:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?options["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^options$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^options$
+  handled:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?handler["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^handler$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^handler$
+  defined-outside-a-factory:
+    matches: command-defined
+    not:
+      inside:
+        stopBy: end
+        matches: scope
+  definition-incomplete:
+    kind: object
+    inside:
+      kind: arguments
+      inside:
+        matches: command-defined
+    any:
+      - not:
+          has:
+            matches: named
+      - not:
+          has:
+            matches: described
+      - not:
+          has:
+            matches: optioned
+      - not:
+          has:
+            matches: handled
+  command-left-undefined:
+    kind: object
+    all:
+      - has:
+          matches: named
+      - has:
+          matches: handled
+    not:
+      inside:
+        kind: arguments
+        inside:
+          matches: command-defined
+rule:
+  any:
+    - matches: defined-outside-a-factory
+    - matches: definition-incomplete
+    - matches: command-left-undefined

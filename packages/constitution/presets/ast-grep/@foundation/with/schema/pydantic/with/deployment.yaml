@@ -1,0 +1,17 @@
+schema/pydantic:
+  settings-model-keeps-extra-forbidden:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/settings-model-keeps-extra-forbidden.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/settings-model-keeps-extra-forbidden.yaml
+  settings-model-sets-an-env-prefix:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/settings-model-sets-an-env-prefix.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/settings-model-sets-an-env-prefix.yaml

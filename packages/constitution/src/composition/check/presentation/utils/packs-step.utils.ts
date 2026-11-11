@@ -110,7 +110,7 @@ const packsStepOf = (input: PacksStepInput): StepReport | undefined => {
   });
 
   if (checked.length === 0) {
-    return undefined;
+    return;
   }
 
   const count = checked.reduce((sum, { validation }) => sum + validation.findings.length, 0);

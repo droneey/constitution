@@ -7,3 +7,19 @@ python:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/sleep-or-call-later-only-at-the-edge.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/sleep-or-call-later-only-at-the-edge.yaml
+  init-of-a-folder-without-a-surface-empty:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/init-of-a-folder-without-a-surface-empty.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/init-of-a-folder-without-a-surface-empty.yaml
+  surface-is-init-with-sorted-all:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/surface-is-init-with-sorted-all.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/surface-is-init-with-sorted-all.yaml

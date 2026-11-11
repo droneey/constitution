@@ -1,0 +1,10 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: typescript-source-spelled-ts-or-tsx@typescript
+language: Tsx
+severity: error
+message: 'A typed source file spelled .mts or .cts: spell it .ts, or .tsx where it writes markup'
+files:
+  - '**/${role.source}/**/*.mts'
+  - '**/${role.source}/**/*.cts'
+rule:
+  kind: program

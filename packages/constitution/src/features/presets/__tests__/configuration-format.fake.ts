@@ -2,6 +2,7 @@ import type { ConfigurationFormat, ConfigurationTarget } from '../application/co
 import type { ConfigurationFile, ConfigurationWrite } from '../domain/configuration-file/entities';
 import { SettingShape } from '../domain/configuration-file/entities';
 import type { Setting } from '../domain/setting/entities';
+import { FileFormat } from '../domain/shared/value-objects';
 import { settingModel } from '../infrastructure/configuration/models';
 
 const NEWLINE = '\n';
@@ -48,10 +49,13 @@ const pairsTextOf = (settings: Setting): string =>
 
 const linesOf = (text: string): Setting => text.split(NEWLINE).filter((line) => line !== '');
 
+const isWholeText = (file: ConfigurationFile): boolean =>
+  file.format === FileFormat.Text || file.filePath.endsWith(WHOLE_TEXT_FILE);
+
 const createFakeConfigurationFormat = (): ConfigurationFormat => ({
   canSortKeys: (target: ConfigurationTarget): boolean => target.writtenPath.endsWith(JSON_FILE),
   read: (file: ConfigurationFile): Setting | undefined => {
-    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+    if (isWholeText(file)) {
       return file.text;
     }
 
@@ -60,13 +64,13 @@ const createFakeConfigurationFormat = (): ConfigurationFormat => ({
     }
 
     if (file.filePath.endsWith(TEXT_FILE)) {
-      return undefined;
+      return;
     }
 
     return isOfNoFormat(file.filePath) && isPairs(file) ? pairsOf(file.text) : linesOf(file.text);
   },
   write: (file: ConfigurationWrite): string => {
-    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+    if (isWholeText(file)) {
       return typeof file.settings === 'string' ? file.settings : '';
     }
 

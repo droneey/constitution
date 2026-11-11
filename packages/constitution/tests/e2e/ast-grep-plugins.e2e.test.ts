@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
+import { formatsPluginRows } from './ast-grep-formats-plugins.fixtures';
+import { frameworksPluginRows } from './ast-grep-frameworks-plugins.fixtures';
+import { interfacePluginRows } from './ast-grep-interface-plugins.fixtures';
 import type { PluginRow } from './ast-grep-plugins.fixtures';
 import {
   allowedCases,
@@ -7,10 +10,12 @@ import {
   pluginsWithNoRow,
   reportedCases,
 } from './ast-grep-plugins.fixtures';
+import { pythonPluginRows } from './ast-grep-python-plugins.fixtures';
+import { typescriptPluginRows } from './ast-grep-typescript-plugins.fixtures';
 
 const SCAN_TIMEOUT = 60_000;
 
-const pluginRows: readonly PluginRow[] = [
+const presetRows: readonly PluginRow[] = [
   {
     language: 'css',
     slug: 'full-width-leaves-out-the-scrollbar',
@@ -7353,6 +7358,15 @@ const pluginRows: readonly PluginRow[] = [
   },
 ];
 
+const pluginRows: readonly PluginRow[] = [
+  ...presetRows,
+  ...formatsPluginRows,
+  ...frameworksPluginRows,
+  ...interfacePluginRows,
+  ...pythonPluginRows,
+  ...typescriptPluginRows,
+];
+
 describe('the ast-grep rules of the presets', () => {
   it('should hold a row for each rule file when the presets give a rule', () => {
     // Act
@@ -7362,7 +7376,7 @@ describe('the ast-grep rules of the presets', () => {
     expect(missing).toStrictEqual([]);
   });
 
-  it.each(reportedCases(pluginRows))(
+  it.concurrent.each(reportedCases(pluginRows))(
     'should report $slug when $condition',
     async (pluginCase) => {
       // Act
@@ -7374,7 +7388,7 @@ describe('the ast-grep rules of the presets', () => {
     SCAN_TIMEOUT,
   );
 
-  it.each(allowedCases(pluginRows))(
+  it.concurrent.each(allowedCases(pluginRows))(
     'should not report $slug when $condition',
     async (pluginCase) => {
       // Act

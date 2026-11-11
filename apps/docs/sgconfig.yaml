@@ -1,9 +1,15 @@
-# ast-grep
 languageGlobs:
+  # ast-grep
   tsx:
     - '*.ts'
     - '*.mts'
     - '*.cts'
+
+  # json
+  json:
+    - '*.jsonc'
+
+# ast-grep
 ruleDirs:
   - ast-grep.gen
 

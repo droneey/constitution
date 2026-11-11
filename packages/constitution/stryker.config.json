@@ -60,5 +60,6 @@
   "timeoutMS": 30000,
   "concurrency": "50%",
   "testRunner": "bun-specs",
-  "coverageAnalysis": "off"
+  "coverageAnalysis": "off",
+  "incremental": false
 }

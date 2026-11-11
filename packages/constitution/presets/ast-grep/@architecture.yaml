@@ -14,3 +14,18 @@ core:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/effects-held-only-by-the-edge.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/effects-held-only-by-the-edge.yaml
+  entity-never-lifts-to-the-kernel:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/entity-never-lifts-to-the-kernel.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/entity-never-lifts-to-the-kernel.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/entity-never-lifts-to-the-kernel.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/entity-never-lifts-to-the-kernel.yaml

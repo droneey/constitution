@@ -36,15 +36,30 @@ utils:
     regex: ^\$$
   child-process-start-imported:
     kind: import_specifier
-    not:
-      regex: ^type\s
     all:
-      - inside:
-          stopBy: end
-          matches: value-import-of-child-process
+      - any:
+          - has:
+              field: alias
+              pattern: $START
+          - all:
+              - not:
+                  has:
+                    field: alias
+                    kind: identifier
+              - has:
+                  field: name
+                  pattern: $START
       - has:
           field: name
           matches: child-process-start-name
+      - not:
+          regex: ^type\s
+      - inside:
+          stopBy: end
+          matches: value-import-of-child-process
+  bun-start-imported:
+    kind: import_specifier
+    all:
       - any:
           - has:
               field: alias
@@ -57,40 +72,17 @@ utils:
               - has:
                   field: name
                   pattern: $START
-  bun-start-imported:
-    kind: import_specifier
-    not:
-      regex: ^type\s
-    all:
-      - inside:
-          stopBy: end
-          matches: value-import-of-bun
       - has:
           field: name
           matches: bun-start-name
-      - any:
-          - has:
-              field: alias
-              pattern: $START
-          - all:
-              - not:
-                  has:
-                    field: alias
-                    kind: identifier
-              - has:
-                  field: name
-                  pattern: $START
-  bun-shell-imported:
-    kind: import_specifier
-    not:
-      regex: ^type\s
-    all:
+      - not:
+          regex: ^type\s
       - inside:
           stopBy: end
           matches: value-import-of-bun
-      - has:
-          field: name
-          matches: bun-shell-name
+  bun-shell-imported:
+    kind: import_specifier
+    all:
       - any:
           - has:
               field: alias
@@ -103,33 +95,40 @@ utils:
               - has:
                   field: name
                   pattern: $TAG
+      - has:
+          field: name
+          matches: bun-shell-name
+      - not:
+          regex: ^type\s
+      - inside:
+          stopBy: end
+          matches: value-import-of-bun
   process-starter:
     any:
       - kind: member_expression
         regex: ^Bun\s*\.\s*spawn(?:Sync)?$
       - all:
           - kind: identifier
-          # Why: a file that imports neither module starts nothing by a name, which its
-          # imports alone tell before any of them is searched.
-          - inside:
-              stopBy: end
-              kind: program
-              has:
-                any:
-                  - matches: value-import-of-child-process
-                  - matches: value-import-of-bun
           - pattern: $START
-          # Why: an import stands directly in the program, so the search walks only its imports.
+          # Why: an import stands directly in the program, so the search walks only the imports
+          # of the two modules, and in them first the specifier that binds the callee's name.
           - inside:
               stopBy: end
               kind: program
               has:
                 kind: import_statement
-                has:
-                  stopBy: end
-                  any:
-                    - matches: child-process-start-imported
-                    - matches: bun-start-imported
+                all:
+                  - has:
+                      field: source
+                      any:
+                        - matches: child-process-module
+                        - matches: bun-module
+                  - has:
+                      stopBy: end
+                      kind: import_specifier
+                      any:
+                        - matches: child-process-start-imported
+                        - matches: bun-start-imported
       - all:
           - kind: member_expression
           - has:
@@ -205,29 +204,29 @@ utils:
         regex: ^Bun\s*\.\s*\$$
       - all:
           - kind: identifier
-          - inside:
-              stopBy: end
-              kind: program
-              has:
-                matches: value-import-of-bun
           - pattern: $TAG
           - inside:
               stopBy: end
               kind: program
               has:
                 kind: import_statement
-                has:
-                  stopBy: end
-                  matches: bun-shell-imported
+                all:
+                  - has:
+                      field: source
+                      matches: bun-module
+                  - has:
+                      stopBy: end
+                      kind: import_specifier
+                      matches: bun-shell-imported
   shell-command:
     kind: call_expression
     all:
       - has:
-          field: function
-          matches: shell-tag
-      - has:
           field: arguments
           kind: template_string
+      - has:
+          field: function
+          matches: shell-tag
   env-call:
     kind: call_expression
     has:
@@ -244,11 +243,11 @@ utils:
           kind: member_expression
           all:
             - has:
-                field: object
-                matches: shell-tag
-            - has:
                 field: property
                 regex: ^env$
+            - has:
+                field: object
+                matches: shell-tag
       - has:
           field: arguments
           kind: arguments
@@ -320,9 +319,8 @@ utils:
   start-left-to-inherit:
     kind: call_expression
     all:
-      - has:
-          field: function
-          matches: process-starter
+      # Why: the arguments' kinds are read before the callee's imports, and the objects' keys
+      # after, so the search reaches the imports and the objects' depths only on a likely start.
       - has:
           field: arguments
           kind: arguments
@@ -338,20 +336,31 @@ utils:
                   - kind: arrow_function
                   - kind: function_expression
                   - kind: object
-                    not:
-                      has:
-                        stopBy: end
-                        any:
-                          - kind: pair
-                            has:
-                              field: key
-                              matches: env-key
-                          - kind: shorthand_property_identifier
-                            regex: ^env$
-                          - kind: spread_element
+      - has:
+          field: function
+          matches: process-starter
+      - has:
+          field: arguments
+          kind: arguments
+          not:
+            has:
+              kind: object
+              has:
+                stopBy: end
+                any:
+                  - kind: pair
+                    has:
+                      field: key
+                      matches: env-key
+                  - kind: shorthand_property_identifier
+                    regex: ^env$
+                  - kind: spread_element
 rule:
   any:
-    - matches: whole-environment-given-to-a-start
-    - matches: shell-command-left-to-inherit
-    - matches: whole-environment-given-to-the-shell
-    - matches: start-left-to-inherit
+    - kind: pair
+      matches: whole-environment-given-to-a-start
+    - kind: call_expression
+      any:
+        - matches: shell-command-left-to-inherit
+        - matches: whole-environment-given-to-the-shell
+        - matches: start-left-to-inherit

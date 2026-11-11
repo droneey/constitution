@@ -123,6 +123,87 @@ typescript:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/parameter-object-has-a-named-type.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/parameter-object-has-a-named-type.yaml
+  cause-passed-in-the-cause-option:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/cause-passed-in-the-cause-option.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/cause-passed-in-the-cause-option.yaml
+  error-class-hands-its-cause-to-super:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/error-class-hands-its-cause-to-super.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/error-class-hands-its-cause-to-super.yaml
+  source-file-is-a-typescript-file:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/source-file-is-a-typescript-file.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/source-file-is-a-typescript-file.yaml
+  typescript-source-spelled-ts-or-tsx:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/typescript-source-spelled-ts-or-tsx.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/typescript-source-spelled-ts-or-tsx.yaml
+  type-error-suppression-gives-its-reason-on-its-line:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/type-error-suppression-gives-its-reason-on-its-line.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/type-error-suppression-gives-its-reason-on-its-line.yaml
+  brand-is-a-unique-symbol-key:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/brand-is-a-unique-symbol-key.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/brand-is-a-unique-symbol-key.yaml
+  empty-return-written-bare:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/empty-return-written-bare.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/empty-return-written-bare.yaml
+  invariant-value-is-plain-readonly-data:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+        utilDirs:
+          - ast-grep-utils.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep-utils.${role.generated-file}/invariant-value-is-plain-readonly-data.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/invariant-value-is-plain-readonly-data.yaml
+      # Why: the files of values with an invariant are the architecture's to name, which a copied
+      # rule cannot take.
+      ast-grep.${role.generated-file}/invariant-value-is-plain-readonly-data.yaml:
+        id: invariant-value-is-plain-readonly-data@typescript
+        language: Tsx
+        severity: error
+        message: >-
+          A class in a file of values equal by their data: make the value plain readonly data, with
+          its rules on its companion
+        files:
+          - slot: invariant-values
+        ignores:
+          - '**/${role.colocated-specs}/**'
+        rule:
+          matches: invariant-value-is-plain-readonly-data@typescript
 core:
   type-name-undecorated:
     typescript:

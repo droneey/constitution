@@ -1,0 +1,18 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: one-instance-writes-every-record@typescript
+language: Tsx
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: identifier
+        regex: ^pino$
+    - inside:
+        stopBy: end
+        kind: program
+        has:
+          kind: import_statement
+          has:
+            field: source
+            regex: ^["']pino["']$

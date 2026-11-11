@@ -1,0 +1,9 @@
+pino:
+  request-logger-takes-the-instance:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/request-logger-takes-the-instance.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/request-logger-takes-the-instance.yaml

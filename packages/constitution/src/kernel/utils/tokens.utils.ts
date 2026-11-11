@@ -1,6 +1,6 @@
 const WHITESPACE = /\s+/g;
-const WORD_START = '(?<![\\w.])';
-const WORD_END = '(?!\\w)';
+const wordStart: string = /(?<![\w.])/.source;
+const wordEnd: string = /(?!\w)/.source;
 const DOT = '.';
 const noLetterBefore: string = /(?<!\p{L})/u.source;
 const noLetterAfter: string = /(?!\p{L})/u.source;
@@ -26,7 +26,7 @@ const collapseWhitespace = (text: string): string => text.replaceAll(WHITESPACE,
 const ownedWordMatcher = (word: string): ((text: string) => boolean) => {
   const normalized = collapseWhitespace(word);
   const pattern = new RegExp(
-    `${normalized.startsWith(DOT) ? '' : WORD_START}${RegExp.escape(normalized)}${WORD_END}`,
+    `${normalized.startsWith(DOT) ? '' : wordStart}${RegExp.escape(normalized)}${wordEnd}`,
   );
 
   return (text: string): boolean => text.includes(normalized) && pattern.test(text);

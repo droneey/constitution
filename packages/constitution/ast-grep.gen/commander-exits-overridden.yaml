@@ -1,0 +1,17 @@
+# commander
+id: commander-exits-overridden@typescript
+language: Tsx
+severity: error
+message: >-
+  Call exitOverride() on the program, so commander throws a CommanderError where it would end the
+  process
+files:
+  - '**/src/**/main.ts'
+  - '**/src/root/**'
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+rule:
+  matches: commander-exits-overridden@typescript

@@ -21,3 +21,9 @@ version-control:
         pre-commit:
           jobs[name=shfmt]:
             stage_fixed: true
+  hook-restages-what-it-rewrote:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=shfmt]:
+            stage_fixed: true

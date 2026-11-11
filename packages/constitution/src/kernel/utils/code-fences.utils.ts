@@ -16,7 +16,7 @@ const fenceOf = (line: string): Fence | undefined => {
   const match = FENCE.exec(line);
 
   if (match === null) {
-    return undefined;
+    return;
   }
 
   const marker = match[0].trim();

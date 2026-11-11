@@ -1,0 +1,56 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: runtime-floor-in-engines@json
+language: Json
+severity: error
+message: >-
+  A published package.json with no runtime floor: declare each runtime it supports in engines,
+  each with a >= floor
+# Why: the unit's own manifest is the one its registry publishes.
+files:
+  - package.json
+utils:
+  # Why: a package marked private is never published, so it reaches no consumer's runtime.
+  published-manifest:
+    kind: object
+    inside:
+      kind: document
+    not:
+      has:
+        kind: pair
+        all:
+          - has:
+              field: key
+              regex: ^"private"$
+          - has:
+              field: value
+              kind: 'true'
+rule:
+  any:
+    - matches: published-manifest
+      not:
+        has:
+          kind: pair
+          all:
+            - has:
+                field: key
+                regex: ^"engines"$
+            - has:
+                field: value
+                kind: object
+                has:
+                  kind: pair
+    - kind: pair
+      not:
+        has:
+          field: value
+          kind: string
+          regex: ^">=
+      inside:
+        kind: object
+        inside:
+          kind: pair
+          has:
+            field: key
+            regex: ^"engines"$
+          inside:
+            matches: published-manifest

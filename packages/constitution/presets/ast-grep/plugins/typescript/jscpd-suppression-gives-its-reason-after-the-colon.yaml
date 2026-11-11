@@ -1,0 +1,16 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: jscpd-suppression-gives-its-reason-after-the-colon@typescript
+language: Tsx
+severity: error
+message: >-
+  State the reason of a jscpd suppression after a colon on its opening marker, as
+  jscpd:ignore-start: <reason>
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: comment
+  all:
+    - regex: jscpd:ignore-start
+    - not:
+        regex: 'jscpd:ignore-start:\s*[^\s*]'

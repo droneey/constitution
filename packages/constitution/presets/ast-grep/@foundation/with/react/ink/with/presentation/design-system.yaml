@@ -1,0 +1,9 @@
+react/ink:
+  ink-animation-interval-from-a-motion-token:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ink-animation-interval-from-a-motion-token.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ink-animation-interval-from-a-motion-token.yaml

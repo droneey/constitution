@@ -7,3 +7,42 @@ client/browser:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/raw-html-never-reaches-the-dom.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/raw-html-never-reaches-the-dom.yaml
+  cross-origin-script-loaded-with-integrity:
+    html:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/cross-origin-script-loaded-with-integrity.html.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/html/cross-origin-script-loaded-with-integrity.yaml
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/cross-origin-script-loaded-with-integrity.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/cross-origin-script-loaded-with-integrity.yaml
+  cross-window-message-posted-to-a-named-origin:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/cross-window-message-posted-to-a-named-origin.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/cross-window-message-posted-to-a-named-origin.yaml
+  page-exit-work-runs-when-the-page-hides:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/page-exit-work-runs-when-the-page-hides.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/page-exit-work-runs-when-the-page-hides.yaml
+  service-worker-update-waits-for-the-page:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/service-worker-update-waits-for-the-page.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/service-worker-update-waits-for-the-page.yaml

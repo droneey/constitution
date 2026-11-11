@@ -5,6 +5,7 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import type { LockQueries } from '../application/contracts/repositories/queries';
 import type { Lock } from '../domain/lock/entities';
 import { LockReadStatus, RecordKind } from '../domain/lock/entities';
+import { FileFormat } from '../domain/shared/value-objects';
 import { lockOf } from './presets.fixtures';
 
 interface LockWorld {
@@ -21,6 +22,16 @@ interface LockQueriesSuiteInput {
 }
 
 const lock = lockOf({
+  'ast-grep.gen/no-data.yaml': {
+    addresses: [],
+    everMetDefaults: [],
+    format: FileFormat.Text,
+    isCreatedByApply: true,
+    kind: RecordKind.Settings,
+    leaves: [
+      'ghi',
+    ],
+  },
   'biome.json': {
     addresses: [
       'name',

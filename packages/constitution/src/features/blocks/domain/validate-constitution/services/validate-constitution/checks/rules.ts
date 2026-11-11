@@ -186,7 +186,7 @@ const parentProblem = (input: {
   const cycle = Rule.tighteningCycleOf(input.rule, input.slugs);
 
   if (parent === undefined) {
-    return undefined;
+    return;
   }
 
   if (target === undefined) {

@@ -55,10 +55,12 @@ const baseTextsIn = (input: BaseTextsInput): ReadonlyMap<UnitRelativePath, strin
 
       headerStartByte = textEndByte + OBJECT_TRAILING_NEWLINE_BYTES;
 
+      const baseText = input.answer.toString('utf8', textStartByte, textEndByte);
+
       return [
         [
           filePath,
-          input.answer.toString('utf8', textStartByte, textEndByte),
+          baseText,
         ] as const,
       ];
     }),

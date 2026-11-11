@@ -1,0 +1,83 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: os-environ-never-changed@python
+language: Python
+severity: error
+message: >-
+  The environment variables are the process's, shared by every module: pass the value to what
+  needs it
+utils:
+  environment:
+    any:
+      - kind: attribute
+        regex: ^os\.environb?$
+      - kind: identifier
+        regex: ^environb?$
+        inside:
+          kind: module
+          stopBy: end
+          has:
+            kind: import_from_statement
+            stopBy: end
+            all:
+              - has:
+                  field: module_name
+                  regex: ^os$
+              - has:
+                  field: name
+                  regex: ^environb?$
+  key-of-the-environment:
+    kind: subscript
+    has:
+      field: value
+      matches: environment
+  environment-change:
+    any:
+      - kind: assignment
+        has:
+          field: left
+          matches: key-of-the-environment
+      - kind: augmented_assignment
+        has:
+          field: left
+          any:
+            - matches: key-of-the-environment
+            - matches: environment
+      - kind: delete_statement
+        has:
+          matches: key-of-the-environment
+      - kind: call
+        has:
+          field: function
+          kind: attribute
+          all:
+            - has:
+                field: object
+                matches: environment
+            - has:
+                field: attribute
+                regex: ^(?:update|setdefault|pop|popitem|clear|__setitem__|__delitem__|__ior__)$
+      - kind: call
+        has:
+          field: function
+          regex: ^(?:os\.)?(?:putenv|unsetenv)$
+  # Why: a spec's hook that runs for each case makes its setup anew, while a fixture of a wider
+  # scope keeps its change across the cases.
+  hook-made-anew-for-each-case:
+    kind: function_definition
+    any:
+      - has:
+          field: name
+          regex: ^(?:setup_method|teardown_method|setup_function|teardown_function|setUp|tearDown)$
+      - inside:
+          kind: decorated_definition
+          has:
+            kind: decorator
+            regex: ^@(?:pytest\.)?fixture\b
+            not:
+              regex: \bscope\s*=\s*["'](?:class|module|package|session)["']
+rule:
+  matches: environment-change
+  not:
+    inside:
+      stopBy: end
+      matches: hook-made-anew-for-each-case

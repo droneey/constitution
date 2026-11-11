@@ -11,6 +11,7 @@ import type { MergedFile } from '../../../../../../merged-file/entities';
 import { WholeKind } from '../../../../../../setting/entities';
 import type { PresetsFinding } from '../../../../../../shared/entities';
 import { PresetsCode } from '../../../../../../shared/entities';
+import { FileFormat } from '../../../../../../shared/value-objects';
 import type { FileChange, FileComputed } from '../../../../../entities';
 import { FileChangeKind } from '../../../../../entities';
 import type { ComputeFileInput, FilePending } from '../compute-file';
@@ -227,6 +228,84 @@ describe('settleFile', () => {
         findings: unparsedAt('biome.json'),
       }),
       kind: FileStepKind.Computed,
+    });
+  });
+
+  it('should keep the format of the file in its record when the file holds what an apply wrote', () => {
+    // Arrange
+    const input = inputOf({
+      filePath: 'biome.jsonc',
+      merged: {
+        defaults: [],
+        problems: [],
+        value: {
+          width: 100,
+        },
+      },
+      read: {
+        status: FileReadStatus.Missing,
+      },
+      record: Lock.emptyRecord,
+    });
+
+    // Act
+    const settled = settleFile({
+      ...input,
+      file: {
+        filePath: input.filePath,
+        format: FileFormat.Jsonc,
+        text: '',
+      },
+      parsed: {},
+    });
+
+    // Assert
+    expect(settled).toStrictEqual({
+      kind: FileStepKind.Write,
+      pending: {
+        defaultsAddedToExistingFile: [],
+        filePath: RepositoryRelativePath.create('biome.jsonc'),
+        findings: [],
+        isDeleted: false,
+        missingOrOutdated: [
+          {
+            filePath: RepositoryRelativePath.create('biome.jsonc'),
+            settingPath: 'width',
+          },
+        ],
+        read: {
+          status: FileReadStatus.Missing,
+        },
+        record: {
+          addresses: [],
+          everMetDefaults: [],
+          format: FileFormat.Jsonc,
+          isCreatedByApply: true,
+          kind: RecordKind.Settings,
+          leaves: [
+            '13a0a30bsz5',
+          ],
+        },
+        removedByApply: [],
+        setting: {
+          width: 100,
+        },
+        staleWithoutReplacement: [],
+        unsorted: [],
+      },
+      write: {
+        filePath: RepositoryRelativePath.create('biome.jsonc'),
+        format: FileFormat.Jsonc,
+        marks: {
+          blocks: [],
+          marks: [],
+        },
+        settings: {
+          width: 100,
+        },
+        sorted: [],
+        text: '',
+      },
     });
   });
 });

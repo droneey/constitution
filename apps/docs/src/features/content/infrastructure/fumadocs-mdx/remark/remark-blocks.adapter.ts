@@ -122,7 +122,7 @@ const levelledRuleOf = (headingText: string): LevelledRule | undefined => {
   const rule = RuleHeading.of(headingText);
 
   if (rule?.level === undefined) {
-    return undefined;
+    return;
   }
 
   const letter = levelLetters[rule.level];
@@ -138,7 +138,7 @@ const levelledRuleOf = (headingText: string): LevelledRule | undefined => {
 
 const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
   if (!isHeading(node, SUBSECTION_HEADING_DEPTH)) {
-    return undefined;
+    return;
   }
 
   const rule = levelledRuleOf(

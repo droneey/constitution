@@ -29,5 +29,5 @@ def touches(file: FileChange, *, first_line: int, last_line: int) -> bool:
       return any(
         changed.start < lines.stop and lines.start < changed.stop for changed in line_ranges
       )
-    case _:  # pragma: no mutate -- no file reaches it
-      assert_never(file)  # pragma: no mutate -- no file reaches it
+    case _:  # pragma: no mutate  # Why: no file reaches it
+      assert_never(file)  # pragma: no mutate  # Why: no file reaches it

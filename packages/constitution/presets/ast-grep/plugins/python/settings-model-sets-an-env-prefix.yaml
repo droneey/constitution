@@ -1,0 +1,55 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: settings-model-sets-an-env-prefix@python
+language: Python
+severity: error
+message: >-
+  Set the settings model's env_prefix: without it, a variable another tool sets under the same name
+  enters the program
+utils:
+  prefix-set:
+    any:
+      - kind: keyword_argument
+        all:
+          - has:
+              field: name
+              regex: ^env_prefix$
+          - not:
+              has:
+                field: value
+                regex: ^["']{2}$
+      - kind: pair
+        all:
+          - has:
+              field: key
+              regex: ^["']env_prefix["']$
+          - not:
+              has:
+                field: value
+                regex: ^["']{2}$
+rule:
+  kind: class_definition
+  has:
+    field: superclasses
+    has:
+      regex: ^(?:pydantic_settings\.)?BaseSettings$
+  not:
+    any:
+      - has:
+          field: superclasses
+          has:
+            matches: prefix-set
+      - has:
+          field: body
+          has:
+            kind: expression_statement
+            has:
+              kind: assignment
+              all:
+                - has:
+                    field: left
+                    regex: ^model_config$
+                - has:
+                    field: right
+                    has:
+                      stopBy: end
+                      matches: prefix-set

@@ -7,3 +7,15 @@ observability:
             lint:
               extend-select:
                 - T20
+python:
+  logger-got-by-module-name:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              # Why: a call on the logging module writes through the root logger, and a logger got
+              # by its file's path is named for no module.
+              extend-select:
+                - LOG002
+                - LOG015

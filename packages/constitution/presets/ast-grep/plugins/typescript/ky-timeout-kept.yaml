@@ -1,0 +1,25 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ky-timeout-kept@typescript
+language: Tsx
+severity: error
+message: 'Keep the timeout of every ky call on: give it a number, never timeout: false'
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: pair
+  all:
+    - has:
+        field: key
+        regex: ^["'`]?timeout["'`]?$
+    - has:
+        field: value
+        kind: 'false'
+    - inside:
+        stopBy: end
+        kind: program
+        has:
+          kind: import_statement
+          has:
+            field: source
+            regex: ^["']ky["']$

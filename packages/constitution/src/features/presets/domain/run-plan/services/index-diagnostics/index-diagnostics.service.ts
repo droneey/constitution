@@ -21,7 +21,7 @@ interface IndexDiagnosticsInput {
 const RULE_NAME = /^[a-z]\w*[A-Z]/;
 const CODE_SELECTOR = /^[A-Z]+\d*$/;
 const NAME_PARTS = /[^A-Za-z\d]/;
-const pluginPath = new RegExp(`/${PLUGINS_FOLDER_NAME}/[^/]+/([^/.]+)\\.`);
+const pluginPath = new RegExp(String.raw`/${PLUGINS_FOLDER_NAME}/[^/]+/([^/.]+)\.`);
 
 const idsOf = (text: EntryText): readonly string[] => {
   const plugin = pluginPath.exec(text.text)?.[1];

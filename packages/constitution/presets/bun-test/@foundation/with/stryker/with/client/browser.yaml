@@ -1,0 +1,7 @@
+bun-test:
+  dom-preload-listed-by-every-bunfig:
+    typescript:
+      bunfig.mutation.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts

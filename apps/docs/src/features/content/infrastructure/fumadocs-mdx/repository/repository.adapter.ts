@@ -87,7 +87,7 @@ const addressOf = (baseUrl: string, repositoryPath: RepositoryPath, hash: string
 
 const linkTargetOf = (fromFilePath: AbsolutePath, url: string): LinkTarget | undefined => {
   if (/^[a-z]+:/i.test(url) || url.startsWith('/')) {
-    return undefined;
+    return;
   }
 
   const [

@@ -1,0 +1,55 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: settings-model-keeps-extra-forbidden@python
+language: Python
+severity: error
+message: >-
+  Keep the settings model's extra='forbid': loosened, a misspelt key in its dotenv file is dropped
+  instead of failing the start
+utils:
+  settings-class:
+    kind: class_definition
+    has:
+      field: superclasses
+      has:
+        regex: ^(?:pydantic_settings\.)?BaseSettings$
+  loosened-extra:
+    any:
+      - kind: keyword_argument
+        all:
+          - has:
+              field: name
+              regex: ^extra$
+          - not:
+              has:
+                field: value
+                regex: ^["']forbid["']$|(?:^|\.)Extra\.forbid$
+      - kind: pair
+        all:
+          - has:
+              field: key
+              regex: ^["']extra["']$
+          - not:
+              has:
+                field: value
+                regex: ^["']forbid["']$|(?:^|\.)Extra\.forbid$
+rule:
+  matches: loosened-extra
+  any:
+    - inside:
+        kind: argument_list
+        inside:
+          field: superclasses
+          matches: settings-class
+    - inside:
+        stopBy: end
+        kind: assignment
+        has:
+          field: left
+          regex: ^model_config$
+        inside:
+          kind: expression_statement
+          inside:
+            kind: block
+            inside:
+              field: body
+              matches: settings-class

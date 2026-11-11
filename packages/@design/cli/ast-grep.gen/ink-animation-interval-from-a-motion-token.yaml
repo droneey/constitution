@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ink-animation-interval-from-a-motion-token@typescript
+language: Tsx
+severity: error
+message: >-
+  Read the animation's interval from a semantic motion token through the theme, never a number
+  written in the component
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: pair
+  has:
+    field: key
+    regex: '^[''"]?interval[''"]?$'
+  all:
+    - has:
+        field: value
+        any:
+          - kind: number
+          - kind: unary_expression
+            has:
+              kind: number
+          - kind: binary_expression
+            not:
+              has:
+                stopBy: end
+                any:
+                  - kind: identifier
+                  - kind: member_expression
+          - kind: parenthesized_expression
+            not:
+              has:
+                stopBy: end
+                any:
+                  - kind: identifier
+                  - kind: member_expression
+    - inside:
+        kind: object
+        inside:
+          kind: arguments
+          inside:
+            kind: call_expression
+            has:
+              field: function
+              regex: '^useAnimation$'

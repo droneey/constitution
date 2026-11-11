@@ -1,0 +1,17 @@
+# commander
+id: commander-output-through-the-programs-writers@typescript
+language: Tsx
+severity: error
+message: >-
+  Give the program its writers by configureOutput({ writeOut, writeErr, outputError }), so
+  commander writes nothing to a standard stream itself
+files:
+  - '**/src/**/main.ts'
+  - '**/src/root/**'
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+rule:
+  matches: commander-output-through-the-programs-writers@typescript

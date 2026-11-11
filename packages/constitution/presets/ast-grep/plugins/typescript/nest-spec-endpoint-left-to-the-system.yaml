@@ -1,0 +1,33 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-spec-endpoint-left-to-the-system@typescript
+language: Tsx
+severity: error
+message: >-
+  A Nest spec's app listens by app.listen(0, '127.0.0.1'): a fixed endpoint collides with another
+  run's
+files:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        has:
+          field: property
+          regex: ^listen$
+    - has:
+        field: arguments
+        not:
+          regex: ^\(\s*0\s*,\s*['"]127\.0\.0\.1['"]\s*,?\s*\)$
+    - inside:
+        stopBy: end
+        kind: program
+        has:
+          kind: import_statement
+          has:
+            field: source
+            regex: ^["']@nestjs/testing["']$

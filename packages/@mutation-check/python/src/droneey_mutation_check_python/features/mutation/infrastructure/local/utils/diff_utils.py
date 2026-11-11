@@ -83,8 +83,8 @@ def file_changes(
         # Why: a NEW section of an untracked file is left to the new files, which mutate it whole.
         if section.path not in untracked_paths:
           changed_files.append(changed_file)
-      case _:  # pragma: no mutate -- no kind reaches it
-        assert_never(section.kind)  # pragma: no mutate -- no kind reaches it
+      case _:  # pragma: no mutate  # Why: no kind reaches it
+        assert_never(section.kind)  # pragma: no mutate  # Why: no kind reaches it
 
   return (
     *changed_files,

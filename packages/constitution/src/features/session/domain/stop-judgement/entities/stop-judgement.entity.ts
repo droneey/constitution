@@ -147,7 +147,7 @@ const judgementOfOwnChanges = (
   const { marks, now, own, reviewOwed, unheldDebts } = input;
 
   if (now === marks[SessionMark.Turn]) {
-    return undefined;
+    return;
   }
 
   // Why: a debt on a file the tree no longer holds owes nothing, and the coordinator's stop settles
@@ -239,12 +239,12 @@ const judge = (
   }
 
   if (event.isHookActive) {
-    return undefined;
+    return;
   }
 
   switch (tree.status) {
     case TreeStateStatus.NoRepository:
-      return undefined;
+      return;
     case TreeStateStatus.Failed:
       return tree.reason === input.unjudged
         ? undefined

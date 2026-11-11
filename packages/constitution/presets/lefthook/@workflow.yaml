@@ -20,6 +20,14 @@ version-control:
             run: !words
               - ${constitution.path}/presets/lefthook/plugins/shell/commit-body-left-empty.sh
               - '{1}'
+  commit-footer-holds-only-trailers:
+    '*':
+      lefthook.yaml:
+        commit-msg:
+          jobs[name=commit-footer]:
+            run: !words
+              - ${constitution.path}/presets/lefthook/plugins/shell/commit-footer-holds-only-trailers.sh
+              - '{1}'
   commit-header-within-100-characters:
     '*':
       lefthook.yaml:

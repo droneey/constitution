@@ -1,0 +1,23 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: structlog-configured-by-the-root@python
+language: Python
+severity: error
+message: >-
+  Only the composition root configures logging: a handler added elsewhere writes records past the
+  chain
+files:
+  - '**/${role.source}/**'
+ignores:
+  - '**/${role.source}/*/${role.composition-root}/**'
+rule:
+  kind: call
+  has:
+    field: function
+    any:
+      - regex: ^structlog\.configure(?:_once)?$
+      - regex: ^logging\.basicConfig$
+      - regex: ^(?:logging\.config\.)?(?:dictConfig|fileConfig)$
+      - kind: attribute
+        has:
+          field: attribute
+          regex: ^addHandler$

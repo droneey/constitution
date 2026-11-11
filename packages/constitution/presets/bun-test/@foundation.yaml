@@ -114,9 +114,13 @@ js-runtime/bun:
             - slot: checks
             - slot: tests
             - slot: mutations
+          test: bun run --parallel 'test:*'
+  check-script-names-the-whole-gate-in-one-call:
+    typescript:
+      package.json:
+        scripts:
           check@tests:
             - test
-          test: bun run --parallel 'test:*'
 task-runner:
   unit-run-through-its-action-tasks:
     typescript:

@@ -8,9 +8,15 @@ tombi:
               check:lint:
                 shell: !commands
                   - tombi lint
-              check:format:
-                shell: !commands
-                  - tombi format --check
               fix:format:
                 shell: !commands
                   - tombi format
+  tombi-is-the-formatter:
+    toml:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:format:
+                shell: !commands
+                  - tombi format --check

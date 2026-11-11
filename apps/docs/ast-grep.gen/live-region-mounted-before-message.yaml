@@ -1,0 +1,66 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: live-region-mounted-before-message@typescript
+language: Tsx
+severity: error
+message: >-
+  Keep the live region mounted, empty, and put the message into it: a region rendered together with
+  its text is often not announced
+files:
+  - '**/*.tsx'
+utils:
+  live-attribute:
+    kind: jsx_attribute
+    any:
+      - regex: '^role\s*=\s*\{?\s*[''"`](?:alert|status|log|marquee|timer)[''"`]'
+      - all:
+          - regex: '^aria-live\s*='
+          - not:
+              regex: '[''"`]off[''"`]'
+  live-tag:
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+    has:
+      field: name
+      regex: '^[a-z][a-z0-9]*$'
+    all:
+      - has:
+          matches: live-attribute
+  live-region:
+    any:
+      - kind: jsx_self_closing_element
+        matches: live-tag
+      - kind: jsx_element
+        has:
+          field: open_tag
+          matches: live-tag
+  # Why: parentheses around markup change nothing of when it mounts.
+  live-region-written:
+    any:
+      - matches: live-region
+      - kind: parenthesized_expression
+        has:
+          matches: live-region
+rule:
+  matches: live-region-written
+  any:
+    - inside:
+        kind: binary_expression
+        field: right
+        has:
+          field: operator
+          regex: '^&&$'
+    - inside:
+        kind: ternary_expression
+        field: consequence
+        not:
+          has:
+            field: alternative
+            matches: live-region-written
+    - inside:
+        kind: ternary_expression
+        field: alternative
+        not:
+          has:
+            field: consequence
+            matches: live-region-written

@@ -1,0 +1,102 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: client-built-with-its-own-timeout@python
+language: Python
+severity: error
+message: >-
+  Build the client with an httpx2.Timeout of its own, and pass no call `timeout=None`, which lets it
+  hang
+utils:
+  module-imports-httpx2:
+    inside:
+      kind: module
+      stopBy: end
+      has:
+        stopBy: end
+        any:
+          - kind: import_from_statement
+            has:
+              field: module_name
+              regex: ^httpx2$
+          - kind: import_statement
+            regex: ^import\s+httpx2\b
+  httpx2-name:
+    any:
+      - kind: attribute
+        regex: ^httpx2\.(?:AsyncClient|Client|Timeout)$
+      - kind: identifier
+        regex: ^(?:AsyncClient|Client|Timeout)$
+        inside:
+          kind: module
+          stopBy: end
+          has:
+            kind: import_from_statement
+            stopBy: end
+            has:
+              field: module_name
+              regex: ^httpx2$
+  client-construction:
+    kind: call
+    has:
+      field: function
+      matches: httpx2-name
+      regex: (?:^|\.)(?:Async)?Client$
+  timeout-construction:
+    kind: call
+    has:
+      field: function
+      matches: httpx2-name
+      regex: (?:^|\.)Timeout$
+  none-keyword:
+    kind: keyword_argument
+    has:
+      field: value
+      kind: none
+rule:
+  any:
+    # Why: a bare number is a timeout nobody named, and the client takes its own httpx2.Timeout.
+    - matches: client-construction
+      not:
+        has:
+          field: arguments
+          any:
+            - has:
+                kind: keyword_argument
+                all:
+                  - has:
+                      field: name
+                      regex: ^timeout$
+                  - not:
+                      has:
+                        field: value
+                        any:
+                          - kind: none
+                          - kind: integer
+                          - kind: float
+            # Why: options handed on whole may carry the timeout, which this call cannot see.
+            - has:
+                kind: dictionary_splat
+    - matches: timeout-construction
+      has:
+        field: arguments
+        any:
+          - has:
+              nthChild: 1
+              kind: none
+          - has:
+              matches: none-keyword
+    - kind: call
+      all:
+        - has:
+            field: function
+            kind: attribute
+            has:
+              field: attribute
+              regex: ^(?:get|post|put|patch|delete|head|options|request|stream|send|build_request)$
+        - has:
+            field: arguments
+            has:
+              matches: none-keyword
+              has:
+                field: name
+                regex: ^timeout$
+        - matches: module-imports-httpx2

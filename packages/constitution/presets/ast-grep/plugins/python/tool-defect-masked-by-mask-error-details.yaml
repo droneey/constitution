@@ -1,0 +1,38 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: tool-defect-masked-by-mask-error-details@python
+language: Python
+severity: error
+message: >-
+  Build the server with mask_error_details=True, so a defect reaches the model as an internal error
+  that shows none of the program's internals
+files:
+  - '**/*.py'
+ignores:
+  - '**/${role.package-suites}/**'
+rule:
+  kind: call
+  has:
+    field: function
+    any:
+      - regex: ^fastmcp\.FastMCP$
+      - kind: identifier
+        regex: ^FastMCP$
+  not:
+    has:
+      field: arguments
+      any:
+        - has:
+            kind: keyword_argument
+            all:
+              - has:
+                  field: name
+                  regex: ^mask_error_details$
+              - not:
+                  has:
+                    field: value
+                    any:
+                      - kind: 'false'
+                      - kind: none
+        # Why: options handed on whole may carry the setting, which this call cannot see.
+        - has:
+            kind: dictionary_splat

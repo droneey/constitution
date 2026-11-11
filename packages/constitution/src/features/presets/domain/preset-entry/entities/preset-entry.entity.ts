@@ -96,6 +96,11 @@ const namedOf = (entry: PresetEntry): EntryNamed => ({
   rule: entry.rule,
 });
 
+const placeBlocksOf = (entry: PresetEntry): readonly BlockId[] => [
+  entry.set.placeInPresets.reader,
+  ...entry.set.placeInPresets.withs,
+];
+
 const bringingBlockOf = (entry: PresetEntry): BlockId =>
   entry.set.placeInPresets.withs[0] ?? entry.set.placeInPresets.reader;
 
@@ -298,6 +303,7 @@ const PresetEntry = {
   mergeProblemsOf,
   namedOf,
   orderOf,
+  placeBlocksOf,
   releaseFilesIn,
   roleIdsOf,
   roleNameOf,

@@ -1,5 +1,11 @@
 import type { LanguageRegistration } from 'shiki';
 
+const numberMatch = String.raw`\b\d+(\.\d+)?\b`;
+const keywordMatch = String.raw`\b(if|else|then|when|for|each|in|while|return|function|let|call|throw|try|catch|end|and|or|not|is|new|type|class|as|await|async|readonly|with|test|import|from|export|extends|override)\b`;
+const languageConstantMatch = String.raw`\b(true|false|nothing)\b`;
+const typeNameMatch = String.raw`\b[A-Z][A-Za-z0-9]*\b`;
+const functionNameMatch = String.raw`\b[a-z][A-Za-z0-9]*(?=\()`;
+
 const PSEUDO: LanguageRegistration = {
   name: 'pseudo',
   scopeName: 'source.pseudo',
@@ -15,24 +21,23 @@ const PSEUDO: LanguageRegistration = {
       name: 'string.quoted.double.pseudo',
     },
     {
-      match: '\\b\\d+(\\.\\d+)?\\b',
+      match: numberMatch,
       name: 'constant.numeric.pseudo',
     },
     {
-      match:
-        '\\b(if|else|then|when|for|each|in|while|return|function|let|call|throw|try|catch|end|and|or|not|is|new|type|class|as|await|async|readonly|with|test|import|from|export|extends|override)\\b',
+      match: keywordMatch,
       name: 'keyword.control.pseudo',
     },
     {
-      match: '\\b(true|false|nothing)\\b',
+      match: languageConstantMatch,
       name: 'constant.language.pseudo',
     },
     {
-      match: '\\b[A-Z][A-Za-z0-9]*\\b',
+      match: typeNameMatch,
       name: 'entity.name.type.pseudo',
     },
     {
-      match: '\\b[a-z][A-Za-z0-9]*(?=\\()',
+      match: functionNameMatch,
       name: 'entity.name.function.pseudo',
     },
   ],

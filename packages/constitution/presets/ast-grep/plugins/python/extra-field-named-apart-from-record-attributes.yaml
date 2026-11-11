@@ -1,0 +1,52 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: extra-field-named-apart-from-record-attributes@python
+language: Python
+severity: error
+message: >-
+  Name the field apart from the LogRecord's attributes: logging raises KeyError for an extra field
+  that takes one's name
+utils:
+  record-attribute:
+    regex: ^(?:args|asctime|created|exc_info|exc_text|filename|funcName|levelname|levelno|lineno|message|module|msecs|msg|name|pathname|process|processName|relativeCreated|stack_info|taskName|thread|threadName)$
+  extra-of-a-log-call:
+    kind: keyword_argument
+    has:
+      field: name
+      regex: ^extra$
+    inside:
+      kind: argument_list
+      inside:
+        kind: call
+        has:
+          field: function
+          kind: attribute
+          has:
+            field: attribute
+            regex: ^(?:debug|info|warning|warn|error|exception|critical|fatal|log)$
+rule:
+  any:
+    - kind: string_content
+      matches: record-attribute
+      inside:
+        kind: string
+        inside:
+          kind: pair
+          field: key
+          inside:
+            kind: dictionary
+            inside:
+              matches: extra-of-a-log-call
+    - kind: identifier
+      matches: record-attribute
+      inside:
+        kind: keyword_argument
+        field: name
+        inside:
+          kind: argument_list
+          inside:
+            kind: call
+            has:
+              field: function
+              regex: ^dict$
+            inside:
+              matches: extra-of-a-log-call

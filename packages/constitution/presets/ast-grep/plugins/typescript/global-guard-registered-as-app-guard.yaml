@@ -1,0 +1,22 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: global-guard-registered-as-app-guard@typescript
+language: Tsx
+severity: error
+message: >-
+  Register a global guard as APP_GUARD in the root's module, never by useGlobalGuards on the app
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: member_expression
+    has:
+      field: property
+      regex: ^useGlobalGuards$

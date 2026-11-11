@@ -1,0 +1,45 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: uvicorn-wait-bounded-by-timeout-graceful-shutdown@python
+language: Python
+severity: error
+message: >-
+  Set the server's timeout_graceful_shutdown: left None, one request that never ends holds the stop
+  until the host kills it
+rule:
+  kind: call
+  has:
+    field: function
+    any:
+      - regex: ^uvicorn\.Config$
+      - kind: identifier
+        regex: ^Config$
+        inside:
+          kind: module
+          stopBy: end
+          has:
+            kind: import_from_statement
+            stopBy: end
+            all:
+              - has:
+                  field: module_name
+                  regex: ^uvicorn$
+              - has:
+                  field: name
+                  regex: ^Config$
+  not:
+    has:
+      field: arguments
+      any:
+        - has:
+            kind: keyword_argument
+            all:
+              - has:
+                  field: name
+                  regex: ^timeout_graceful_shutdown$
+              - not:
+                  has:
+                    field: value
+                    kind: none
+        # Why: options handed on whole may carry the setting, which this call cannot see.
+        - has:
+            kind: dictionary_splat

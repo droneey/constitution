@@ -1,0 +1,71 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: async-work-started-in-a-task-group@python
+language: Python
+severity: error
+message: >-
+  A bare task: start it in an `asyncio.TaskGroup`, which waits for it and raises its failure
+utils:
+  bare-start-name:
+    regex: ^(?:create_task|ensure_future|gather)$
+  event-loop-reading:
+    any:
+      - pattern: asyncio.get_running_loop()
+      - pattern: asyncio.get_event_loop()
+      - pattern: asyncio.new_event_loop()
+rule:
+  any:
+    - kind: import_from_statement
+      all:
+        - has:
+            field: module_name
+            regex: ^asyncio$
+        - has:
+            field: name
+            any:
+              - matches: bare-start-name
+              - has:
+                  field: name
+                  matches: bare-start-name
+    - kind: call
+      has:
+        field: function
+        kind: attribute
+        all:
+          - has:
+              field: attribute
+              matches: bare-start-name
+          - has:
+              field: object
+              any:
+                - regex: ^asyncio$
+                - matches: event-loop-reading
+    # Why: a loop read into a name starts its task as bare as one asyncio starts, while a task
+    # group's own `create_task` is read from no loop.
+    - kind: call
+      all:
+        - has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: attribute
+                  regex: ^create_task$
+              - has:
+                  field: object
+                  kind: identifier
+                  pattern: $LOOP
+        - inside:
+            stopBy: end
+            any:
+              - kind: function_definition
+              - kind: module
+            has:
+              stopBy: end
+              kind: assignment
+              all:
+                - has:
+                    field: left
+                    pattern: $LOOP
+                - has:
+                    field: right
+                    matches: event-loop-reading

@@ -1,0 +1,33 @@
+nestjs:
+  nest-app-closed-inside-its-case:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-app-closed-inside-its-case.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-app-closed-inside-its-case.yaml
+  nest-http-exception-never-thrown:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-http-exception-never-thrown.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-http-exception-never-thrown.yaml
+  nest-shutdown-hooks-enabled:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-shutdown-hooks-enabled.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-shutdown-hooks-enabled.yaml
+  nest-spec-endpoint-left-to-the-system:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-spec-endpoint-left-to-the-system.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-spec-endpoint-left-to-the-system.yaml

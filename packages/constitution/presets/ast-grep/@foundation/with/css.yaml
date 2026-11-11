@@ -23,3 +23,11 @@ css:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/line-height-set-as-a-number.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/line-height-set-as-a-number.yaml
+  layer-order-declared-first-in-the-entry-stylesheet:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/layer-order-declared-first-in-the-entry-stylesheet.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/layer-order-declared-first-in-the-entry-stylesheet.yaml

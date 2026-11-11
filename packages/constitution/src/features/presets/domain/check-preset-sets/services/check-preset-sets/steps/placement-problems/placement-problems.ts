@@ -6,6 +6,7 @@ import type { BlockId } from '#/kernel/value-objects';
 
 import type { PresetSet } from '../../../../../preset-entry/entities';
 import { PresetEntry } from '../../../../../preset-entry/entities';
+import { PresetValue } from '../../../../../setting/entities';
 import { EVERY, MAX_WITHS } from '../../../../../shared/constants';
 import type { PresetsProblem } from '../../../../../shared/entities';
 import { PresetsCode } from '../../../../../shared/entities';
@@ -21,6 +22,9 @@ interface EntryProblemsInput {
   readonly entry: PresetEntry;
   readonly index: ModelIndex;
   readonly model: BlockModel;
+  // Why: the entries that write the entry's target, itself among them, so the blocks the target
+  // exists only beside are known.
+  readonly writers: readonly PresetEntry[];
 }
 
 // Why: an entry's placement weighs each block's reach against every other's and asks again whether
@@ -185,6 +189,24 @@ const withStandIns = (input: {
   );
 };
 
+// Why: a file exists only where an entry that writes more than inserts into it is placed, so a
+// block every other such entry names is one without which the file the entry writes into is not
+// there at all.
+const fileCreatorsOf = (input: {
+  entry: PresetEntry;
+  writers: readonly PresetEntry[];
+}): readonly BlockId[] => {
+  const others = input.writers.filter(
+    (writer) => writer !== input.entry && !PresetValue.isInsertOnly(writer.value),
+  );
+
+  return input.entry.set.placeInPresets.withs.filter(
+    (block) =>
+      others.length > 0 &&
+      others.every((other) => PresetEntry.placeBlocksOf(other).includes(block)),
+  );
+};
+
 const neededOf = (input: {
   entry: PresetEntry;
   model: BlockModel;
@@ -232,17 +254,34 @@ const neededOf = (input: {
   });
 };
 
-const isPlaced = (input: { needed: readonly BlockId[]; withs: readonly BlockId[] }): boolean =>
-  // Why: an entry its reader alone places may sit under any with/ path, which only conditions it.
-  input.needed.length === 0 || isDeepEqual(input.needed, input.withs);
+// Why: an entry its reader alone places may sit under any with/ path, which only conditions it;
+// any other may name first the blocks its file is created beside, which condition it alike.
+const isPlaced = (input: {
+  creators: readonly BlockId[];
+  needed: readonly BlockId[];
+  withs: readonly BlockId[];
+}): boolean => {
+  const { creators, needed, withs } = input;
+  const conditions = withs.filter((block) => !needed.includes(block));
+
+  return (
+    needed.length === 0 ||
+    (conditions.every((block) => creators.includes(block)) &&
+      isDeepEqual(withs, [
+        ...conditions,
+        ...needed,
+      ]))
+  );
+};
 
 const placementProblems = (input: {
+  creators: readonly BlockId[];
   entry: PresetEntry;
   model: BlockModel;
   needed: readonly BlockId[];
   roles: readonly DefinedRole[];
 }): readonly PresetsProblem[] => {
-  const { entry, model, needed } = input;
+  const { creators, entry, model, needed } = input;
   const { reader, withs } = entry.set.placeInPresets;
 
   if (needed.length > MAX_WITHS) {
@@ -258,6 +297,7 @@ const placementProblems = (input: {
   }
 
   return isPlaced({
+    creators,
     needed,
     withs,
   })
@@ -343,7 +383,7 @@ const keyedProblems = (
     rule: ModelRule | undefined;
   },
 ): readonly PresetsProblem[] => {
-  const { entry, index, model, rule } = input;
+  const { entry, index, model, rule, writers } = input;
   const roles = definedRolesOf({
     entry,
     model,
@@ -368,6 +408,10 @@ const keyedProblems = (
           } satisfies PresetsProblem,
         ]),
     ...placementProblems({
+      creators: fileCreatorsOf({
+        entry,
+        writers,
+      }),
       entry,
       model,
       needed,

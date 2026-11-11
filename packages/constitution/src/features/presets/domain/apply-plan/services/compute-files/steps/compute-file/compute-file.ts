@@ -14,6 +14,7 @@ import type { MergedFile } from '../../../../../merged-file/entities';
 import type { FilePlan } from '../../../../../presets-plan/entities';
 import { Leaf, Setting, WholeKind } from '../../../../../setting/entities';
 import { PresetsCode } from '../../../../../shared/entities';
+import type { FileFormat } from '../../../../../shared/value-objects';
 import type { FileChange, FileComputed, SettingPlace } from '../../../../entities';
 import { FileChangeKind } from '../../../../entities';
 import { overlayFile } from './steps/overlay-file';
@@ -181,20 +182,29 @@ const shapingOf = (merged: MergedFile | undefined): Setting | undefined => {
   return merged?.value ?? (whole?.kind === WholeKind.Added ? whole.setting : undefined);
 };
 
+// Why: a file no entry writes any longer is read in the format the lock kept for it, so a copy
+// written as whole text under another format's name is read as the text the lock holds.
+const formatOf = (input: FileAsked): FileFormat | undefined =>
+  input.plan === undefined ? Lock.settingsOf(input.record).format : input.plan.format;
+
 const configurationFileOf = (
   input: ComputeFileInput & {
     text: string;
   },
-): ConfigurationFile => ({
-  filePath: input.filePath,
-  ...(input.plan?.format === undefined
-    ? {}
-    : {
-        format: input.plan.format,
-      }),
-  ...shapeOf(shapingOf(input.plan?.merged)),
-  text: input.text,
-});
+): ConfigurationFile => {
+  const format = formatOf(input);
+
+  return {
+    filePath: input.filePath,
+    ...(format === undefined
+      ? {}
+      : {
+          format,
+        }),
+    ...shapeOf(shapingOf(input.plan?.merged)),
+    text: input.text,
+  };
+};
 
 const isForgotten = (input: {
   isCreatedByApply: boolean;
@@ -354,6 +364,7 @@ const settleFile = (input: SettleFileInput): FileSettled => {
       record: recordOf({
         everMetDefaults: defaults.everMet,
         fields,
+        file,
         heldBefore,
         isCreatedByApply,
         lock: record,

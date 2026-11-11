@@ -1,0 +1,91 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: offline-path-left-to-its-use-case@typescript
+language: Tsx
+severity: error
+message: >-
+  Let the use case decide what happens offline: give the client's queries and mutations
+  networkMode 'always', and no read or write another mode
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  client-built:
+    kind: new_expression
+    has:
+      field: constructor
+      regex: ^QueryClient$
+  runs-always:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?networkMode["'`]?$
+    all:
+      - has:
+          field: value
+          regex: ^["'`]always["'`]$
+  network-mode-other-than-always:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?networkMode["'`]?$
+    not:
+      matches: runs-always
+  queries-run-always:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?queries["'`]?$
+    all:
+      - has:
+          field: value
+          kind: object
+          has:
+            matches: runs-always
+  mutations-run-always:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?mutations["'`]?$
+    all:
+      - has:
+          field: value
+          kind: object
+          has:
+            matches: runs-always
+  defaults-run-always:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?defaultOptions["'`]?$
+    all:
+      - has:
+          field: value
+          kind: object
+          all:
+            - has:
+                matches: queries-run-always
+            - has:
+                matches: mutations-run-always
+  client-pauses-offline:
+    matches: client-built
+    has:
+      field: arguments
+      any:
+        - not:
+            has:
+              nthChild: 1
+        - has:
+            nthChild: 1
+            kind: object
+            not:
+              has:
+                matches: defaults-run-always
+rule:
+  any:
+    - matches: client-pauses-offline
+    - matches: network-mode-other-than-always

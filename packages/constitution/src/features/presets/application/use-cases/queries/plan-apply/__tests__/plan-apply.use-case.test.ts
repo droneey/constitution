@@ -1462,6 +1462,8 @@ describe('planApply', () => {
 
 const COPIED_PLUGIN = 'biome/plugins/typescript/unchecked-type-never-used.grit';
 const PLUGIN_COPY = 'biome.gen/unchecked-type-never-used.grit';
+const COPIED_TEXT_PLUGIN = 'biome/plugins/typescript/unchecked-type-never-used.yaml';
+const TEXT_COPY = 'biome.gen/unchecked-type-never-used.yaml';
 
 const copyPresets = (plugin: string): Files => ({
   'biome/@foundation.yaml': [
@@ -1543,22 +1545,47 @@ describe('planApply of a plugin an entry copies', () => {
     });
   });
 
-  it('should delete the copy once no entry writes it', () => {
-    // Arrange
-    const first = firstCopy();
+  it.each([
+    {
+      condition: 'a copy its name gives a format of whole text',
+      copy: PLUGIN_COPY,
+      presets: copyPresets('in ${role.source}\n'),
+    },
+    {
+      condition: 'a .yaml copy marked as text',
+      copy: TEXT_COPY,
+      presets: {
+        'biome/@foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          `      ${TEXT_COPY} !text: !copy \${constitution.path}/presets/${COPIED_TEXT_PLUGIN}`,
+        ].join('\n'),
+        [COPIED_TEXT_PLUGIN]: 'rule: no-data\n',
+      },
+    },
+  ])(
+    'should delete the copy when no entry writes it any longer, as $condition',
+    ({ copy, presets }) => {
+      // Arrange
+      const first = planOnce({
+        files: {},
+        presets,
+      });
 
-    // Act
-    const gone = planOnce({
-      files: first.texts,
-      locks: readOf(first.locks),
-      presets: presetsWith([
-        'kept.json',
-      ]),
-    });
+      // Act
+      const gone = planOnce({
+        files: first.texts,
+        locks: readOf(first.locks),
+        presets: presetsWith([
+          'kept.json',
+        ]),
+      });
 
-    // Assert
-    expect(gone.deleted).toStrictEqual([
-      PLUGIN_COPY,
-    ]);
-  });
+      // Assert
+      expect(gone.deleted).toStrictEqual([
+        copy,
+      ]);
+    },
+  );
 });

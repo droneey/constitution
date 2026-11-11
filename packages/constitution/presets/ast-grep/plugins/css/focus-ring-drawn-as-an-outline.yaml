@@ -1,0 +1,30 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: focus-ring-drawn-as-an-outline@css
+language: Css
+severity: error
+message: >-
+  Draw the focus ring as an outline on :focus-visible, never an outline set to none or 0: forced
+  colors drop every other ring
+files:
+  - '**/*.css'
+utils:
+  outline-removed:
+    kind: declaration
+    any:
+      - regex: '(?i)^outline\s*:[^;]*\bnone\b'
+      - regex: '(?i)^outline(?:-width)?\s*:\s*[+-]?0*\.?0+(?:[a-z]+)?\s*(?:!\s*important\s*)?;?$'
+      - regex: '(?i)^outline-style\s*:\s*none\b'
+  # Why: a ring hidden only while focus is not visible, as for a pointer's click, leaves the one on
+  # :focus-visible in place.
+  hidden-while-focus-is-not-visible:
+    inside:
+      kind: block
+      inside:
+        kind: rule_set
+        has:
+          kind: selectors
+          regex: ':not\(\s*:focus-visible\s*\)'
+rule:
+  matches: outline-removed
+  not:
+    matches: hidden-while-focus-is-not-visible

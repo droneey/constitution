@@ -66,7 +66,7 @@ const wordsIn = (path: string): readonly string[] => {
     .replace(MUTATION_DIRECTIVE, '');
 
   return toolWords.filter((word) =>
-    new RegExp(`(?<![\\w-])${RegExp.escape(word)}(?![\\w-])`, 'i').test(text),
+    new RegExp(String.raw`(?<![\w-])${RegExp.escape(word)}(?![\w-])`, 'i').test(text),
   );
 };
 

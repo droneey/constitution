@@ -1,0 +1,90 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-app-closed-inside-its-case@typescript
+language: Tsx
+severity: error
+message: >-
+  Build, init and close a Nest spec's app inside its case, never in a hook or at the top of the
+  file
+files:
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  testing-module-built:
+    kind: call_expression
+    has:
+      field: function
+      regex: (?:^|\.)createTestingModule$
+  hook-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:beforeAll|beforeEach|afterAll|afterEach)$
+  case-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: ^(?:test|it)(?:\s*\.\s*\w+)*$
+  function-scope:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  app-closed:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^close$
+  built-in-a-hook:
+    matches: testing-module-built
+    inside:
+      stopBy: end
+      matches: hook-call
+  built-at-the-top:
+    matches: testing-module-built
+    not:
+      inside:
+        stopBy: end
+        matches: function-scope
+  closed-in-a-hook:
+    matches: app-closed
+    all:
+      - inside:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: ^(?:afterAll|afterEach)$
+      - inside:
+          stopBy: end
+          kind: program
+          has:
+            stopBy: end
+            matches: testing-module-built
+  case-left-open:
+    matches: case-call
+    all:
+      - has:
+          field: arguments
+          has:
+            matches: function-scope
+            has:
+              stopBy: end
+              matches: testing-module-built
+      - not:
+          has:
+            field: arguments
+            has:
+              matches: function-scope
+              has:
+                stopBy: end
+                matches: app-closed
+rule:
+  any:
+    - matches: built-in-a-hook
+    - matches: built-at-the-top
+    - matches: closed-in-a-hook
+    - matches: case-left-open

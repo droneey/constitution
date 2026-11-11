@@ -35,8 +35,8 @@ def _pass_message(reason: PassReason) -> str:
       return messages.EVERY_MUTANT_KILLED
     case PassReason.NOTHING_TO_MUTATE:
       return messages.NOTHING_TO_MUTATE
-    case _:  # pragma: no mutate -- no reason reaches it
-      assert_never(reason)  # pragma: no mutate -- no reason reaches it
+    case _:  # pragma: no mutate  # Why: no reason reaches it
+      assert_never(reason)  # pragma: no mutate  # Why: no reason reaches it
 
 
 def render(outcome: Outcome) -> str:
@@ -52,8 +52,8 @@ def render(outcome: Outcome) -> str:
       return ''.join(
         REPORT_LINE.format(code=MUTMUT_FAILED_CODE, text=line) for line in output.splitlines()
       )
-    case _:  # pragma: no mutate -- no outcome reaches it
-      assert_never(outcome)  # pragma: no mutate -- no outcome reaches it
+    case _:  # pragma: no mutate  # Why: no outcome reaches it
+      assert_never(outcome)  # pragma: no mutate  # Why: no outcome reaches it
 
 
 def exit_status(outcome: Outcome) -> ExitStatus:
@@ -62,8 +62,8 @@ def exit_status(outcome: Outcome) -> ExitStatus:
       return ExitStatus.PASSED
     case Survived() | Broken():
       return ExitStatus.FAILED
-    case _:  # pragma: no mutate -- no outcome reaches it
-      assert_never(outcome)  # pragma: no mutate -- no outcome reaches it
+    case _:  # pragma: no mutate  # Why: no outcome reaches it
+      assert_never(outcome)  # pragma: no mutate  # Why: no outcome reaches it
 
 
 def _unfinished_message(code: Unfinished) -> str:
@@ -72,8 +72,8 @@ def _unfinished_message(code: Unfinished) -> str:
       return messages.COMMAND_NOT_RUN
     case Failure.COMMAND_TIMED_OUT:
       return messages.COMMAND_TIMED_OUT
-    case _:  # pragma: no mutate -- no code reaches it
-      assert_never(code)  # pragma: no mutate -- no code reaches it
+    case _:  # pragma: no mutate  # Why: no code reaches it
+      assert_never(code)  # pragma: no mutate  # Why: no code reaches it
 
 
 def _value_message(code: ValueFailure) -> str:
@@ -82,16 +82,16 @@ def _value_message(code: ValueFailure) -> str:
       return messages.ABSOLUTE_PATH
     case ValueFailure.PATH_OUT_OF_UNIT:
       return messages.PATH_OUT_OF_UNIT
-    case _:  # pragma: no mutate -- no code reaches it
-      assert_never(code)  # pragma: no mutate -- no code reaches it
+    case _:  # pragma: no mutate  # Why: no code reaches it
+      assert_never(code)  # pragma: no mutate  # Why: no code reaches it
 
 
 def _misuse_message(code: Misuse) -> str:
   match code:
     case Misuse.UNKNOWN_ARGUMENTS:
       return messages.UNKNOWN_ARGUMENTS
-    case _:  # pragma: no mutate -- no code reaches it
-      assert_never(code)  # pragma: no mutate -- no code reaches it
+    case _:  # pragma: no mutate  # Why: no code reaches it
+      assert_never(code)  # pragma: no mutate  # Why: no code reaches it
 
 
 def _error_message(error: Exception) -> str:

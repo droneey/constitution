@@ -4,6 +4,7 @@ import { RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { ConfigurationFormat } from '../application/contracts';
 import type { Setting } from '../domain/setting/entities';
+import { FileFormat } from '../domain/shared/value-objects';
 
 interface ConfigurationFormatSuiteInput {
   readonly format: ConfigurationFormat;
@@ -18,15 +19,30 @@ const NO_MARKS = {
 const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void => {
   const { format } = input;
 
-  const readOf = (path: string, text: string): Setting | undefined =>
+  const readOf = (row: { format?: FileFormat; path: string; text: string }): Setting | undefined =>
     format.read({
-      filePath: RepositoryRelativePath.create(path),
-      text,
+      filePath: RepositoryRelativePath.create(row.path),
+      ...(row.format === undefined
+        ? {}
+        : {
+            format: row.format,
+          }),
+      text: row.text,
     });
 
-  const writeOf = (row: { path: string; settings: Setting; text: string }): string =>
+  const writeOf = (row: {
+    format?: FileFormat;
+    path: string;
+    settings: Setting;
+    text: string;
+  }): string =>
     format.write({
       filePath: RepositoryRelativePath.create(row.path),
+      ...(row.format === undefined
+        ? {}
+        : {
+            format: row.format,
+          }),
       marks: NO_MARKS,
       settings: row.settings,
       sorted: [],
@@ -36,7 +52,10 @@ const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void
   describe(`${input.name}: the ConfigurationFormat contract`, () => {
     it('should read the settings a JSON text holds', () => {
       // Act
-      const read = readOf('biome.json', '{ "files": ["src"], "line": { "width": 100 } }\n');
+      const read = readOf({
+        path: 'biome.json',
+        text: '{ "files": ["src"], "line": { "width": 100 } }\n',
+      });
 
       // Assert
       expect(read).toStrictEqual({
@@ -60,9 +79,9 @@ const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void
         path: 'src/main.py',
         text: 'print()\n',
       },
-    ])('should read no settings when $condition', ({ path, text }) => {
+    ])('should read no settings when $condition', (row) => {
       // Act
-      const read = readOf(path, text);
+      const read = readOf(row);
 
       // Assert
       expect(read).toBeUndefined();
@@ -111,12 +130,22 @@ const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void
         settings: 'language js\n\n`data`\n',
         text: 'language js\n',
       },
+      {
+        condition: 'a rule marked as text is copied whole under a JSON name',
+        format: FileFormat.Text,
+        path: 'rules.gen/no-data.json',
+        settings: '{ "rule": "no-data" }\n',
+        text: '',
+      },
     ])('should write a text that reads back as the settings when $condition', (row) => {
       // Arrange
       const written = writeOf(row);
 
       // Act
-      const read = readOf(row.path, written);
+      const read = readOf({
+        ...row,
+        text: written,
+      });
 
       // Assert
       expect(read).toStrictEqual(row.settings);

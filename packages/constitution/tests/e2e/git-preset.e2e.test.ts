@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ignoredOf, patternsMeetingNoPath } from './git-preset.fixtures';
+import { ignoredOf, patternsMeetingNoPath, storedEndingOf } from './git-preset.fixtures';
 
 const ignoredPaths = [
   '.droneey/state.json',
@@ -57,6 +57,8 @@ const ignoredPaths = [
   '.venv/bin/python',
   'packages/orders/dist/index.js',
   'apps/web/build/index.js',
+  'ios/Unit/AppDelegate.swift',
+  'android/app/build.gradle',
 ];
 
 const keptPaths = [
@@ -71,6 +73,7 @@ const keptPaths = [
   'mise.toml',
   'reports/summary.md',
   'apps/web/.droneey/notes.md',
+  'src/android/order.ts',
 ];
 
 describe("the configuration git's presets write", () => {
@@ -96,5 +99,13 @@ describe("the configuration git's presets write", () => {
 
     // Assert
     expect(unmet).toStrictEqual([]);
+  });
+
+  it('should store a file with LF line endings when it is written with CRLF line endings', () => {
+    // Act
+    const ending = storedEndingOf("export const ORDER_KIND = 'order';\r\n");
+
+    // Assert
+    expect(ending).toBe('lf');
   });
 });

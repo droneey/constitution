@@ -1,0 +1,9 @@
+lingui:
+  components-take-t-from-use-lingui:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/components-take-t-from-use-lingui.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/components-take-t-from-use-lingui.yaml

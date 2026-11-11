@@ -1,0 +1,119 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: child-process-given-its-own-env@python
+language: Python
+severity: error
+message: >-
+  Pass the child an `env=` built for it: left out, None or taken from os.environ, it hands the child
+  every secret
+# Why: a script that only runs other programs passes on what its caller built, and it is no part of
+# the program's source.
+files:
+  - '**/${role.source}/**'
+utils:
+  whole-environment:
+    any:
+      - regex: ^os\.environ$
+      - regex: ^os\.environ\.copy\(\)$
+      - regex: ^dict\(os\.environ\b
+      - kind: binary_operator
+        has:
+          field: left
+          regex: ^os\.environ$
+      - kind: dictionary
+        has:
+          kind: dictionary_splat
+          has:
+            regex: ^os\.environ$
+  env-built-for-the-child:
+    kind: keyword_argument
+    all:
+      - has:
+          field: name
+          regex: ^env$
+      - not:
+          has:
+            field: value
+            any:
+              - kind: none
+              - matches: whole-environment
+  subprocess-start:
+    regex: ^(?:run|call|check_call|check_output|Popen)$
+  asyncio-start:
+    regex: ^create_subprocess_(?:exec|shell)$
+  # Why: these starts take no env, so the child always inherits the program's.
+  os-start:
+    regex: ^(?:system|popen|execl|execlp|execv|execvp|spawnl|spawnlp|spawnv|spawnvp)$
+  start-reached-by-its-module:
+    kind: attribute
+    any:
+      - all:
+          - has:
+              field: object
+              regex: ^subprocess$
+          - has:
+              field: attribute
+              matches: subprocess-start
+      - all:
+          - has:
+              field: object
+              regex: ^asyncio$
+          - has:
+              field: attribute
+              matches: asyncio-start
+      - all:
+          - has:
+              field: object
+              regex: ^os$
+          - has:
+              field: attribute
+              matches: os-start
+  start-imported-by-name:
+    kind: identifier
+    pattern: $START
+    inside:
+      kind: module
+      stopBy: end
+      has:
+        kind: import_from_statement
+        stopBy: end
+        any:
+          - all:
+              - has:
+                  field: module_name
+                  regex: ^subprocess$
+              - has:
+                  field: name
+                  pattern: $START
+                  matches: subprocess-start
+          - all:
+              - has:
+                  field: module_name
+                  regex: ^asyncio$
+              - has:
+                  field: name
+                  pattern: $START
+                  matches: asyncio-start
+          - all:
+              - has:
+                  field: module_name
+                  regex: ^os$
+              - has:
+                  field: name
+                  pattern: $START
+                  matches: os-start
+rule:
+  kind: call
+  has:
+    field: function
+    any:
+      - matches: start-reached-by-its-module
+      - matches: start-imported-by-name
+  not:
+    has:
+      field: arguments
+      any:
+        - has:
+            matches: env-built-for-the-child
+        # Why: options handed on whole may carry the env, which this call cannot see.
+        - has:
+            kind: dictionary_splat

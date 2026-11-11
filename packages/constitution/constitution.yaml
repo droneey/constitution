@@ -50,3 +50,8 @@ overrides:
     # Why: constitution reads an override's reason from its one line.
     # yamllint disable-line rule:line-length
     reason: "No member of the session feature's WorkingTree port takes a deadline yet, and each git run is bounded by the adapter's own timeout; removed with #428, which hands the stop's remaining time to every WorkingTree call"
+  - rule: entity-never-lifts-to-the-kernel
+    level: SHOULD
+    # Why: constitution reads an override's reason from its one line.
+    # yamllint disable-line rule:line-length
+    reason: 'the files of src/kernel/entities/ are values, union types and read models misnamed .entity, none an entity with an identity that lives through its changes; removed by the change that renames them by their kind'

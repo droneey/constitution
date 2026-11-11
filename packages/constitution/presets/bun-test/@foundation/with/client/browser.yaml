@@ -1,0 +1,21 @@
+bun-test:
+  dom-preload-listed-by-every-bunfig:
+    typescript:
+      ${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts: !default |
+        import { GlobalRegistrator } from '@happy-dom/global-registrator';
+
+        GlobalRegistrator.register();
+      bunfig.integration.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts
+      bunfig.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts
+  dom-registered-before-the-sandbox:
+    typescript:
+      bunfig.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts

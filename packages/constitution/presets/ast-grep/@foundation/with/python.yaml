@@ -1,0 +1,89 @@
+python:
+  case-named-test-should:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/case-named-test-should.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/case-named-test-should.yaml
+  async-work-started-in-a-task-group:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/async-work-started-in-a-task-group.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/async-work-started-in-a-task-group.yaml
+  cancellation-always-re-raised:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/cancellation-always-re-raised.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/cancellation-always-re-raised.yaml
+  class-name-carries-no-protocol-or-abc-mark:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/class-name-carries-no-protocol-or-abc-mark.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/class-name-carries-no-protocol-or-abc-mark.yaml
+  os-environ-never-changed:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/os-environ-never-changed.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/os-environ-never-changed.yaml
+  child-process-given-its-own-env:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/child-process-given-its-own-env.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/child-process-given-its-own-env.yaml
+  suppression-reason-in-a-second-comment:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/suppression-reason-in-a-second-comment.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/suppression-reason-in-a-second-comment.yaml
+  duration-measured-by-a-python-monotonic-clock:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/duration-measured-by-a-python-monotonic-clock.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/duration-measured-by-a-python-monotonic-clock.yaml
+  enumeration-is-a-unique-str-enum:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/enumeration-is-a-unique-str-enum.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/enumeration-is-a-unique-str-enum.yaml
+  int-enum-member-number-never-left-to-auto:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/int-enum-member-number-never-left-to-auto.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/int-enum-member-number-never-left-to-auto.yaml
+  str-enum-member-value-never-left-to-auto:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/str-enum-member-value-never-left-to-auto.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/str-enum-member-value-never-left-to-auto.yaml

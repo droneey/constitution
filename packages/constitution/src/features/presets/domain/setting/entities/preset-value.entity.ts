@@ -52,7 +52,7 @@ type PresetValue =
 const slotOf = (listed: Setting): string | undefined => {
   // Stryker disable next-line ConditionalExpression,BlockStatement: a text or a list holds no slot key either
   if (!Setting.isMap(listed)) {
-    return undefined;
+    return;
   }
 
   const name = listed[SLOT_KEY];

@@ -705,7 +705,7 @@ export type Customer = {
 
 ### empty-return-written-bare · MUST
 
-Every `return` of `undefined` is a bare `return;`, never `return undefined`.
+Every `return` of `undefined` is a bare `return;`, never `return undefined`. Exempt: a `return undefined` that no statement of a function answering a value on another path follows, whose bare form would be a statement that does nothing.
 
 #### Why
 

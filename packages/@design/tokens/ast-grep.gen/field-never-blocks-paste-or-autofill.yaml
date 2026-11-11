@@ -1,0 +1,41 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: field-never-blocks-paste-or-autofill@typescript
+language: Tsx
+severity: error
+message: >-
+  Let the field take pasting and autofill: blocking them turns sign-in into a test of memory and
+  pushes people to weaker passwords
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  paste-prevented:
+    has:
+      stopBy: end
+      kind: call_expression
+      has:
+        field: function
+        regex: '\.preventDefault$'
+rule:
+  any:
+    - kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: '^autoComplete$'
+      regex: '^autoComplete\s*=\s*\{?\s*[''"`]off[''"`]'
+    - kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: '^onPaste$'
+      matches: paste-prevented
+    - kind: call_expression
+      has:
+        field: function
+        regex: '(?:^|\.)addEventListener$'
+      all:
+        - has:
+            field: arguments
+            has:
+              nthChild: 1
+              regex: '^[''"`]paste[''"`]$'
+        - matches: paste-prevented

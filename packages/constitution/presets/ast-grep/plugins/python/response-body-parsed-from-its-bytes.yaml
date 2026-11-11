@@ -1,0 +1,93 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: response-body-parsed-from-its-bytes@python
+language: Python
+severity: error
+message: >-
+  Parse the body from `response.content` by its schema: `.json()` returns Any, which turns the type
+  checker off
+utils:
+  # Why: a get or a send is a request only in a module that takes httpx2; a mapping's or a
+  # repository's get returns no response.
+  module-imports-httpx2:
+    inside:
+      kind: module
+      stopBy: end
+      has:
+        stopBy: end
+        any:
+          - kind: import_from_statement
+            has:
+              field: module_name
+              regex: ^httpx2$
+          - kind: import_statement
+            regex: ^import\s+httpx2\b
+  request-call:
+    kind: call
+    has:
+      field: function
+      kind: attribute
+      has:
+        field: attribute
+        regex: ^(?:get|post|put|patch|delete|head|options|request|send)$
+  response-reading:
+    any:
+      - matches: request-call
+      - kind: await
+        has:
+          matches: request-call
+  response:
+    any:
+      - kind: parenthesized_expression
+        has:
+          matches: response-reading
+      - kind: identifier
+        pattern: $RESPONSE
+        inside:
+          stopBy: end
+          any:
+            - kind: function_definition
+            - kind: module
+          has:
+            stopBy: end
+            kind: assignment
+            all:
+              - has:
+                  field: left
+                  pattern: $RESPONSE
+              - has:
+                  field: right
+                  matches: response-reading
+rule:
+  matches: module-imports-httpx2
+  any:
+    - kind: call
+      all:
+        - has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: attribute
+                  regex: ^json$
+              - has:
+                  field: object
+                  matches: response
+        - has:
+            field: arguments
+            regex: ^\(\s*\)$
+    # Why: `.text` decodes the body by a charset the response guessed before the parse reads it.
+    - kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^text$
+        - has:
+            field: object
+            matches: response
+        - inside:
+            kind: argument_list
+            inside:
+              kind: call
+              has:
+                field: function
+                regex: (?:^|\.)(?:model_validate_json|validate_json|loads)$

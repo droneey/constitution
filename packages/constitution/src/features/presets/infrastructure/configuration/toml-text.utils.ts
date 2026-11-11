@@ -30,7 +30,7 @@ const ARRAY_CLOSE = ']';
 const NOT_FOUND = -1;
 // Why: smol-toml pads an array's brackets with spaces, which the formatter takes out; a string
 // keeps its own.
-const paddedBracket = new RegExp(`(${STRINGS.source})|\\[ | \\]`, 'g');
+const paddedBracket = new RegExp(String.raw`(${STRINGS.source})|\[ | \]`, 'g');
 const itemPattern = new RegExp(`(?:${STRINGS.source}|[^,"'])+`, 'g');
 const TABLE_OR_ARRAY_INSIDE = /[[\]{}]/;
 
@@ -148,7 +148,7 @@ const spansOf = (
     const key = KEY_LINE.exec(line)?.[1];
 
     if (DOTTED_KEY_LINE.test(line) && key === undefined) {
-      return undefined;
+      return;
     }
 
     if (key !== undefined) {
@@ -180,7 +180,7 @@ const withChangedKeysSpliced = (input: {
   const { start } = input;
 
   if (!(Settings.isMap(input.before) && Settings.isMap(input.after))) {
-    return undefined;
+    return;
   }
 
   const { after, before } = input;
@@ -196,7 +196,7 @@ const withChangedKeysSpliced = (input: {
     spans === undefined ||
     changed.some((key) => ownFieldOf(before, key) !== undefined && !spans.has(key))
   ) {
-    return undefined;
+    return;
   }
 
   const lineOf = (key: string, held: Setting): string => `${keyText(key)} = ${inlineOf(held)}`;

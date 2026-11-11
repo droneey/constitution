@@ -12,3 +12,9 @@ typescript:
       tsconfig.json !jsonc:
         compilerOptions:
           isolatedDeclarations: true
+  distributed-package-checked-under-its-runtimes-resolution:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          module: !replace nodenext
+          moduleResolution: !replace nodenext

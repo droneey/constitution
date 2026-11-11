@@ -57,7 +57,7 @@ const createPageBodies = (
     const collectionLoader = loadersByCollection.get(collection);
 
     if (collectionLoader === undefined || !Object.hasOwn(collectionLoader.raw, `./${path}`)) {
-      return undefined;
+      return;
     }
 
     const load = (): Promise<Loaded> => {

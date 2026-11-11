@@ -1,0 +1,53 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: runtime-module-with-an-effect-imported-only-by-the-edge@typescript
+language: Tsx
+severity: error
+message: >-
+  A module of the runtime that holds an effect, imported outside the edge: reach the effect through
+  a port its adapter implements
+files:
+  - '**/${role.source}/*/**'
+ignores:
+  - '**/${role.source}/${role.adapter}/**'
+  - '**/${role.source}/${role.bounded-context}/*/${role.adapter}/**'
+  - '**/${role.source}/${role.composition-module}/*/${role.adapter}/**'
+  - '**/${role.source}/${role.generic-library}/**'
+  - '**/${role.source}/${role.composition-root}/**'
+  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
+  - '**/${role.source}/${role.host-integration}/**'
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.tsx'
+utils:
+  # Why: sqlite and quic are the runtime's only under node:, and the bare names are packages of the
+  # registry.
+  effect-module:
+    kind: string
+    regex: ^["'](?:(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|readline|repl|tls|trace_events|tty|v8|vm|wasi|worker_threads)|node:(?:sqlite|quic))(?:/[^"']*)?["']$
+  # Why: an import of types alone loads nothing, so it holds no effect.
+  type-only:
+    any:
+      - regex: ^import\s+type\b
+      - regex: ^export\s+type\b
+rule:
+  matches: effect-module
+  any:
+    - inside:
+        kind: import_statement
+        field: source
+        not:
+          matches: type-only
+    - inside:
+        kind: export_statement
+        field: source
+        not:
+          matches: type-only
+    - inside:
+        kind: arguments
+        inside:
+          kind: call_expression
+          has:
+            field: function
+            any:
+              - kind: import
+              - kind: identifier
+                regex: ^require$

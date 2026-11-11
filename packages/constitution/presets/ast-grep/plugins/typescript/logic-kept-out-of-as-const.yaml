@@ -1,0 +1,50 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: logic-kept-out-of-as-const@typescript
+language: Tsx
+severity: error
+message: >-
+  An as const literal holds only values written out and names: define the logic outside it, where
+  Stryker mutates it, and name it inside
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  signed-number:
+    kind: unary_expression
+    all:
+      - regex: ^[-+]
+      - has:
+          field: argument
+          kind: number
+  logic:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: generator_function
+      - kind: method_definition
+      - kind: class
+      - kind: ternary_expression
+      - kind: binary_expression
+      - kind: template_substitution
+      - kind: await_expression
+      - kind: yield_expression
+      - kind: update_expression
+      - kind: assignment_expression
+      - kind: augmented_assignment_expression
+      - all:
+          - kind: unary_expression
+          - not:
+              matches: signed-number
+rule:
+  kind: as_expression
+  regex: \bas\s+const$
+  has:
+    stopBy: end
+    matches: logic

@@ -1,0 +1,92 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: query-retry-delay-spread-at-random@typescript
+language: Tsx
+severity: error
+message: >-
+  Give a client that retries a retryDelay that spreads its exponential backoff at random, such as
+  Math.random() * Math.min(base * 2 ** attempt, max)
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  client-built:
+    kind: new_expression
+    has:
+      field: constructor
+      regex: ^QueryClient$
+  retry-delay:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?retryDelay["'`]?$
+  retries-off:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^["'`]?retry["'`]?$
+      - has:
+          field: value
+          any:
+            - kind: 'false'
+            - kind: number
+              regex: ^0$
+  queries-delayed:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^["'`]?queries["'`]?$
+      - has:
+          field: value
+          kind: object
+          has:
+            any:
+              - matches: retry-delay
+              - matches: retries-off
+  defaults-delayed:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^["'`]?defaultOptions["'`]?$
+      - has:
+          field: value
+          kind: object
+          has:
+            matches: queries-delayed
+  client-without-a-delay:
+    matches: client-built
+    has:
+      field: arguments
+      any:
+        - not:
+            has:
+              nthChild: 1
+        - has:
+            nthChild: 1
+            kind: object
+            not:
+              has:
+                matches: defaults-delayed
+  delay-without-a-spread:
+    matches: retry-delay
+    has:
+      field: value
+      any:
+        - kind: number
+        - all:
+            - any:
+                - kind: arrow_function
+                - kind: function_expression
+            - not:
+                regex: \brandom\b
+rule:
+  any:
+    - matches: client-without-a-delay
+    - matches: delay-without-a-spread

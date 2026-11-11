@@ -1,0 +1,8 @@
+# Why: the tree gives libs/ the component primitives; the rule that puts them in its ui/,
+# component-lives-where-its-knowledge-lives, is a SHOULD, which no setting may be keyed by.
+core:
+  package-laid-out-by-the-tree:
+    typescript:
+      ast-grep.${role.generated-file}/primitive-class-merged-by-cn.yaml:
+        files@primitive-files:
+          - '**/${role.generic-library}/${role.ui-kit}/**/*.tsx'

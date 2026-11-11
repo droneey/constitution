@@ -209,9 +209,9 @@ export class ErosError extends Error {
 `,
   'packages/@eros/typescript/src/features/errors/domain/error/errors/index.ts':
     "export { ErosError } from './eros.error';\n",
-  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
+  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/error-code.value-object.ts': String.raw`export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
 
-export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z-]+$/u.test(text);
+export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\.[a-z-]+$/u.test(text);
 `,
   'packages/@eros/typescript/src/features/errors/domain/error/value-objects/index.ts':
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
@@ -403,6 +403,9 @@ export const QUEUES: readonly string[] = isQueues(queues) ? queues : [];
 };
 
 const web: Files = {
+  // Why: a browser's unit preloads its DOM before its specs, and these specs render nothing.
+  'apps/web/src/__tests__/dom.fixtures.ts':
+    '// Why: the specs of this unit render nothing, so its DOM preload registers no globals.\n',
   'apps/web/package.json': manifestOf({
     dependencies: [
       '@shop/orders',

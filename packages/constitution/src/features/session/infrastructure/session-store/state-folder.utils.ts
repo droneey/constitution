@@ -99,7 +99,7 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
       code: StateFolderProblem.Unnamed,
     });
 
-    return undefined;
+    return;
   }
 
   const [program, name] = input.names;
@@ -126,7 +126,7 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
       folder,
     });
 
-    return undefined;
+    return;
   }
 
   if (made.unsafe !== undefined) {
@@ -135,7 +135,7 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
       folder: made.unsafe,
     });
 
-    return undefined;
+    return;
   }
 
   return folder;

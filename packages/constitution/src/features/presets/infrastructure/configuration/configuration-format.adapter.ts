@@ -110,7 +110,7 @@ const formatOf = (file: ConfigurationFile): Format | undefined => {
   const extension = extensionOf(fileName);
 
   if (extension !== '' && !RUN_COMMAND_EXTENSION.test(extension) && !fileName.startsWith(DOT)) {
-    return undefined;
+    return;
   }
 
   if (file.shape === undefined) {

@@ -1,0 +1,25 @@
+yaml:
+  value-holding-a-backslash-never-double-quoted:
+    yaml:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/value-holding-a-backslash-never-double-quoted.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/yaml/value-holding-a-backslash-never-double-quoted.yaml
+  yaml-file-ends-in-yaml:
+    yaml:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/yaml-file-ends-in-yaml.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/yaml/yaml-file-ends-in-yaml.yaml
+  merge-key-never-used:
+    yaml:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/merge-key-never-used.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/yaml/merge-key-never-used.yaml

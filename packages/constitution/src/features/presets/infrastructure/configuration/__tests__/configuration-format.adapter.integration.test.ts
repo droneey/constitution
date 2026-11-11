@@ -1397,6 +1397,14 @@ const yamlWrites: readonly WriteRow[] = [
     text: '',
   },
   {
+    condition: 'a folded text one column past the width breaks before its last word',
+    path: 'lefthook.yaml',
+    settings: {
+      run: `${'a'.repeat(95)} {1}`,
+    },
+    text: '',
+  },
+  {
     condition: 'a long text of lines stays a literal block',
     path: 'lefthook.yaml',
     settings: {

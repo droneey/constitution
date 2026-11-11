@@ -1,0 +1,33 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: opened-connection-verifies-its-peer@python
+language: Python
+severity: error
+message: >-
+  A connection that skips its peer's certificate or name: keep ssl's verification on, and trust a
+  private authority through cafile instead
+# Why: a spec's local connection to an engine it started on the loopback is the exempt one.
+ignores:
+  - '**/${role.package-suites}/**'
+rule:
+  any:
+    - kind: attribute
+      regex: ^ssl\s*\.\s*(?:CERT_NONE|_create_unverified_context)$
+    - kind: identifier
+      regex: ^(?:CERT_NONE|_create_unverified_context)$
+      inside:
+        stopBy: end
+        kind: import_from_statement
+        has:
+          field: module_name
+          regex: ^ssl$
+    - kind: assignment
+      all:
+        - has:
+            field: left
+            kind: attribute
+            has:
+              field: attribute
+              regex: ^check_hostname$
+        - has:
+            field: right
+            kind: 'false'

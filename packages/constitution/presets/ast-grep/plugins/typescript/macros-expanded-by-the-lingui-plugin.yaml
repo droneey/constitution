@@ -1,0 +1,34 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: macros-expanded-by-the-lingui-plugin@typescript
+language: Tsx
+severity: error
+message: >-
+  Expand Lingui's macros with lingui({ macroTransform: true }), never through another plugin's babel
+  options, which it can drop without a warning
+# Why: Vite finds its configuration by these names.
+files:
+  - '**/vite.config.ts'
+  - '**/vite.*.config.ts'
+utils:
+  lingui-plugin-expanding-macros:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^lingui$'
+    all:
+      - has:
+          field: arguments
+          has:
+            kind: object
+            has:
+              kind: pair
+              regex: '^[''"]?macroTransform[''"]?\s*:\s*true$'
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          matches: lingui-plugin-expanding-macros
+    - kind: string
+      regex: '^[''"](?:@lingui/babel-plugin-lingui-macro|@lingui/swc-plugin|babel-plugin-macros|macros)[''"]$'

@@ -1,0 +1,57 @@
+nestjs:
+  global-guard-registered-as-app-guard:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/global-guard-registered-as-app-guard.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/global-guard-registered-as-app-guard.yaml
+  global-module-never-declared:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/global-module-never-declared.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/global-module-never-declared.yaml
+  guard-or-filter-never-filed-as-a-provider:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/guard-or-filter-never-filed-as-a-provider.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/guard-or-filter-never-filed-as-a-provider.yaml
+  nest-controller-carries-the-controller-suffix:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-controller-carries-the-controller-suffix.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-controller-carries-the-controller-suffix.yaml
+  nest-module-sits-in-the-presentation-it-serves:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/nest-module-sits-in-the-presentation-it-serves.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/nest-module-sits-in-the-presentation-it-serves.yaml
+  providers-folder-holds-only-providers:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/providers-folder-holds-only-providers.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/providers-folder-holds-only-providers.yaml
+  use-filters-never-written:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/use-filters-never-written.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/use-filters-never-written.yaml

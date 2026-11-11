@@ -132,7 +132,7 @@ const piecesOf = (input: PiecesInput): ReadPieces | undefined => {
     }
 
     if (character === '}') {
-      return undefined;
+      return;
     }
 
     const read =
@@ -148,7 +148,7 @@ const piecesOf = (input: PiecesInput): ReadPieces | undefined => {
           });
 
     if (read === undefined) {
-      return undefined;
+      return;
     }
 
     pieces.push(read.piece);
@@ -168,7 +168,7 @@ const eitherOf = (input: PiecesInput): ReadPiece | undefined => {
   let at = input.at;
 
   if (input.depth > MAX_NESTING) {
-    return undefined;
+    return;
   }
 
   for (;;) {
@@ -178,7 +178,7 @@ const eitherOf = (input: PiecesInput): ReadPiece | undefined => {
     });
 
     if (read === undefined) {
-      return undefined;
+      return;
     }
 
     alternatives.push(read.pieces);

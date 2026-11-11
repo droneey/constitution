@@ -1,0 +1,54 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: nest-http-exception-never-thrown@typescript
+language: Tsx
+severity: error
+message: >-
+  Throw an error of the program's error library, never Nest's HttpException or one of its
+  subclasses
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  nest-http-exception-name:
+    regex: ^(?:HttpException|BadRequestException|UnauthorizedException|NotFoundException|ForbiddenException|NotAcceptableException|RequestTimeoutException|ConflictException|GoneException|HttpVersionNotSupportedException|PayloadTooLargeException|UnsupportedMediaTypeException|UnprocessableEntityException|InternalServerErrorException|NotImplementedException|ImATeapotException|MethodNotAllowedException|BadGatewayException|ServiceUnavailableException|GatewayTimeoutException|PreconditionFailedException|MisdirectedException)$
+  nest-http-exception-built:
+    kind: new_expression
+    has:
+      field: constructor
+      matches: nest-http-exception-name
+  thrown:
+    any:
+      - kind: throw_statement
+        has:
+          matches: nest-http-exception-built
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: (?:^|\.)reject$
+          - has:
+              field: arguments
+              has:
+                matches: nest-http-exception-built
+  subclassed:
+    kind: class_heritage
+    has:
+      kind: extends_clause
+      has:
+        field: value
+        matches: nest-http-exception-name
+  imports-nest-common:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["']@nestjs/common["']$
+rule:
+  all:
+    - any:
+        - matches: thrown
+        - matches: subclassed
+    - matches: imports-nest-common

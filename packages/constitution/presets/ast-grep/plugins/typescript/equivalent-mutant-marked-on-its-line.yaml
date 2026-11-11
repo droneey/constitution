@@ -1,0 +1,18 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: equivalent-mutant-marked-on-its-line@typescript
+language: Tsx
+severity: error
+message: >-
+  Mark an equivalent mutant on its line by // Stryker disable next-line <mutator>: never a disable
+  to the end of the file, a restore, or all
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: comment
+  all:
+    - regex: ^(?://|/\*)\s*Stryker\s+(?:disable|restore)\b
+    - any:
+        - not:
+            regex: ^(?://|/\*)\s*Stryker\s+disable\s+next-line\s+[A-Za-z]+(?:\s*,\s*[A-Za-z]+)*\s*(?::|\*/|$)
+        - regex: ^(?://|/\*)\s*Stryker\s+disable\s+next-line\s+(?:[A-Za-z]+\s*,\s*)*all\b

@@ -1,0 +1,10 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: utc-instant-ends-in-z@json
+language: Json
+severity: error
+message: 'Write an instant at offset zero with Z, never +00:00'
+rule:
+  kind: string
+  # Why: a time a person sets keeps its zone in brackets after its offset, so it never ends at the
+  # offset, and `z` is the spelling RFC 3339 also allows but a reader comparing text tells apart.
+  regex: '^"\d{4}-\d{2}-\d{2}[Tt ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[+-]00:00|z)"$'

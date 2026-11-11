@@ -1,0 +1,8 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: invariant-value-is-plain-readonly-data@typescript
+language: Tsx
+rule:
+  any:
+    - kind: class_declaration
+    - kind: abstract_class_declaration
+    - kind: class

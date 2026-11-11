@@ -209,6 +209,22 @@ const placementsWhereSent = (shape: EntryShape): readonly PresetsFinding[] => {
 
 const isPlacedWhereSent = (shape: EntryShape): boolean => placementsWhereSent(shape).length === 0;
 
+const CREATED_FILE = 'biome.mutation.json';
+
+const createdFileMisplaced: PresetsFinding = {
+  code: PresetsCode.EntryMisplaced,
+  details: {
+    belongs: placeOf('biome', Axis.Foundation, 'bun'),
+    block: BlockId.create('bun'),
+    rule: '*',
+    unneededBlocks: [
+      BlockId.create('git'),
+    ],
+    unreachedRoles: [],
+  },
+  path: 'presets/biome/@foundation/with/git/with/bun.yaml',
+};
+
 describe('checkPresets', () => {
   it('should find nothing when every preset file is sound', () => {
     // Arrange
@@ -1669,6 +1685,84 @@ describe('checkPresets', () => {
       },
     ]);
   });
+
+  it('should find no misplacement when an entry’s path names first a block it does not need that every other entry creating its file names', () => {
+    // Act
+    const found = findingsOf({
+      presets: {
+        'biome/@foundation/with/git.yaml': [
+          entryOf({
+            file: CREATED_FILE,
+          }),
+          entryOf({
+            block: 'git',
+            file: CREATED_FILE,
+          }),
+        ].join('\n'),
+        'biome/@foundation/with/git/with/bun.yaml': entryOf({
+          block: 'bun',
+          file: CREATED_FILE,
+        }),
+      },
+    }).filter(({ code }) => code === PresetsCode.EntryMisplaced);
+
+    // Assert
+    expect(found).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'another entry creates its file without that block',
+      presets: {
+        'biome/@foundation.yaml': entryOf({
+          file: CREATED_FILE,
+        }),
+        'biome/@foundation/with/git.yaml': entryOf({
+          block: 'git',
+          file: CREATED_FILE,
+        }),
+        'biome/@foundation/with/git/with/bun.yaml': entryOf({
+          block: 'bun',
+          file: CREATED_FILE,
+        }),
+      },
+    },
+    {
+      condition: 'the other entry that names that block only inserts into its file',
+      presets: {
+        'biome/@foundation/with/git.yaml': entryOf({
+          file: CREATED_FILE,
+          value: "files@fixtures: ['**/*${role.ignore-file}']",
+        }),
+        'biome/@foundation/with/git/with/bun.yaml': entryOf({
+          block: 'bun',
+          file: CREATED_FILE,
+        }),
+      },
+    },
+    {
+      condition: 'no other entry writes its file',
+      presets: {
+        'biome/@foundation/with/git/with/bun.yaml': entryOf({
+          block: 'bun',
+          file: CREATED_FILE,
+        }),
+      },
+    },
+  ])(
+    'should find an entry whose path names first a block it does not need misplaced when $condition',
+    ({ presets }) => {
+      // Act
+      const found: readonly PresetsFinding[] = findingsOf({
+        presets,
+      }).filter(({ code }) => code === PresetsCode.EntryMisplaced);
+
+      // Assert
+      expect(found).toStrictEqual([
+        createdFileMisplaced,
+      ]);
+    },
+  );
 
   it('should find the release’s files its entries name and lack, and its plugins no entry names or that name no rule, a name that is no slug among them', () => {
     // Arrange

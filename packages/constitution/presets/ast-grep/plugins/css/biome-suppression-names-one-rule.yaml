@@ -1,0 +1,15 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: biome-suppression-names-one-rule@css
+language: Css
+severity: error
+message: >-
+  Name one rule on one line, as biome-ignore lint/<group>/<rule>: never a group, a whole file, a
+  range or another category
+files:
+  - '**/*.css'
+rule:
+  kind: comment
+  all:
+    - regex: ^(?://|/\*+)\s*biome-ignore
+    - not:
+        regex: ^(?://|/\*+)\s*biome-ignore\s+lint/[A-Za-z]+/[A-Za-z]+(?:\([^)]*\))?\s*(?::|\*/|$)

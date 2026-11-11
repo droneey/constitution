@@ -312,7 +312,7 @@ const removedFrom = (setting: Setting, leaf: Leaf): Setting | undefined => {
   const removal = removedIn(setting, leaf.keyPath, leaf);
 
   if (!removal.isRemoved) {
-    return undefined;
+    return;
   }
 
   return removal.rest ?? (Setting.isList(setting) ? [] : {});

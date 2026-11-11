@@ -1,0 +1,34 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: invalidation-in-on-settled@typescript
+language: Tsx
+severity: error
+message: >-
+  Invalidate a write's keys in onSettled, which runs after a failure too, never in onSuccess or
+  onError
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  invalidated:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^(?:invalidateQueries|refetchQueries)$
+  success-or-error-callback:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?(?:onSuccess|onError)["'`]?$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^(?:onSuccess|onError)$
+rule:
+  matches: invalidated
+  inside:
+    stopBy: end
+    matches: success-or-error-callback

@@ -1,0 +1,56 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: commander-settings-copied-to-every-command@typescript
+language: Tsx
+severity: error
+message: >-
+  Add each subcommand as addCommand(command.copyInheritedSettings(program)), so its output, its exit
+  override and its help are the program's
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  imports-commander:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["'](?:commander|@commander-js/extra-typings)["']$
+  settings-copied:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^copyInheritedSettings$
+rule:
+  all:
+    - any:
+        - pattern: $PROGRAM.addCommand($COMMAND)
+        - pattern: $PROGRAM.addCommand($COMMAND, $$$OPTIONS)
+    - matches: imports-commander
+    - not:
+        has:
+          field: arguments
+          has:
+            nthChild: 1
+            matches: settings-copied
+    # Why: a command whose settings its own statement copies before it is added takes them first
+    # too.
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: statement_block
+            - kind: program
+          has:
+            stopBy: end
+            pattern: $COMMAND.copyInheritedSettings($$$)

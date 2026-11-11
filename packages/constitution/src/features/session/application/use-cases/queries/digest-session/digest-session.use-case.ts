@@ -27,7 +27,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
   const place = source.findProjectAround(input.searchFrom);
 
   if (place === undefined) {
-    return undefined;
+    return;
   }
 
   const { releaseFolderPath, repositoryFolderPath } = place;

@@ -13,6 +13,7 @@ import { lockOf } from '../../../__tests__/presets.fixtures';
 import { ApplyError } from '../../../domain/apply-plan/errors';
 import type { Lock } from '../../../domain/lock/entities';
 import { LockReadStatus, RecordKind } from '../../../domain/lock/entities';
+import { FileFormat } from '../../../domain/shared/value-objects';
 import { createFileAppliedFilesRepository } from '../file-applied-files.repository';
 import { createFileLockQueries } from '../file-lock.repository';
 
@@ -90,10 +91,6 @@ describe('createFileLockQueries', () => {
       text: '{\n<<<<<<< ours\n}\n',
     },
     {
-      condition: 'it holds a field no lock writes',
-      text: '{"biome.json": {"hashes": []}}\n',
-    },
-    {
       condition: 'it names a file by an absolute path',
       text: '{"/biome.json": {}}\n',
     },
@@ -107,6 +104,30 @@ describe('createFileLockQueries', () => {
     // Assert
     expect(read).toStrictEqual({
       status: LockReadStatus.Unparsed,
+    });
+  });
+
+  it('should ignore a field no lock writes when a later release wrote it', () => {
+    // Arrange
+    writeFileSync(at(LOCK_FILE), '{"biome.json": {"hashes": [], "leaves": ["abc"]}}\n');
+
+    // Act
+    const read = createFileLockQueries().read(at(''));
+
+    // Assert
+    expect(read).toStrictEqual({
+      lock: lockOf({
+        'biome.json': {
+          addresses: [],
+          everMetDefaults: [],
+          isCreatedByApply: false,
+          kind: RecordKind.Settings,
+          leaves: [
+            'abc',
+          ],
+        },
+      }),
+      status: LockReadStatus.Read,
     });
   });
 
@@ -152,12 +173,22 @@ describe('createFileAppliedFilesRepository', () => {
             'abc',
           ],
         },
+        'ast-grep.gen/no-data.yaml': {
+          addresses: [],
+          everMetDefaults: [],
+          format: FileFormat.Text,
+          isCreatedByApply: true,
+          kind: RecordKind.Settings,
+          leaves: [
+            'ghi',
+          ],
+        },
       }),
       empty: {},
     });
 
     const written = goldenOf({
-      'a lock of three files': textOf(LOCK_FILE),
+      'a lock of four files': textOf(LOCK_FILE),
       'an empty lock': textOf(join('empty', LOCK_FILE)),
     });
 

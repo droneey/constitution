@@ -19,7 +19,7 @@ const ESCAPE = '\u001B';
 const BELL = '\u0007';
 const STRONG = 'strong';
 const markEnd = `${ESCAPE}]8;;${BELL}`;
-const mark = new RegExp(`${ESCAPE}\\]8;;(?:mark:(\\w+))?${BELL}`, 'gu');
+const mark = new RegExp(String.raw`${ESCAPE}\]8;;(?:mark:(\w+))?${BELL}`, 'gu');
 
 const markOf = (name: string): string => `${ESCAPE}]8;;mark:${name}${BELL}`;
 

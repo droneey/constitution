@@ -39,6 +39,8 @@ const hooks = z.record(
           z.object({
             name: z.string(),
             run: z.string(),
+            // biome-ignore lint/style/useNamingConvention: lefthook names the option stage_fixed
+            stage_fixed: z.boolean().optional(),
           }),
         ),
       })
@@ -48,6 +50,7 @@ const hooks = z.record(
 
 interface UnitJob {
   readonly hook: string;
+  readonly isRestaged: boolean;
   readonly job: string;
   readonly run: string;
 }
@@ -68,8 +71,9 @@ const jobsIn = (unit: string): readonly UnitJob[] =>
     hooks.parse(YAML.parse(readFileSync(join(unit, 'lefthook.yaml'), 'utf8'))),
   ).flatMap(([hook, parsed]) =>
     parsed.success
-      ? parsed.data.jobs.map(({ name, run }) => ({
+      ? parsed.data.jobs.map(({ name, run, stage_fixed: stageFixed }) => ({
           hook,
+          isRestaged: stageFixed === true,
           job: name,
           run,
         }))
@@ -239,6 +243,13 @@ const commitMessageJobs = (lowered: readonly string[]): readonly string[] =>
     .filter(({ hook }) => hook === Hook.CommitMessage)
     .map(({ job }) => job);
 
+const restagedJobs = (lowered: readonly string[]): readonly string[] =>
+  unitJobs({
+    lowered,
+  })
+    .filter(({ hook, isRestaged }) => hook === Hook.PreCommit && isRestaged)
+    .map(({ job }) => job);
+
 const checkBranch = (branch: string): HookCheck => checkOf(headRun(checkoutOf(branch)));
 
 const checkDetachedHead = (): HookCheck => checkOf(headRun(DETACHED_HEAD));
@@ -273,6 +284,7 @@ export {
   Hook,
   hookTexts,
   jobRun,
+  restagedJobs,
   shellCheckRun,
   unitJobs,
   validation,

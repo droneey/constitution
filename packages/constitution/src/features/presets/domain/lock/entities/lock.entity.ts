@@ -1,6 +1,8 @@
 import { isDeepEqual } from '#/kernel/utils';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
+import type { FileFormat } from '../../shared/value-objects';
+
 enum RecordKind {
   Settings = 'settings',
   Whole = 'whole',
@@ -9,6 +11,7 @@ enum RecordKind {
 interface SettingsRecord {
   readonly addresses: readonly string[];
   readonly everMetDefaults: readonly string[];
+  readonly format?: FileFormat;
   readonly isCreatedByApply: boolean;
   readonly kind: RecordKind.Settings;
   readonly leaves: readonly string[];

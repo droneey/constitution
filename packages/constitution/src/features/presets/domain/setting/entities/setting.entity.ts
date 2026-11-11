@@ -32,7 +32,7 @@ const addressedIn = (holder: Setting | undefined, key: AddressKey): Addressed | 
   const list = isMap(holder) ? holder[key.list] : undefined;
 
   if (!isList(list)) {
-    return undefined;
+    return;
   }
 
   const element = list.filter(isMap).find((listed) => {

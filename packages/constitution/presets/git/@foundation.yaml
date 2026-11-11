@@ -26,6 +26,10 @@ version-control:
     '*':
       .gitignore:
         - /${role.working-notes}/
+  text-stored-with-one-line-ending:
+    '*':
+      .gitattributes ? ${file.isTop}:
+        - '* text=auto eol=lf'
 core:
   secret-never-in-the-repository:
     '*':

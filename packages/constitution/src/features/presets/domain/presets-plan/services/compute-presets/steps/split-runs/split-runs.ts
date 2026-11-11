@@ -54,7 +54,7 @@ const entryPointCommandsOf = ([name, held]: [
 const commandsOf = (setting: Setting | undefined): UnitRun['commands'] | undefined => {
   // Stryker disable next-line ConditionalExpression,BlockStatement: a run that is no map holds no list of commands
   if (!Setting.isMap(setting)) {
-    return undefined;
+    return;
   }
 
   const lists = Object.entries(setting).map(entryPointCommandsOf);

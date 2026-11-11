@@ -1,0 +1,38 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: head-written-by-hoisted-elements@typescript
+language: Tsx
+severity: error
+message: >-
+  Render <title>, <meta> and <link> as elements React hoists, never through a library or an effect
+  that writes the head: the two overwrite each other
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+rule:
+  any:
+    - kind: assignment_expression
+      has:
+        field: left
+        regex: '^document\.(?:title|head\.innerHTML)$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^document\.head\.(?:append|appendChild|prepend|insertBefore|insertAdjacentElement|insertAdjacentHTML|replaceChildren)$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^document\.createElement$'
+      all:
+        - has:
+            field: arguments
+            has:
+              nthChild: 1
+              regex: '(?i)^[''"`](?:title|meta|link)[''"`]$'
+    - kind: import_statement
+      has:
+        field: source
+        regex: '^[''"](?:react-helmet|react-helmet-async)[''"]$'

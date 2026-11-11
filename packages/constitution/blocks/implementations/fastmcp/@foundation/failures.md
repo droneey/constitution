@@ -4,25 +4,49 @@
 
 ## General
 
-### tool-defect-masked-by-mask-error-details → tool-defect-answered-as-an-error-result · MUST
+### tool-defect-masked-by-mask-error-details → defect-answered-masked · MUST
 
-Every server is built with `mask_error_details=True`. A defect of a tool call is then answered as an internal error that shows none of the program's internals.
+Every server, a mounted one included, is built with `mask_error_details=True`. A defect of a tool call then reaches the language model with none of its message, class, stack trace or cause.
 
 #### Why
 
-Fastmcp otherwise sends a defect's own message to the language model, which then reads the program's internals.
+Fastmcp otherwise sends a defect's own message to the language model, which then reads the program's internals. A mounted server built without it hands its defect to the server that mounts it as a `ToolError` that carries the defect's message, and that server passes a `ToolError`'s message on even when it masks its own defects.
 
 #### Examples
 
 ```py title="Avoid"
+# src/shop/features/orders/presentation/tools.py
+def build_orders_server(context: OrdersContext) -> FastMCP:
+    orders_server = FastMCP(name="orders")
+
+    @orders_server.tool
+    async def find_orders(customer_id: CustomerId) -> tuple[OrderSummary, ...]:
+        """List a customer's open orders, newest first."""
+        return await context.find_orders(customer_id)
+
+    return orders_server
+
+
 # src/shop/root/server.py
 def build_server(context: ShopContext) -> FastMCP:
-    server = FastMCP(name="shop")
+    server = FastMCP(name="shop", mask_error_details=True)
     server.mount(build_orders_server(context.orders))
     return server
 ```
 
 ```py title="Prefer"
+# src/shop/features/orders/presentation/tools.py
+def build_orders_server(context: OrdersContext) -> FastMCP:
+    orders_server = FastMCP(name="orders", mask_error_details=True)
+
+    @orders_server.tool
+    async def find_orders(customer_id: CustomerId) -> tuple[OrderSummary, ...]:
+        """List a customer's open orders, newest first."""
+        return await context.find_orders(customer_id)
+
+    return orders_server
+
+
 # src/shop/root/server.py
 def build_server(context: ShopContext) -> FastMCP:
     server = FastMCP(name="shop", mask_error_details=True)

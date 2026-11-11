@@ -37,7 +37,7 @@ const toolCallOf = (input: ToolEventInput): ToolCall | undefined => {
   const tool = event[HookField.ToolName];
 
   if (agent === undefined || tool === undefined) {
-    return undefined;
+    return;
   }
 
   const toolInput = event[HookField.ToolInput];

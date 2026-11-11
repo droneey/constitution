@@ -1,0 +1,6 @@
+react/react-native/expo:
+  native-projects-never-committed:
+    '*':
+      .gitignore:
+        - /ios
+        - /android

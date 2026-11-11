@@ -1,0 +1,6 @@
+pino:
+  pino-configured-by-the-root:
+    typescript:
+      ast-grep.${role.generated-file}/one-instance-writes-every-record.yaml:
+        ignores@left-out:
+          - '**/${role.source}/${role.composition-root}/**'

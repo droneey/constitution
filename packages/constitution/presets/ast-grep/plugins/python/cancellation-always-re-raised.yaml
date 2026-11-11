@@ -1,0 +1,53 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cancellation-always-re-raised@python
+language: Python
+severity: error
+message: 'A caught cancellation is raised again once its cleanup is done, or its scope never stops'
+utils:
+  cancellation-type:
+    any:
+      - kind: identifier
+        regex: ^(?:BaseException|CancelledError)$
+      - kind: attribute
+        regex: (?:^|\.)(?:BaseException|CancelledError)$
+      - kind: attribute
+        regex: ^trio\.Cancelled$
+      - kind: call
+        regex: (?:^|\.)get_cancelled_exc_class\(\)$
+  catches-cancellation:
+    any:
+      - matches: cancellation-type
+      - kind: tuple
+        has:
+          matches: cancellation-type
+      - kind: as_pattern
+        has:
+          nthChild: 1
+          any:
+            - matches: cancellation-type
+            - kind: tuple
+              has:
+                matches: cancellation-type
+rule:
+  any:
+    - kind: except_clause
+      all:
+        - any:
+            - has:
+                field: value
+                matches: catches-cancellation
+            # Why: a bare `except:` catches every exception, a cancellation among them.
+            - regex: '^except\s*:'
+        - not:
+            has:
+              stopBy: end
+              kind: raise_statement
+    - kind: call
+      all:
+        - has:
+            field: function
+            regex: ^(?:contextlib\.)?suppress$
+        - has:
+            field: arguments
+            has:
+              matches: cancellation-type

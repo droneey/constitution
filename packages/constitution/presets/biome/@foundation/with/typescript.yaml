@@ -136,6 +136,25 @@ typescript:
           rules:
             style:
               useEnumInitializers: error
+  numeric-enum-member-written-with-its-number:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              useEnumInitializers: error
+  source-file-named-in-kebab-case:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              useFilenamingConvention:
+                level: error
+                options:
+                  strictCase: true
+                  filenameCases:
+                    - kebab-case
   time-held-as-a-temporal-value:
     typescript:
       biome.jsonc:

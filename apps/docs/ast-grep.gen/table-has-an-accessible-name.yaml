@@ -1,0 +1,55 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: table-has-an-accessible-name@typescript
+language: Tsx
+severity: error
+message: >-
+  Name the table, by its <caption> or aria-labelledby: a screen reader announces a table by its name
+files:
+  - '**/*.tsx'
+utils:
+  # Why: aria-labelledby, aria-label and title each give a table its name, and a spread may carry
+  # one from the caller.
+  naming-attribute:
+    any:
+      - kind: jsx_attribute
+        has:
+          kind: property_identifier
+          regex: '^(?:aria-labelledby|aria-label|title)$'
+      - kind: jsx_expression
+        has:
+          kind: spread_element
+  caption:
+    any:
+      - kind: jsx_element
+        has:
+          field: open_tag
+          has:
+            field: name
+            regex: '^caption$'
+      - kind: jsx_self_closing_element
+        has:
+          field: name
+          regex: '^caption$'
+rule:
+  any:
+    - kind: jsx_element
+      has:
+        field: open_tag
+        all:
+          - has:
+              field: name
+              regex: '^table$'
+          - not:
+              has:
+                matches: naming-attribute
+      not:
+        has:
+          stopBy: end
+          matches: caption
+    - kind: jsx_self_closing_element
+      has:
+        field: name
+        regex: '^table$'
+      not:
+        has:
+          matches: naming-attribute

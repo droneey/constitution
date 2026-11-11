@@ -1,0 +1,11 @@
+mise:
+  install-limited-to-the-lock:
+    '*':
+      mise.toml ? ${file.isTop}:
+        tool_config:
+          locked: true
+  mise-minimum-release-age-set:
+    '*':
+      mise.toml ? ${file.isTop}:
+        settings:
+          minimum_release_age: 3d

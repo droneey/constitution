@@ -1,0 +1,25 @@
+stryker:
+  equivalent-mutant-marked-on-its-line:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/equivalent-mutant-marked-on-its-line.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/equivalent-mutant-marked-on-its-line.yaml
+  logic-kept-out-of-as-const:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/logic-kept-out-of-as-const.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/logic-kept-out-of-as-const.yaml
+  stryker-disable-gives-its-reason-after-the-colon:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/stryker-disable-gives-its-reason-after-the-colon.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/stryker-disable-gives-its-reason-after-the-colon.yaml

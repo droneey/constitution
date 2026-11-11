@@ -102,7 +102,7 @@ const inheritingFlaw = (
       return boundNames(earlier).includes(step.name) ? InheritanceFlaw.NameBoundTwice : undefined;
     // Stryker disable next-line ConditionalExpression: the last case left without its return falls off the switch into the same absent value
     case StepKind.AnyChild:
-      return undefined;
+      return;
   }
 };
 

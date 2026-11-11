@@ -1,0 +1,32 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: shellcheck-reason-in-a-comment-of-its-own@shell
+language: Bash
+severity: error
+message: >-
+  Give the ShellCheck directive its reason in a comment of its own, after a second # or on the
+  line above it
+files:
+  - '**/*.sh'
+  - '**/*.bash'
+utils:
+  directive:
+    kind: comment
+    regex: '^#\s*shellcheck\s'
+  # Why: neither the interpreter line nor another directive gives a reason.
+  reason-above:
+    follows:
+      kind: comment
+      not:
+        any:
+          - regex: '^#!'
+          - matches: directive
+rule:
+  matches: directive
+  any:
+    # Why: ShellCheck reads every word after the directive's keys as more of the directive.
+    - regex: '^#\s*shellcheck(?:\s+[a-z]+=[^\s#]+)*\s+[^\s#][^=\s]*(?:\s|$)'
+    # Why: a disable with no `#` after its keys carries no reason of its own on its line.
+    - all:
+        - regex: '^#\s*shellcheck(?:\s+[a-z]+=[^\s#]+)*\s+disable=[^\s#]+(?:\s+[a-z]+=[^\s#]+)*\s*$'
+        - not:
+            matches: reason-above

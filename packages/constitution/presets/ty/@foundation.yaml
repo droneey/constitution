@@ -25,6 +25,13 @@ core:
           ty:
             rules:
               all: error
+  absence-shown-by-the-type:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error
 python:
   typing-any-never-written:
     python:

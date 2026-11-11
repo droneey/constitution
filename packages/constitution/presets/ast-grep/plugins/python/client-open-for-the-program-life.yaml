@@ -1,0 +1,87 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: client-open-for-the-program-life@python
+language: Python
+severity: error
+message: >-
+  Open the client by `async with` or `with` around the program's run, which closes it on every way
+  out
+files:
+  - '**/${role.source}/**'
+utils:
+  client-construction:
+    kind: call
+    has:
+      field: function
+      any:
+        - regex: ^httpx2\.(?:Async)?Client$
+        - kind: identifier
+          regex: ^(?:Async)?Client$
+          inside:
+            kind: module
+            stopBy: end
+            has:
+              kind: import_from_statement
+              stopBy: end
+              has:
+                field: module_name
+                regex: ^httpx2$
+  # Why: a stack of contexts that the run's own `async with` holds closes the client as that
+  # statement does, and a factory hands the client to the statement that opens it.
+  opened-or-handed-to-its-opener:
+    any:
+      - inside:
+          kind: with_item
+      - inside:
+          kind: as_pattern
+          inside:
+            kind: with_item
+      - inside:
+          kind: argument_list
+          inside:
+            kind: call
+            has:
+              field: function
+              regex: (?:^|\.)enter_(?:async_)?context$
+      - inside:
+          kind: return_statement
+  bound-to-a-name-it-opens:
+    inside:
+      kind: assignment
+      has:
+        field: left
+        kind: identifier
+        pattern: $CLIENT
+      inside:
+        stopBy: end
+        any:
+          - kind: function_definition
+          - kind: module
+        has:
+          stopBy: end
+          any:
+            - kind: with_item
+              has:
+                any:
+                  - pattern: $CLIENT
+                  - kind: as_pattern
+                    has:
+                      nthChild: 1
+                      pattern: $CLIENT
+            - kind: call
+              all:
+                - has:
+                    field: function
+                    regex: (?:^|\.)enter_(?:async_)?context$
+                - has:
+                    field: arguments
+                    has:
+                      pattern: $CLIENT
+            - kind: return_statement
+              has:
+                pattern: $CLIENT
+rule:
+  matches: client-construction
+  not:
+    any:
+      - matches: opened-or-handed-to-its-opener
+      - matches: bound-to-a-name-it-opens

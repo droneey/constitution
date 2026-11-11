@@ -13,9 +13,54 @@ typescript:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/set-timeout-called-only-at-the-edge.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/set-timeout-called-only-at-the-edge.yaml
+  entity-rules-held-by-its-companion:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/entity-rules-held-by-its-companion.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/entity-rules-held-by-its-companion.yaml
+  role-suffix-spelled-after-a-dot:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/role-suffix-spelled-after-a-dot.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/role-suffix-spelled-after-a-dot.yaml
+  surface-imported-by-its-folders-path:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+        utilDirs:
+          - ast-grep-utils.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep-utils.${role.generated-file}/surface-imported-by-its-folders-path.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/surface-imported-by-its-folders-path.yaml
+      # Why: a framework that reads a file named like the surface by its spelling, as a route,
+      # leaves its specifiers out through the slot, which a copied rule cannot take.
+      ast-grep.${role.generated-file}/surface-imported-by-its-folders-path.yaml:
+        id: surface-imported-by-its-folders-path@typescript
+        language: Tsx
+        severity: error
+        message: >-
+          An import that ends at a surface's file: end it at the folder, which names the surface
+        files:
+          - '**/*.ts'
+          - '**/*.tsx'
+        rule:
+          matches: surface-imported-by-its-folders-path@typescript
+          not:
+            any:
+              - slot: framework-files
 core:
   business-value-lives-in-the-domain:
     typescript:
+      ast-grep.${role.generated-file}/invariant-value-is-plain-readonly-data.yaml:
+        files@invariant-values:
+          - '**/*.${role.value-object-file}.ts'
       ast-grep.${role.generated-file}/entity-value-or-event-typed-readonly.yaml:
         files@business-types:
           - '**/${role.domain-layer}/**'

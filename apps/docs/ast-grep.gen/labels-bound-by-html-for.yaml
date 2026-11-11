@@ -1,0 +1,27 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: labels-bound-by-html-for@typescript
+language: Tsx
+severity: error
+message: >-
+  Name the label's control with htmlFor: a label that only wraps its control loses it once the
+  control moves out
+files:
+  - '**/*.tsx'
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: '^label$'
+  not:
+    has:
+      any:
+        - kind: jsx_attribute
+          has:
+            kind: property_identifier
+            regex: '^htmlFor$'
+        # Why: a label primitive takes its htmlFor from its caller.
+        - kind: jsx_expression
+          has:
+            kind: spread_element

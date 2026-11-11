@@ -1,0 +1,33 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: query-client-built-in-the-render-function@typescript
+language: Tsx
+severity: error
+message: >-
+  Build the query client a server renders with inside the function that renders its request,
+  never once at a module's top level
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  function-scope:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+rule:
+  kind: new_expression
+  has:
+    field: constructor
+    regex: ^QueryClient$
+  not:
+    inside:
+      stopBy: end
+      any:
+        - matches: function-scope
+        - kind: class_body

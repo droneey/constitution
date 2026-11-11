@@ -115,7 +115,7 @@ const rulesInOf = (files: ProjectFiles, file: AbsolutePath): ChapterRules | unde
   const read = files.read(file);
 
   if (read.status !== FileReadStatus.Read) {
-    return undefined;
+    return;
   }
 
   const { body } = splitFrontMatter(read.text);

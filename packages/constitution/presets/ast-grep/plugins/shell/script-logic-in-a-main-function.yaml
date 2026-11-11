@@ -1,0 +1,93 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: script-logic-in-a-main-function@shell
+language: Bash
+severity: error
+message: 'Run the logic in a function main, and call it on the last line as main "$@"'
+files:
+  - '**/*.sh'
+  - '**/*.bash'
+utils:
+  # Why: a sourced file runs only inside the shell that reads it, and only a script run on its own
+  # names its shell on its first line; the rule binds a script that defines functions.
+  in-a-script-with-functions:
+    inside:
+      kind: program
+      all:
+        - has:
+            kind: comment
+            nthChild: 1
+            regex: '^#!'
+        - has:
+            kind: function_definition
+  calls-main:
+    kind: command
+    regex: '^main\s+"\$@"$'
+  # Why: the lines that set the shell's options, some under a check of Bash's version, read other
+  # files, set a trap or declare a value prepare the run and decide nothing, so they may stand
+  # outside main.
+  prepares-the-run:
+    any:
+      - kind: command
+        has:
+          field: name
+          regex: '^(?:set|shopt|source|\.|trap)$'
+      - kind: if_statement
+        not:
+          has:
+            stopBy: end
+            kind: command
+            not:
+              has:
+                field: name
+                regex: '^(?:set|shopt)$'
+      - kind: declaration_command
+        not:
+          has:
+            stopBy: end
+            kind: command_substitution
+      - kind: variable_assignment
+        not:
+          has:
+            stopBy: end
+            kind: command_substitution
+  statement:
+    any:
+      - kind: command
+      - kind: pipeline
+      - kind: list
+      - kind: variable_assignment
+      - kind: variable_assignments
+      - kind: declaration_command
+      - kind: unset_command
+      - kind: test_command
+      - kind: negated_command
+      - kind: redirected_statement
+      - kind: subshell
+      - kind: compound_statement
+      - kind: if_statement
+      - kind: case_statement
+      - kind: for_statement
+      - kind: c_style_for_statement
+      - kind: while_statement
+      - kind: function_definition
+rule:
+  matches: statement
+  all:
+    - matches: in-a-script-with-functions
+    - any:
+        # Why: what runs outside a function runs as the shell reads it, before the rest of the file.
+        - all:
+            - not:
+                kind: function_definition
+            - not:
+                matches: prepares-the-run
+            - not:
+                matches: calls-main
+        # Why: only main called on the last line runs once the whole file is read.
+        - all:
+            - not:
+                matches: calls-main
+            - not:
+                precedes:
+                  stopBy: end
+                  matches: statement

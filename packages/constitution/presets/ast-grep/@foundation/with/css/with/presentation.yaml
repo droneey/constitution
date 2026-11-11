@@ -7,3 +7,11 @@ css:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/type-sized-in-rem.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/type-sized-in-rem.yaml
+  focus-ring-drawn-as-an-outline:
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/focus-ring-drawn-as-an-outline.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/focus-ring-drawn-as-an-outline.yaml

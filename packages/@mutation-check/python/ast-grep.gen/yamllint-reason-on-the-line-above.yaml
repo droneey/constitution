@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: yamllint-reason-on-the-line-above@yaml
+language: Yaml
+severity: error
+message: >-
+  Give the yamllint suppression its reason in a comment on the line above it, never on its own
+  line
+rule:
+  any:
+    # Why: yamllint takes a directive only when nothing follows its rule list.
+    - kind: comment
+      regex: '^#\s*yamllint\s+disable'
+      not:
+        regex: '^#\s*yamllint\s+disable(?:-line|-file)?(?:\s+rule:[\w-]+)*\s*$'
+    # Why: the parser hangs a comment on whichever node is open, so only the file's lines tell what
+    # stands on the line above a suppression: one that opens the file, or follows a line with no
+    # comment or no line at all, has no reason above it.
+    - kind: stream
+      regex: '(?m)(?:\A|^[^#\n]*\n)(?:[ \t]*|[^\n]*[ \t])#[ \t]*yamllint[ \t]+disable'

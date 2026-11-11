@@ -1,0 +1,77 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: opened-connection-verifies-its-peer@typescript
+language: Tsx
+severity: error
+message: >-
+  A connection that skips its peer's certificate or name: keep the verification on, and trust a
+  private authority through ca instead
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+# Why: a spec's local connection to an engine it started on the loopback is the exempt one.
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  verification-switch:
+    regex: ^["'`]?NODE_TLS_REJECT_UNAUTHORIZED["'`]?$
+  # Why: the runtime turns the verification off only for the value 0.
+  switched-off:
+    regex: ^["'`]?0["'`]?$
+rule:
+  any:
+    - kind: pair
+      all:
+        - has:
+            field: key
+            regex: ^["']?rejectUnauthorized["']?$
+        - has:
+            field: value
+            kind: 'false'
+    # Why: a check of the name that returns nothing accepts every name.
+    - kind: pair
+      all:
+        - has:
+            field: key
+            regex: ^["']?checkServerIdentity["']?$
+        - has:
+            field: value
+            kind: arrow_function
+            has:
+              field: body
+              any:
+                - kind: undefined
+                - kind: statement_block
+                  not:
+                    has:
+                      stopBy: end
+                      kind: return_statement
+                      has:
+                        not:
+                          kind: undefined
+    - kind: assignment_expression
+      all:
+        - has:
+            field: right
+            matches: switched-off
+        - has:
+            field: left
+            any:
+              - kind: member_expression
+                has:
+                  field: property
+                  matches: verification-switch
+              - kind: subscript_expression
+                has:
+                  field: index
+                  matches: verification-switch
+    - kind: pair
+      all:
+        - has:
+            field: key
+            matches: verification-switch
+        - has:
+            field: value
+            matches: switched-off

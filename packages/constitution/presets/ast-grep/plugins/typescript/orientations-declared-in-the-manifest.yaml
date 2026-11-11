@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: orientations-declared-in-the-manifest@typescript
+language: Tsx
+severity: error
+message: >-
+  Declare both portrait and landscape for the app, orientation 'default': a locked orientation turns
+  every screen away from a device mounted the other way
+# Why: Expo writes the app manifests of both systems from its app config, whose name it fixes.
+files:
+  - '**/app.config.ts'
+rule:
+  kind: pair
+  has:
+    field: key
+    regex: '^[''"]?orientation[''"]?$'
+  all:
+    - has:
+        field: value
+        regex: '^[''"`](?:portrait|landscape)[''"`]$'

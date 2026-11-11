@@ -31,5 +31,5 @@ def covers(targets: MutationTargets, mutant: Mutant) -> bool:
       return True
     case Functions(globs=globs):
       return any(fnmatch.fnmatchcase(mutant.name, glob) for glob in globs)
-    case _:  # pragma: no mutate -- no targets reach it
-      assert_never(targets)  # pragma: no mutate -- no targets reach it
+    case _:  # pragma: no mutate  # Why: no targets reach it
+      assert_never(targets)  # pragma: no mutate  # Why: no targets reach it

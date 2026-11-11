@@ -24,7 +24,7 @@ const of = (text: string): RuleHeading | undefined => {
     (word !== undefined && level === undefined) ||
     (word === undefined && match[2] === undefined)
   ) {
-    return undefined;
+    return;
   }
 
   const tightens = match[2];

@@ -775,7 +775,9 @@ describe('the files apply writes for a unit of Python', () => {
       {
         condition: 'the only mutants of a new line are marked equivalent',
         changes: {
-          'src/shop/orders.py': ordersWithLabel('  # pragma: no mutate -- a name no spec reads'),
+          'src/shop/orders.py': ordersWithLabel(
+            '  # pragma: no mutate  # Why: a name no spec reads',
+          ),
         },
         task: 'mutate:branch',
       },

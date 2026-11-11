@@ -5,6 +5,7 @@ import { SourceKind } from '#/kernel/value-objects';
 import type { PresetEntry, PresetSet } from '../../../preset-entry/entities';
 import type { PresetsProblem } from '../../../shared/entities';
 import { PresetsFinding } from '../../../shared/entities';
+import { EntryTarget } from '../../../shared/value-objects';
 import { RoleNames } from '../../value-objects';
 import { indexOf } from './steps/index-model';
 import { namingProblems } from './steps/naming-problems';
@@ -47,6 +48,8 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
     ).values(),
   ];
 
+  const writersByTarget = Map.groupBy(input.entries, EntryTarget.textOf);
+
   return PresetsFinding.eachOnce([
     ...sets.flatMap((set) =>
       setProblems({
@@ -61,6 +64,8 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
           entry,
           index,
           model: input.model,
+          // Stryker disable next-line ArrayDeclaration: every entry is among those it is grouped with
+          writers: writersByTarget.get(EntryTarget.textOf(entry)) ?? [],
         }),
         ...namingProblems({
           entry,

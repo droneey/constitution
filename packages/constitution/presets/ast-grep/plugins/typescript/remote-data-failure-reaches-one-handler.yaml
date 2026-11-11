@@ -1,0 +1,98 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: remote-data-failure-reaches-one-handler@typescript
+language: Tsx
+severity: error
+message: >-
+  Register one handler of failed reads and writes on the client: queryCache: new QueryCache({
+  onError }) and mutationCache: new MutationCache({ onError })
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+utils:
+  client-built:
+    kind: new_expression
+    has:
+      field: constructor
+      regex: ^QueryClient$
+  on-error:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?onError["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^onError$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^onError$
+  cache-built:
+    kind: new_expression
+    has:
+      field: constructor
+      regex: ^(?:QueryCache|MutationCache)$
+  cache-given:
+    any:
+      - kind: identifier
+      - kind: member_expression
+      - kind: call_expression
+      - matches: cache-built
+  query-cache-given:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?queryCache["'`]?$
+    all:
+      - has:
+          field: value
+          matches: cache-given
+  mutation-cache-given:
+    kind: pair
+    has:
+      field: key
+      regex: ^["'`]?mutationCache["'`]?$
+    all:
+      - has:
+          field: value
+          matches: cache-given
+  client-without-a-handler:
+    matches: client-built
+    has:
+      field: arguments
+      any:
+        - not:
+            has:
+              nthChild: 1
+        - has:
+            nthChild: 1
+            kind: object
+            any:
+              - not:
+                  has:
+                    matches: query-cache-given
+              - not:
+                  has:
+                    matches: mutation-cache-given
+  cache-without-a-handler:
+    matches: cache-built
+    has:
+      field: arguments
+      any:
+        - not:
+            has:
+              nthChild: 1
+        - has:
+            nthChild: 1
+            kind: object
+            not:
+              has:
+                matches: on-error
+rule:
+  any:
+    - matches: client-without-a-handler
+    - matches: cache-without-a-handler

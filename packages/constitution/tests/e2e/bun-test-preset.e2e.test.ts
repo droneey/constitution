@@ -1,9 +1,16 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { describe, expect, it } from 'bun:test';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { BunConfig, bunTestRun, specOf } from './bun-test-preset.fixtures';
 
 const passing = specOf("test('should hold when run', () => {\n  expect(true).toBeTrue();\n});");
 const failing = specOf("test('should fail when run', () => {\n  expect(false).toBeTrue();\n});");
+// Why: the DOM preload records the socket it finds, which the sandbox replaces once it has run.
+const DOM_PRELOAD =
+  "Reflect.set(globalThis, 'connectSeenByTheDom', Bun.connect.name);\n\nexport {};\n";
 const ORDER =
   'export const total = (price: number, tax: number): number => price + tax;\n\nexport const half = (value: number): number => value / 2;\n';
 const totalSpec = specOf(
@@ -41,6 +48,58 @@ describe("the configuration Bun's test runner's presets write", () => {
         files: {
           'src/__tests__/sandbox.test.ts': specOf(
             "test('should refuse a socket when the sandbox is preloaded', () => {\n  expect(Bun.connect.name).toBe('refuseNetwork');\n});",
+          ),
+        },
+      });
+
+      // Assert
+      expect(run.status).toBe(0);
+    },
+  );
+
+  it.each(Object.values(BunConfig))(
+    'should load the DOM preload before the sandbox when the specs run by %s',
+    async (config) => {
+      // Act
+      const run = await bunTestRun({
+        config,
+        files: {
+          'src/__tests__/dom.fixtures.ts': DOM_PRELOAD,
+          'src/__tests__/dom.test.ts': specOf(
+            "test('should find the socket untouched when the DOM preload ran', () => {\n  expect(Reflect.get(globalThis, 'connectSeenByTheDom')).toBe('connect');\n});",
+          ),
+        },
+      });
+
+      // Assert
+      expect(run.status).toBe(0);
+    },
+  );
+
+  it("should write the DOM preload when a unit runs browser code without React's DOM renderer", () => {
+    // Act
+    const folder = appliedUnit({
+      blocks: [
+        'bun-test',
+        'client/browser',
+        'typescript',
+      ],
+    });
+
+    // Assert
+    expect(existsSync(join(folder, 'src/__tests__/dom.fixtures.ts'))).toBe(true);
+  });
+
+  it.each(Object.values(BunConfig))(
+    'should leave the environment file unread when the specs run by %s',
+    async (config) => {
+      // Act
+      const run = await bunTestRun({
+        config,
+        files: {
+          '.env': 'ORDER_TOKEN=loaded\n',
+          'src/__tests__/env.test.ts': specOf(
+            "test('should find no variable of the environment file when it runs', () => {\n  expect(process.env['ORDER_TOKEN']).toBeUndefined();\n});",
           ),
         },
       });
