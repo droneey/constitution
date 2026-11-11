@@ -150,7 +150,7 @@ Use the owner's words: the glossary seeds the language of the code. When an answ
 
 ### 7. Overrides
 
-`overrides` stays `[]`. When the owner names a rule the repository will not follow, offer `/constitution:amend` once the files are written: it asks for each field of an override and for the owner's consent to it.
+`overrides` stays `[]`. When the owner names a rule the repository will not follow, offer `/constitution:override` once the files are written: it asks for each field of an override and for the owner's consent to it.
 
 ### 8. Summarise, then write
 
@@ -174,7 +174,7 @@ It prints each file the active blocks give, with the preset entries that write i
 constitution presets apply
 ```
 
-It writes every unit's files beside the settings each file holds of its own, removes what an earlier apply wrote that no entry gives any longer, writes each unit's `constitution.lock`, and then runs the fix of each unit it wrote a file of. Show the owner the diff and every finding. A finding is fixed in the code, or offered as an override through `/constitution:amend`; a written setting is never edited back by hand, which the next check reports. Then run `constitution run check`.
+It writes every unit's files beside the settings each file holds of its own, removes what an earlier apply wrote that no entry gives any longer, writes each unit's `constitution.lock`, and then runs the fix of each unit it wrote a file of. Show the owner the diff and every finding. A finding is fixed in the code, or offered as an override through `/constitution:override`; a written setting is never edited back by hand, which the next check reports. Then run `constitution run check`.
 
 ### 10. See what a session will receive
 

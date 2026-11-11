@@ -2,14 +2,14 @@
 
 > When a rule does not fit the project, lower it in `constitution.yaml`, with a reason, instead of breaking it silently.
 
-## Run `/constitution:amend`
+## Run `/constitution:override`
 
 ```text
-/constitution:amend data-view-shows-every-state
+/constitution:override data-view-shows-every-state
 ```
 
 1. Check that the rule it shows is the one you mean.
-2. Answer its questions, one at a time: the lower level, your reason in one line, an end date if the override is temporary, and the scope, the repository or one member of its workspace. [Skills](../reference/skills.md#constitutionamend) has what each answer takes.
+2. Answer its questions, one at a time: the lower level, your reason in one line, an end date if the override is temporary, and the scope, the repository or one member of its workspace. [Skills](../reference/skills.md#constitutionoverride) has what each answer takes.
 3. Check the exact lines it shows under `overrides:` of the unit's `constitution.yaml`, in [its form](../reference/constitution-yaml.md#overrides), and agree; it writes them only then.
 
 ## What an override does
@@ -22,4 +22,4 @@
 
 ## Remove it
 
-The change that ends the reason removes the override: run `/constitution:amend` with the rule's slug again, or delete the entry.
+The change that ends the reason removes the override: run `/constitution:override` with the rule's slug again, or delete the entry.
