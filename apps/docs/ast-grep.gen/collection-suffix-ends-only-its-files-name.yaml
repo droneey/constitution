@@ -1,0 +1,50 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: collection-suffix-ends-only-its-files-name@typescript
+language: Tsx
+severity: error
+message: >-
+  A type named with a collection suffix: name the one thing it is, and leave the suffix to its
+  file's name
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  # Why: Utils, Types, Constants and Messages are the vocabulary's own words, which no term of the
+  # foundation names, while the marks of specs, suites, fixtures and generated files are terms;
+  # a mark ends a type's name capitalised, after a lower-case letter or a digit.
+  suffixed:
+    regex: '[a-z0-9](?:Utils|Types|Constants|Messages|(?i:test|suite|fixtures|gen))$'
+  # Why: a mark spelled in lower case ends a longer word, as test ends Latest.
+  word-ending-in-a-mark:
+    regex: (?:test|suite|fixtures|gen)$
+  declared-name:
+    any:
+      - kind: type_identifier
+        any:
+          - inside:
+              field: name
+              kind: class_declaration
+          - inside:
+              field: name
+              kind: abstract_class_declaration
+          - inside:
+              field: name
+              kind: interface_declaration
+          - inside:
+              field: name
+              kind: type_alias_declaration
+      - kind: identifier
+        inside:
+          field: name
+          kind: enum_declaration
+rule:
+  matches: declared-name
+  all:
+    - matches: suffixed
+    - not:
+        matches: word-ending-in-a-mark
+    # Why: a name declared to augment a module or the global scope is the one its library imposes.
+    - not:
+        inside:
+          stopBy: end
+          kind: ambient_declaration

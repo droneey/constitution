@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cross-origin-script-loaded-with-integrity@typescript
+language: Tsx
+severity: error
+message: >-
+  Load a script of another origin with integrity and crossOrigin, so the browser runs only the file
+  whose digest is pinned
+files:
+  - '**/*.tsx'
+utils:
+  cross-origin-source:
+    kind: jsx_attribute
+    has:
+      kind: property_identifier
+      regex: '^src$'
+    regex: '^src\s*=\s*\{?\s*[''"`](?:https?:)?//'
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: '^script$'
+  all:
+    - has:
+        matches: cross-origin-source
+    - not:
+        any:
+          - all:
+              - has:
+                  kind: jsx_attribute
+                  has:
+                    kind: property_identifier
+                    regex: '^integrity$'
+              - has:
+                  kind: jsx_attribute
+                  has:
+                    kind: property_identifier
+                    regex: '^crossOrigin$'
+          # Why: the one loader of code its maker changes by design, a tag manager's or a payment
+          # provider's, runs by the nonce its page's CSP allows.
+          - has:
+              kind: jsx_attribute
+              has:
+                kind: property_identifier
+                regex: '^nonce$'

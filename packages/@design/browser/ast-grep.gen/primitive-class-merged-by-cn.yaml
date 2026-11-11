@@ -1,0 +1,28 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: primitive-class-merged-by-cn@typescript
+language: Tsx
+severity: error
+message: >-
+  Merge the caller's className through cn(), as its last argument: classes joined without the merge
+  fight by their order in the stylesheet
+files:
+  - '**/libs/ui/**/*.tsx'
+rule:
+  kind: identifier
+  regex: '^className$'
+  not:
+    any:
+      - inside:
+          kind: arguments
+          inside:
+            kind: call_expression
+            has:
+              field: function
+              regex: '^cn$'
+        nthChild:
+          position: 1
+          reverse: true
+      - inside:
+          any:
+            - kind: required_parameter
+            - kind: optional_parameter

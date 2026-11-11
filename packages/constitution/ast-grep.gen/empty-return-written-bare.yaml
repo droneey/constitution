@@ -1,0 +1,69 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: empty-return-written-bare@typescript
+language: Tsx
+severity: error
+message: 'A return of undefined spelled out: write a bare return;'
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  undefined-value:
+    any:
+      - kind: undefined
+      - kind: identifier
+        regex: ^undefined$
+      - kind: unary_expression
+        regex: ^void\s+0$
+      - kind: parenthesized_expression
+        regex: ^\(\s*(?:undefined|void\s+0)\s*\)$
+  value-return:
+    kind: return_statement
+    regex: ^return\s*[^\s;]
+    not:
+      has:
+        matches: undefined-value
+  function-answering-a-value:
+    any:
+      - kind: arrow_function
+      - kind: function_declaration
+      - kind: function_expression
+      - kind: method_definition
+    has:
+      stopBy: end
+      matches: value-return
+  last-of-the-body:
+    nthChild:
+      position: 1
+      reverse: true
+    inside:
+      kind: statement_block
+      inside:
+        matches: function-answering-a-value
+  # Why: no statement follows a return that ends its function's body, or a block of a try that
+  # does, so its bare form is a statement that does nothing, and the compiler asks a function
+  # that answers a value on another path for the value there.
+  ends-the-function:
+    nthChild:
+      position: 1
+      reverse: true
+    any:
+      - matches: last-of-the-body
+      - inside:
+          kind: statement_block
+          any:
+            - inside:
+                kind: try_statement
+                matches: last-of-the-body
+            - inside:
+                any:
+                  - kind: catch_clause
+                  - kind: finally_clause
+                inside:
+                  kind: try_statement
+                  matches: last-of-the-body
+rule:
+  kind: return_statement
+  has:
+    matches: undefined-value
+  not:
+    matches: ends-the-function

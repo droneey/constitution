@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: suppression-reason-in-a-second-comment@python
+language: Python
+severity: error
+message: >-
+  Give the type checker's suppression its reason in a second comment after its codes, as
+  `# type: ignore[code]  # <reason>`
+# Why: a type checker refuses other text after its codes, while Ruff's block writes a noqa's reason
+# after its code in the same comment, so only the type checkers' suppressions are read here.
+rule:
+  kind: comment
+  regex: ^#\s*(?:type|ty|pyright)\s*:\s*ignore\b
+  not:
+    regex: ^#\s*(?:type|ty|pyright)\s*:\s*ignore(?:\[[^\]]*\])?\s*#\s*\S

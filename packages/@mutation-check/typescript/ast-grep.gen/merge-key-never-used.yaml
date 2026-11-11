@@ -1,0 +1,32 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: merge-key-never-used@yaml
+language: Yaml
+severity: error
+message: 'Write the merged keys out: a YAML 1.2 reader takes << as an ordinary key'
+# Why: Bitbucket Pipelines defines the merge key for the file it reads by this fixed name.
+ignores:
+  - '**/bitbucket-pipelines.yml'
+rule:
+  any:
+    - kind: block_mapping_pair
+    - kind: flow_pair
+  has:
+    field: key
+    has:
+      kind: plain_scalar
+      regex: '^<<$'
+  # Why: the Compose specification defines the merge key, and a Compose file, whatever its name,
+  # holds its services under a top-level `services` key.
+  not:
+    inside:
+      stopBy: end
+      kind: document
+      has:
+        kind: block_node
+        has:
+          kind: block_mapping
+          has:
+            kind: block_mapping_pair
+            has:
+              field: key
+              regex: '^services$'

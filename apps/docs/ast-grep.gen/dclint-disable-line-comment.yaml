@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: dclint-disable-line-comment@yaml
+language: Yaml
+severity: error
+message: 'Silence one dclint finding with # dclint disable-line <rule>, naming its one rule'
+files:
+  - '**/compose.yaml'
+  - '**/compose.yml'
+  - '**/compose.*.yaml'
+  - '**/compose.*.yml'
+  - '**/docker-compose.yaml'
+  - '**/docker-compose.yml'
+  - '**/docker-compose.*.yaml'
+  - '**/docker-compose.*.yml'
+rule:
+  kind: comment
+  regex: '^#\s*dclint\s+disable'
+  not:
+    regex: '^#\s*dclint\s+disable-line\s+[a-z0-9-]+\s*$'

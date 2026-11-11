@@ -1,0 +1,15 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: value-holding-a-backslash-never-double-quoted@yaml
+language: Yaml
+severity: error
+message: >-
+  Write a string that holds a backslash plain, single-quoted or as a block scalar: double quotes
+  read each backslash as an escape
+rule:
+  kind: double_quote_scalar
+  # Why: `\\` is an escaped backslash, which the string holds, and `\b`, `\f`, `\a`, `\e`, `\N`,
+  # `\L`, `\P` and `\_` are what a pattern means otherwise, such as a word boundary or a class of
+  # Unicode letters, which double quotes turn into a character of their own. An escape YAML does not
+  # define fails the parse, and the escapes of a line break, a tab, a quote or a code point hold no
+  # backslash.
+  regex: '\\[\\bfaeNLP_]'

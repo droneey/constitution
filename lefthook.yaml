@@ -7,8 +7,8 @@ pre-commit:
     # lefthook
     - name: validate-branch
       run: >-
-        .droneey/constitution/presets/lefthook/plugins/shell/branch-named-type-issue-name.sh feature
-        fix hotfix
+        .droneey/constitution/presets/lefthook/plugins/shell/branch-named-type-issue-name.sh
+        feature fix hotfix
 
     # biome
     - name: biome
@@ -114,6 +114,10 @@ commit-msg:
     - name: commit-body
       run: >-
         .droneey/constitution/presets/lefthook/plugins/shell/commit-body-left-empty.sh {1}
+    - name: commit-footer
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-footer-holds-only-trailers.sh
+        {1}
     - name: commit-header-length
       run: >-
         .droneey/constitution/presets/lefthook/plugins/shell/commit-header-within-100-characters.sh

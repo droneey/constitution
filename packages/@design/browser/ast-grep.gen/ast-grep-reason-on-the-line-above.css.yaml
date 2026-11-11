@@ -1,0 +1,42 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: ast-grep-reason-on-the-line-above@css
+language: Css
+severity: error
+message: >-
+  Give an ast-grep suppression its reason in a comment of its own on the line above it, never
+  inside the suppression's comment
+files:
+  - '**/*.css'
+utils:
+  reason-above:
+    follows:
+      kind: comment
+  # Why: a suppression at the end of a line of code follows that code, so its reason stands
+  # above the code it ends.
+  punctuation:
+    regex: ^[,;]$
+  reason-above-its-code:
+    follows:
+      stopBy:
+        not:
+          matches: punctuation
+      not:
+        any:
+          - kind: comment
+          - matches: punctuation
+      follows:
+        stopBy:
+          not:
+            matches: punctuation
+        kind: comment
+rule:
+  kind: comment
+  all:
+    - regex: ^(?://|/\*+|#)\s*ast-grep-ignore
+    - any:
+        - not:
+            regex: ^(?://|/\*+|#)\s*ast-grep-ignore(?::\s*[A-Za-z0-9_-]+@[A-Za-z0-9_-]+(?:\s*,\s*[A-Za-z0-9_-]+@[A-Za-z0-9_-]+)*)?\s*(?:\*+/)?$
+        - not:
+            any:
+              - matches: reason-above
+              - matches: reason-above-its-code

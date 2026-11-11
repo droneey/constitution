@@ -99,7 +99,7 @@
         "noUnusedInstantiation": "error",
       },
       "style": {
-        // biome
+        // typescript
         "useFilenamingConvention": {
           "level": "error",
           "options": {
@@ -109,6 +109,8 @@
             ],
           },
         },
+
+        // biome
         "noExcessiveLinesPerFile": {
           "level": "error",
           "options": {

@@ -1,0 +1,25 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: init-of-a-folder-without-a-surface-empty@python
+language: Python
+severity: error
+message: >-
+  A folder with no surface keeps its __init__.py empty: import its members by their own modules
+# Why: a glob's star crosses folders, so the layers are named only where no folder module or role
+# folder of the same name can sit: a layer's name directly under the import package, a feature's or
+# a composition module's, and a concept folder directly under a domain layer.
+files:
+  - '**/src/*/{features,composition,infrastructure,kernel,shared,libs,integrations,entrypoints,presentation,domain,application}/__init__.py'
+  - '**/src/*/{features,composition}/*/domain/*/__init__.py'
+ignores:
+  # Why: a role folder of a concept, and what it holds, may have a surface.
+  - '**/domain/*/*/__init__.py'
+  # Why: a folder module named like a layer, as a feature named for presentations, has a surface.
+  - '**/{features,composition,infrastructure,shared,libs,integrations,entrypoints}/{features,composition,infrastructure,kernel,shared,libs,integrations,entrypoints,presentation,domain,application}/__init__.py'
+  - '**/*_gen/**'
+rule:
+  kind: module
+  has:
+    all:
+      - pattern: $STATEMENT
+      - not:
+          kind: comment

@@ -1,0 +1,40 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: role-suffix-spelled-after-a-dot@typescript
+language: Tsx
+severity: error
+message: >-
+  A role joined to the file's name by a hyphen: spell it after a dot, as <name>.<role>.ts, so it
+  reads apart from the name
+# Why: these role words end no other word a file of the source is named by; the words that do, an
+# error's and an event's, are read as a role only in the role folder that holds them.
+files:
+  - '**/src/**/*-entity.ts'
+  - '**/src/**/*-aggregate.ts'
+  - '**/src/**/*-value-object.ts'
+  - '**/src/**/*-service.ts'
+  - '**/src/**/*-transitions.ts'
+  - '**/src/**/*-port.ts'
+  - '**/src/**/*-adapter.ts'
+  - '**/src/**/*-use-case.ts'
+  - '**/src/**/*-dto.ts'
+  - '**/src/**/*-utils.ts'
+  - '**/src/**/*-types.ts'
+  - '**/src/**/*-constants.ts'
+  - '**/src/**/errors/*-error.ts'
+  - '**/src/**/events/*-event.ts'
+  - '**/src/**/*-entity.tsx'
+  - '**/src/**/*-aggregate.tsx'
+  - '**/src/**/*-value-object.tsx'
+  - '**/src/**/*-service.tsx'
+  - '**/src/**/*-transitions.tsx'
+  - '**/src/**/*-port.tsx'
+  - '**/src/**/*-adapter.tsx'
+  - '**/src/**/*-use-case.tsx'
+  - '**/src/**/*-dto.tsx'
+  - '**/src/**/*-utils.tsx'
+  - '**/src/**/*-types.tsx'
+  - '**/src/**/*-constants.tsx'
+  - '**/src/**/errors/*-error.tsx'
+  - '**/src/**/events/*-event.tsx'
+rule:
+  kind: program

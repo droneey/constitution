@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: adapter-is-a-factory-or-module-object@typescript
+language: Tsx
+severity: error
+message: >-
+  Write the adapter as a factory function or a module object, never a class: a method handed to a
+  hook or a handler loses its this
+files:
+  - '**/*.adapter.ts'
+  - '**/*.adapter.tsx'
+rule:
+  any:
+    - kind: class_declaration
+    - kind: class
+  # Why: an error the adapter raises is a class the language requires to extend its base.
+  not:
+    has:
+      kind: class_heritage
+      regex: 'Error\b'

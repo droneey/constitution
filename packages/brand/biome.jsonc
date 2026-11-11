@@ -159,6 +159,8 @@
         "useNodejsImportProtocol": "error",
         "useShorthandFunctionType": "error",
         "useTemplate": "error",
+
+        // typescript
         "useFilenamingConvention": {
           "level": "error",
           "options": {
@@ -168,6 +170,8 @@
             ],
           },
         },
+
+        // biome
         "noExcessiveLinesPerFile": {
           "level": "error",
           "options": {

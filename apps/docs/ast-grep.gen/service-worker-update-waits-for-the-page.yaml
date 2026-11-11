@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: service-worker-update-waits-for-the-page@typescript
+language: Tsx
+severity: error
+message: >-
+  Activate a waiting service worker only when its page asks, in a message listener, and reload the
+  page then: skipping the wait swaps the worker under a page already open
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  message-listener:
+    any:
+      - kind: call_expression
+        has:
+          field: function
+          regex: '(?:^|\.)addEventListener$'
+        all:
+          - has:
+              field: arguments
+              has:
+                nthChild: 1
+                regex: '^[''"`]message[''"`]$'
+      - kind: assignment_expression
+        has:
+          field: left
+          regex: '(?:^|\.)onmessage$'
+rule:
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^(?:(?:self|globalThis|this)\.)?skipWaiting$'
+      not:
+        inside:
+          stopBy: end
+          matches: message-listener
+    # Why: Workbox's generated worker skips the wait as it installs, outside any listener.
+    - kind: pair
+      has:
+        field: key
+        regex: '^[''"]?skipWaiting[''"]?$'
+      all:
+        - has:
+            field: value
+            regex: '^true$'

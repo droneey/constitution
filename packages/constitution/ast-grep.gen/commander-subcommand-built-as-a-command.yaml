@@ -1,0 +1,44 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: commander-subcommand-built-as-a-command@typescript
+language: Tsx
+severity: error
+message: >-
+  Give a subcommand its description, options and action in the factory that builds it, never
+  through the program's list of commands
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  imports-commander:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["'](?:commander|@commander-js/extra-typings)["']$
+  commands-listed:
+    kind: member_expression
+    has:
+      field: property
+      regex: ^commands$
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        all:
+          - has:
+              field: property
+              regex: ^(?:description|summary|option|requiredOption|addOption|argument|arguments|addArgument|action|alias|aliases)$
+          - has:
+              stopBy: end
+              matches: commands-listed
+    - matches: imports-commander

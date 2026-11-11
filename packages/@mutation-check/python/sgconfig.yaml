@@ -1,3 +1,8 @@
+# json
+languageGlobs:
+  json:
+    - '*.jsonc'
+
 # ast-grep
 ruleDirs:
   - ast-grep.gen

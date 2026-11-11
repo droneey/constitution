@@ -1,0 +1,13 @@
+# typescript
+id: surface-imported-by-its-folders-path@typescript
+language: Tsx
+severity: error
+message: >-
+  An import that ends at a surface's file: end it at the folder, which names the surface
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  matches: surface-imported-by-its-folders-path@typescript
+  not:
+    any: []

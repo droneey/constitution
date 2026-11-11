@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: type-error-suppression-gives-its-reason-on-its-line@typescript
+language: Tsx
+severity: error
+message: "A @ts-expect-error with no reason: state it on the directive's line, after it"
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: comment
+  any:
+    - regex: ^//\s*@ts-expect-error[\s:.\-]*$
+    - regex: ^/\*+\s*@ts-expect-error[\s:.\-]*\*/$
+    - regex: ^/\*+\s*@ts-expect-error[\s:.\-]*\n

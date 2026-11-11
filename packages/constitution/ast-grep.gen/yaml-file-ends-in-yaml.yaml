@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: yaml-file-ends-in-yaml@yaml
+language: Yaml
+severity: error
+message: 'Name the YAML file with .yaml, never .yml'
+files:
+  - '**/*.yml'
+# Why: the files a tool reads only by a fixed name in .yml. ast-grep walks no hidden folder or
+# file, so those under .github/ or .circleci/ and the dotfiles never reach the rule.
+ignores:
+  - '**/appveyor.yml'
+  - '**/bitbucket-pipelines.yml'
+rule:
+  kind: stream

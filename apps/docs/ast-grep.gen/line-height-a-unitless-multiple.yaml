@@ -1,0 +1,39 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: line-height-a-unitless-multiple@json
+language: Json
+severity: error
+message: >-
+  Hold the line height as a unitless multiple of its text's size, or a reference to one: a height
+  fixed in a unit stays as it was when a theme changes the size
+files:
+  - '**/*.tokens.json'
+utils:
+  # Why: a length in a unit is a string with its unit, or a dimension's object that names its unit.
+  value-in-a-unit:
+    any:
+      - kind: string
+        regex: '^"\s*[+-]?(?:\d*\.)?\d+\s*[A-Za-z%]+\s*"$'
+      - kind: object
+        has:
+          kind: pair
+          has:
+            field: key
+            regex: '^"unit"$'
+rule:
+  kind: pair
+  has:
+    field: value
+    matches: value-in-a-unit
+  any:
+    - has:
+        field: key
+        regex: '^"(?:lineHeight|line-height)"$'
+    - has:
+        field: key
+        regex: '^"\$value"$'
+      inside:
+        stopBy: end
+        kind: pair
+        has:
+          field: key
+          regex: '^"(?:leading|lineHeight|line-height)"$'

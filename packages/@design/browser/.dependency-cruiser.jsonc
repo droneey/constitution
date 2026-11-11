@@ -678,6 +678,24 @@
         "path": "^src/(features|composition)/[^/]+/presentation/(screens|widgets|components)/",
       },
     },
+    {
+      "name": "feature-ui-imports-only-ui-shared-layers",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/([^/]+)/presentation/(?:widgets|components)/",
+        "pathNot": [
+          "(^|/)__tests__/",
+        ],
+      },
+      "to": {
+        "path": "^src/.+\\.[cm]?[jt]sx?$",
+        "pathNot": [
+          "^src/features/$1/",
+          "^src/(?:libs|shared)/ui/",
+          "^src/kernel/(?!contracts/)",
+        ],
+      },
+    },
 
     // workspace
     {

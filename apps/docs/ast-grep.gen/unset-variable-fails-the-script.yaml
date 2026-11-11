@@ -1,0 +1,71 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: unset-variable-fails-the-script@shell
+language: Bash
+severity: error
+message: 'Turn on set -u before the first command, so an unset variable fails the script'
+files:
+  - '**/*.sh'
+  - '**/*.bash'
+utils:
+  # Why: a sourced file runs only inside the shell that reads it, and only a script run on its own
+  # names its shell on its first line.
+  in-a-script:
+    inside:
+      kind: program
+      has:
+        kind: comment
+        nthChild: 1
+        regex: '^#!'
+  # Why: the lines that set the shell's options come first, some under a check of Bash's version.
+  sets-options:
+    any:
+      - kind: command
+        has:
+          field: name
+          regex: '^(?:set|shopt)$'
+      - kind: if_statement
+        not:
+          has:
+            stopBy: end
+            kind: command
+            not:
+              has:
+                field: name
+                regex: '^(?:set|shopt)$'
+  # Why: a function's definition runs nothing until it is called.
+  runs-a-command:
+    any:
+      - kind: command
+      - kind: pipeline
+      - kind: list
+      - kind: variable_assignment
+      - kind: variable_assignments
+      - kind: declaration_command
+      - kind: unset_command
+      - kind: test_command
+      - kind: negated_command
+      - kind: redirected_statement
+      - kind: subshell
+      - kind: compound_statement
+      - kind: if_statement
+      - kind: case_statement
+      - kind: for_statement
+      - kind: c_style_for_statement
+      - kind: while_statement
+    not:
+      matches: sets-options
+  sets-nounset:
+    kind: command
+    regex: '^set(?:\s+[-+][a-zA-Z]+|\s+[-+]o\s+[a-z]+)*\s+(?:-[a-zA-Z]*u[a-zA-Z]*|-o\s+nounset)(?:\s|$)'
+rule:
+  matches: runs-a-command
+  all:
+    - matches: in-a-script
+    - not:
+        follows:
+          stopBy: end
+          matches: runs-a-command
+    - not:
+        follows:
+          stopBy: end
+          matches: sets-nounset

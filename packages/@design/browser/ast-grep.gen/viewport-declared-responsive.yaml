@@ -1,0 +1,44 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: viewport-declared-responsive@html
+language: Html
+severity: error
+message: >-
+  Declare the responsive viewport in the head, <meta name="viewport" content="width=device-width,
+  initial-scale=1">, or a phone lays the page out at a desktop's width
+files:
+  - '**/*.html'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+utils:
+  meta-tag:
+    any:
+      - kind: start_tag
+      - kind: self_closing_tag
+    has:
+      kind: tag_name
+      regex: '(?i)^meta$'
+  responsive-viewport:
+    matches: meta-tag
+    all:
+      - has:
+          kind: attribute
+          regex: '(?i)^name\s*=\s*["'']?\s*viewport\s*["'']?$'
+      - has:
+          kind: attribute
+          regex: '(?i)^content\s*=.*\bwidth\s*=\s*device-width\b'
+      - has:
+          kind: attribute
+          regex: '(?i)^content\s*=.*\binitial-scale\s*=\s*1(?:\.0*)?(?:[\s,;"'']|$)'
+rule:
+  kind: element
+  has:
+    kind: start_tag
+    has:
+      kind: tag_name
+      regex: '(?i)^head$'
+  not:
+    has:
+      stopBy: end
+      matches: responsive-viewport

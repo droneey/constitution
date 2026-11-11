@@ -1,0 +1,122 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: commander-output-through-the-programs-writers@typescript
+language: Tsx
+severity: error
+message: >-
+  Give the program its writers by configureOutput({ writeOut, writeErr, outputError }), so
+  commander writes nothing to a standard stream itself
+files:
+  - '**/src/root/**'
+  - '**/src/main.ts'
+  - '**/src/entrypoints/*/main.ts'
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+utils:
+  imports-commander:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["'](?:commander|@commander-js/extra-typings)["']$
+  scope:
+    any:
+      - kind: program
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  output-configured:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^configureOutput$
+  # Why: a command that copies its parent's settings is a subcommand, which takes the program's
+  # exit override and writers from it.
+  settings-copied-in-its-chain:
+    inside:
+      stopBy:
+        not:
+          any:
+            - kind: call_expression
+            - kind: member_expression
+      kind: call_expression
+      has:
+        field: function
+        kind: member_expression
+        has:
+          field: property
+          regex: ^copyInheritedSettings$
+  program-built:
+    any:
+      - all:
+          - any:
+              - kind: new_expression
+                has:
+                  field: constructor
+                  regex: ^Command$
+              - kind: call_expression
+                has:
+                  field: function
+                  regex: ^createCommand$
+          - not:
+              matches: settings-copied-in-its-chain
+      - kind: import_specifier
+        has:
+          field: name
+          regex: ^program$
+  writer:
+    any:
+      - kind: pair
+        has:
+          field: key
+          regex: ^["'`]?(?:writeOut|writeErr|outputError)["'`]?$
+      - kind: shorthand_property_identifier
+        regex: ^(?:writeOut|writeErr|outputError)$
+      - kind: method_definition
+        has:
+          field: name
+          regex: ^(?:writeOut|writeErr|outputError)$
+  program-without-writers:
+    all:
+      - matches: program-built
+      - inside:
+          stopBy: end
+          matches: scope
+          not:
+            has:
+              stopBy: end
+              matches: output-configured
+  writers-left-out:
+    kind: object
+    inside:
+      kind: arguments
+      inside:
+        matches: output-configured
+    any:
+      - not:
+          has:
+            matches: writer
+            regex: ^["'`]?writeOut
+      - not:
+          has:
+            matches: writer
+            regex: ^["'`]?writeErr
+      - not:
+          has:
+            matches: writer
+            regex: ^["'`]?outputError
+rule:
+  all:
+    - matches: imports-commander
+    - any:
+        - matches: program-without-writers
+        - matches: writers-left-out

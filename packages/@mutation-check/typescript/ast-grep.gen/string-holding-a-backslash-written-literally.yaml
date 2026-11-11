@@ -1,0 +1,53 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: string-holding-a-backslash-written-literally@typescript
+language: Tsx
+severity: error
+message: >-
+  A backslash written as an escape: write the string literally, as String.raw`…` or a regular
+  expression literal
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  escaped-backslash:
+    kind: escape_sequence
+    regex: ^\\\\$
+  # Why: a string with another escape, one that ends in a backslash or one that holds a backtick
+  # or a substitution's opening has no literal form that keeps it whole.
+  literal-form-exists:
+    all:
+      - has:
+          matches: escaped-backslash
+      - not:
+          has:
+            kind: escape_sequence
+            not:
+              matches: escaped-backslash
+      - not:
+          regex: \\\\["'`]$
+      - not:
+          regex: '`'
+rule:
+  any:
+    - kind: string
+      matches: literal-form-exists
+      not:
+        regex: \$\{
+    - kind: template_string
+      # Why: a tagged template is read raw where its tag reads it so, and String.raw is that form.
+      not:
+        inside:
+          kind: call_expression
+      all:
+        - has:
+            matches: escaped-backslash
+        - not:
+            has:
+              kind: escape_sequence
+              not:
+                matches: escaped-backslash
+        - not:
+            regex: \\\\`$
+        # Why: a backslash before a substitution would escape its opening in the raw form.
+        - not:
+            regex: \\\\\$\{

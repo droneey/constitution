@@ -48,5 +48,6 @@
   "diagnosticsTextArguments": {
     "new *Error": 0,
     "super": 0
-  }
+  },
+  "incremental": false
 }

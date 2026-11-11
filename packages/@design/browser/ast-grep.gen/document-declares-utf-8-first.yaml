@@ -1,0 +1,48 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: document-declares-utf-8-first@html
+language: Html
+severity: error
+message: >-
+  Declare <meta charset="utf-8"> at the top of the head: the browser guesses an encoding it finds no
+  declaration of in the first 1024 bytes
+files:
+  - '**/*.html'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/__tests__/**'
+  - '**/tests/**'
+utils:
+  meta-tag:
+    any:
+      - kind: start_tag
+      - kind: self_closing_tag
+    has:
+      kind: tag_name
+      regex: '(?i)^meta$'
+  charset-attribute:
+    kind: attribute
+    has:
+      kind: attribute_name
+      regex: '(?i)^charset$'
+  utf-8-charset:
+    matches: meta-tag
+    has:
+      matches: charset-attribute
+      regex: '(?i)=\s*["'']?\s*utf-8\s*["'']?$'
+rule:
+  any:
+    - kind: element
+      has:
+        kind: start_tag
+        has:
+          kind: tag_name
+          regex: '(?i)^head$'
+      not:
+        has:
+          stopBy: end
+          matches: utf-8-charset
+    - matches: meta-tag
+      has:
+        matches: charset-attribute
+      not:
+        matches: utf-8-charset

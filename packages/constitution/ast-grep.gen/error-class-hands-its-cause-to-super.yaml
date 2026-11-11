@@ -1,0 +1,113 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: error-class-hands-its-cause-to-super@typescript
+language: Tsx
+severity: error
+message: >-
+  A constructor that takes the cause option keeps it from super: hand the option on, or the
+  cause its caller passed is dropped
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  cause-name:
+    any:
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+    regex: ^cause$
+  # Why: ErrorOptions is the standard type of the option, and a type that names a cause field is
+  # one of the class's own.
+  cause-type:
+    any:
+      - has:
+          stopBy: end
+          kind: type_identifier
+          regex: ^ErrorOptions$
+      - has:
+          stopBy: end
+          kind: property_identifier
+          regex: ^cause$
+          inside:
+            kind: property_signature
+  parameter:
+    any:
+      - kind: required_parameter
+      - kind: optional_parameter
+  super-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: super
+  # Why: a parameter read whole from its name, typed as one holding the option, is handed on only
+  # where super receives that name.
+  options-kept-from-super:
+    all:
+      - has:
+          field: parameters
+          has:
+            matches: parameter
+            all:
+              - has:
+                  field: pattern
+                  kind: identifier
+                  pattern: $OPTIONS
+              - has:
+                  field: type
+                  matches: cause-type
+      - not:
+          has:
+            field: body
+            has:
+              stopBy: end
+              matches: super-call
+              has:
+                field: arguments
+                has:
+                  stopBy: end
+                  pattern: $OPTIONS
+  # Why: a parameter destructured to a name cause is handed on only where super receives a cause.
+  cause-kept-from-super:
+    all:
+      - has:
+          field: parameters
+          has:
+            matches: parameter
+            has:
+              field: pattern
+              any:
+                - kind: object_pattern
+                - kind: identifier
+                  regex: ^cause$
+              has:
+                stopBy: end
+                matches: cause-name
+      - not:
+          has:
+            field: body
+            has:
+              stopBy: end
+              matches: super-call
+              has:
+                field: arguments
+                has:
+                  stopBy: end
+                  matches: cause-name
+rule:
+  kind: method_definition
+  all:
+    - has:
+        field: name
+        regex: ^constructor$
+    - inside:
+        kind: class_body
+        inside:
+          any:
+            - kind: class_declaration
+            - kind: abstract_class_declaration
+            - kind: class
+          has:
+            kind: class_heritage
+    - any:
+        - matches: options-kept-from-super
+        - matches: cause-kept-from-super

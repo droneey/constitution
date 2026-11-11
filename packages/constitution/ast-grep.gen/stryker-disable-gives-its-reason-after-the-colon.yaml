@@ -1,0 +1,16 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: stryker-disable-gives-its-reason-after-the-colon@typescript
+language: Tsx
+severity: error
+message: >-
+  State why the mutant is equivalent after the mark's colon, as // Stryker disable next-line
+  <mutator>: <reason>
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+rule:
+  kind: comment
+  all:
+    - regex: ^(?://|/\*)\s*Stryker\s+disable\b
+    - not:
+        regex: ^(?://|/\*)\s*Stryker\s+disable\b[^:]*:\s*[^\s*]

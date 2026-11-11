@@ -3,8 +3,8 @@
 id: entity-value-or-event-typed-readonly@typescript
 language: Tsx
 severity: error
-message: 'A field of a business type that is not readonly: the value is shared, and a change made in
-  place goes unseen'
+message: 'A field of a business type that is not readonly: the value is shared, and a change made
+  in place goes unseen'
 files:
   - '**/domain/**'
   - '**/kernel/**'

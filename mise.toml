@@ -39,6 +39,7 @@ postinstall = [
   "uv sync --locked"
 ]
 
+# mise
 [settings]
 lockfile = true
 # Why: three days catch the hijacked releases found at once, and the cooldown holds for the

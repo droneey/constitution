@@ -1,0 +1,35 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cross-window-message-posted-to-a-named-origin@typescript
+language: Tsx
+severity: error
+message: >-
+  Post a message to its target's origin by name, never to *: whatever page that window now shows
+  reads it
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  any-origin:
+    regex: '^[''"`]\*[''"`]$'
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '(?:^|\.)postMessage$'
+  all:
+    - has:
+        field: arguments
+        has:
+          nthChild: 2
+          any:
+            - matches: any-origin
+            - kind: object
+              has:
+                kind: pair
+                all:
+                  - has:
+                      field: key
+                      regex: '^[''"]?targetOrigin[''"]?$'
+                  - has:
+                      field: value
+                      matches: any-origin

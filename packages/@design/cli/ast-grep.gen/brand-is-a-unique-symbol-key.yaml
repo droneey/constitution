@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: brand-is-a-unique-symbol-key@typescript
+language: Tsx
+severity: error
+message: >-
+  A brand keyed by a name: key it by the program's one declare const brand: unique symbol, as
+  string & { readonly [brand]: 'Name' }
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  primitive:
+    kind: predefined_type
+    regex: ^(?:string|number|bigint|boolean|symbol)$
+  # Why: the one key a brand takes is the computed name brand; a field named by an identifier or a
+  # literal, or a computed key of another name, is a brand any literal may spell.
+  key-other-than-the-brand:
+    any:
+      - kind: property_identifier
+      - kind: string
+      - kind: number
+      - kind: computed_property_name
+        not:
+          regex: ^\[\s*brand\s*\]$
+rule:
+  kind: object_type
+  all:
+    - inside:
+        kind: intersection_type
+        has:
+          matches: primitive
+    - has:
+        kind: property_signature
+        has:
+          field: name
+          matches: key-other-than-the-brand
