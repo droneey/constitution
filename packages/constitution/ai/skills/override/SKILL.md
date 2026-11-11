@@ -1,11 +1,11 @@
 ---
-name: amend
+name: override
 description: Add, change or remove an override in this repository's constitution.yaml — lower one Constitution rule from MUST to SHOULD, or set it to MAY, with the owner's reason and consent. Use when the owner wants to record, renew or drop a departure from a rule.
 argument-hint: "[rule-slug]"
 disable-model-invocation: true
 ---
 
-# Amend an override
+# Override a rule
 
 The repository's `constitution.yaml`:
 

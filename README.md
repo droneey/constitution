@@ -76,7 +76,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 - [`constitution.yaml`](docs/reference/constitution-yaml.md) — every key
 - [Presets](docs/reference/presets.md) — what each tool's presets configure
 - [Templates](docs/reference/templates.md) — the files ratify starts a project from
-- [Skills](docs/reference/skills.md) — what `/constitution:ratify`, `amend` and `review` do and write
+- [Skills](docs/reference/skills.md) — what `/constitution:ratify`, `override` and `review` do and write
 - [The plugin](docs/reference/plugin.md) — skills, the reviewer and the hooks
 - [Block format](docs/reference/block-format.md) — how a block and its rules are written
 - [Terms](docs/reference/terms.md) — every term the blocks define, its owner, its axis and its definition

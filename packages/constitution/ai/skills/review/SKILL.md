@@ -62,7 +62,7 @@ Take each finding, the reviewer's and the rule reviewer's alike, by what it says
 - **A SHOULD you keep:** leave it only with its reason, and give that reason in your report.
 - **A question for the person:** ask only where the rules give no answer, because they are silent, two of them clash, or the fix needs a decision outside the task, such as a new dependency, a project-wide logger, a change to a stored format or who may perform an action. A finding with `none` as its rule is such a question.
 
-Fixes are reviewed by running this skill again, until a review finds nothing to fix; what the last review still finds goes to the person, as `review-left-open-goes-to-the-person` asks. A finding against a rule the person does not want in this repository is a case for `/amend`, never for a silent exception.
+Fixes are reviewed by running this skill again, until a review finds nothing to fix; what the last review still finds goes to the person, as `review-left-open-goes-to-the-person` asks. A finding against a rule the person does not want in this repository is a case for `/constitution:override`, never for a silent exception.
 
 ## 6. Report
 

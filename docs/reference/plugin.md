@@ -7,7 +7,7 @@
 Each skill is called by its slash command:
 
 - `/constitution:ratify`, by you only, puts a repository under the Constitution;
-- `/constitution:amend`, by you only, adds, changes or removes an override;
+- `/constitution:override`, by you only, adds, changes or removes an override;
 - `/constitution:review`, by you or the agent, runs the check, has one fresh reviewer judge the change, beside the rule reviewer where it touches blocks or presets, and routes their findings.
 
 [Skills](skills.md) describes each, with its arguments and what it writes.
