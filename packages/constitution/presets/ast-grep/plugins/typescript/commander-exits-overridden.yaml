@@ -1,19 +1,6 @@
 # yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
 id: commander-exits-overridden@typescript
 language: Tsx
-severity: error
-message: >-
-  Call exitOverride() on the program, so commander throws a CommanderError where it would end the
-  process
-files:
-  - '**/${role.source}/${role.composition-root}/**'
-  - '**/${role.source}/${role.entry}.ts'
-  - '**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
-ignores:
-  - '**/${role.colocated-specs}/**'
-  - '**/${role.package-suites}/**'
-  - '**/*.${role.spec-file}.ts'
-  - '**/*.${role.spec-file}.tsx'
 utils:
   imports-commander:
     inside:

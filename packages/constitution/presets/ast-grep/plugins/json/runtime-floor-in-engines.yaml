@@ -1,5 +1,5 @@
 # yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
-id: manifest-declares-the-runtime-floor@json
+id: runtime-floor-in-engines@json
 language: Json
 severity: error
 message: >-

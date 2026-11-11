@@ -1266,10 +1266,11 @@ const typescriptPluginRows: readonly PluginRow[] = [
   },
   {
     language: 'json',
-    slug: 'manifest-declares-the-runtime-floor',
+    slug: 'runtime-floor-in-engines',
     unit: {
       blocks: [
         'distribution',
+        'js-runtime',
         'json',
       ],
     },

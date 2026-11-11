@@ -4,6 +4,29 @@ pino:
       sgconfig.yaml:
         ruleDirs:
           - ast-grep.${role.generated-file}
+        utilDirs:
+          - ast-grep-utils.${role.generated-file}
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
-      ast-grep.${role.generated-file}/one-instance-writes-every-record.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/one-instance-writes-every-record.yaml
+      ast-grep-utils.${role.generated-file}/one-instance-writes-every-record.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/one-instance-writes-every-record.yaml
+      # Why: the files beyond the entry files that create the program's instance are the
+      # architecture's to name, which a copied rule cannot take.
+      ast-grep.${role.generated-file}/one-instance-writes-every-record.yaml:
+        id: one-instance-writes-every-record@typescript
+        language: Tsx
+        severity: error
+        message: >-
+          Create the one pino instance at the program's start and hand it, or its children, to the
+          code that logs
+        files:
+          - '**/*.ts'
+          - '**/*.tsx'
+        ignores:
+          - '**/${role.source}/**/${role.entry}.ts'
+          - slot: left-out
+          - '**/${role.colocated-specs}/**'
+          - '**/${role.package-suites}/**'
+          - '**/*.${role.spec-file}.ts'
+          - '**/*.${role.spec-file}.tsx'
+        rule:
+          matches: one-instance-writes-every-record@typescript

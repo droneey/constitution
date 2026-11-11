@@ -506,7 +506,6 @@ const pinoRows: readonly PluginRow[] = [
     language: 'typescript',
     slug: 'one-instance-writes-every-record',
     unit: {
-      axes: [],
       blocks: [
         'pino',
       ],
@@ -517,6 +516,19 @@ const pinoRows: readonly PluginRow[] = [
         files: {
           'src/features/payments/infrastructure/stripe/payment-gateway.adapter.ts':
             "import pino from 'pino';\n\nexport const logger = pino({ name: 'payments' });\n",
+        },
+      },
+      {
+        condition: 'the root creates the instance and the architecture axis is not followed',
+        files: {
+          'src/root/logger.ts':
+            "import pino from 'pino';\n\nexport const createLogger = () => pino({ hooks: { streamWrite: maskLine } });\n",
+        },
+        unit: {
+          axes: [],
+          blocks: [
+            'pino',
+          ],
         },
       },
       {
@@ -540,6 +552,19 @@ const pinoRows: readonly PluginRow[] = [
         files: {
           'src/main.ts':
             "import pino from 'pino';\n\nconst logger = pino();\n\nlogger.info('started');\n",
+        },
+      },
+      {
+        condition: 'the entry file creates the instance and the architecture axis is not followed',
+        files: {
+          'src/main.ts':
+            "import pino from 'pino';\n\nconst logger = pino();\n\nlogger.info('started');\n",
+        },
+        unit: {
+          axes: [],
+          blocks: [
+            'pino',
+          ],
         },
       },
       {
@@ -738,7 +763,6 @@ const commanderRows: readonly PluginRow[] = [
     language: 'typescript',
     slug: 'commander-exits-overridden',
     unit: {
-      axes: [],
       blocks: [
         'commander',
       ],
@@ -752,9 +776,23 @@ const commanderRows: readonly PluginRow[] = [
         },
       },
       {
-        condition: "the entry file runs commander's global program without an exit override",
+        condition:
+          "the entry file runs commander's global program without an exit override and the architecture axis is not followed",
         files: {
           'src/main.ts': "import { program } from 'commander';\n\nprogram.parse();\n",
+        },
+        unit: {
+          axes: [],
+          blocks: [
+            'commander',
+          ],
+        },
+      },
+      {
+        condition: 'the entry file of another artefact builds a program without an exit override',
+        files: {
+          'src/entrypoints/admin/main.ts':
+            "import { Command } from 'commander';\n\nawait new Command('admin').configureOutput(writers).parseAsync();\n",
         },
       },
     ],
@@ -786,7 +824,6 @@ const commanderRows: readonly PluginRow[] = [
     language: 'typescript',
     slug: 'commander-output-through-the-programs-writers',
     unit: {
-      axes: [],
       blocks: [
         'commander',
       ],

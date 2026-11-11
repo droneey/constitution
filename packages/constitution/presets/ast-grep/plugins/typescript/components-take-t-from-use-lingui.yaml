@@ -6,8 +6,8 @@ message: >-
   Take t or i18n from useLingui in a component or a hook: the global one does not render the
   component again when the locale changes
 files:
+  - '**/*.ts'
   - '**/*.tsx'
-  - '**/*.${role.hooks-file}.ts'
 utils:
   global-t-imported:
     kind: program

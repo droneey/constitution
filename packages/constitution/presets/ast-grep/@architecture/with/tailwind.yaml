@@ -1,0 +1,6 @@
+core:
+  package-laid-out-by-the-tree:
+    typescript:
+      ast-grep.${role.generated-file}/primitive-class-merged-by-cn.yaml:
+        files@primitive-files:
+          - '**/${role.generic-library}/${role.ui-kit}/**/*.tsx'

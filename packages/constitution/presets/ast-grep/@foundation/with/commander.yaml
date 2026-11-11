@@ -4,17 +4,59 @@ commander:
       sgconfig.yaml:
         ruleDirs:
           - ast-grep.${role.generated-file}
+        utilDirs:
+          - ast-grep-utils.${role.generated-file}
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
-      ast-grep.${role.generated-file}/commander-exits-overridden.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-exits-overridden.yaml
+      ast-grep-utils.${role.generated-file}/commander-exits-overridden.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-exits-overridden.yaml
+      # Why: the files that build the program beyond its entry files are the architecture's to name,
+      # which a copied rule cannot take.
+      ast-grep.${role.generated-file}/commander-exits-overridden.yaml:
+        id: commander-exits-overridden@typescript
+        language: Tsx
+        severity: error
+        message: >-
+          Call exitOverride() on the program, so commander throws a CommanderError where it would
+          end the process
+        files:
+          - '**/${role.source}/**/${role.entry}.ts'
+          - slot: program-files
+        ignores:
+          - '**/${role.colocated-specs}/**'
+          - '**/${role.package-suites}/**'
+          - '**/*.${role.spec-file}.ts'
+          - '**/*.${role.spec-file}.tsx'
+        rule:
+          matches: commander-exits-overridden@typescript
   commander-output-through-the-programs-writers:
     typescript:
       sgconfig.yaml:
         ruleDirs:
           - ast-grep.${role.generated-file}
+        utilDirs:
+          - ast-grep-utils.${role.generated-file}
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
-      ast-grep.${role.generated-file}/commander-output-through-the-programs-writers.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-output-through-the-programs-writers.yaml
+      ast-grep-utils.${role.generated-file}/commander-output-through-the-programs-writers.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-output-through-the-programs-writers.yaml
+      # Why: the files that build the program beyond its entry files are the architecture's to name,
+      # which a copied rule cannot take.
+      ast-grep.${role.generated-file}/commander-output-through-the-programs-writers.yaml:
+        id: commander-output-through-the-programs-writers@typescript
+        language: Tsx
+        severity: error
+        message: >-
+          Give the program its writers by configureOutput({ writeOut, writeErr, outputError }), so
+          commander writes nothing to a standard stream itself
+        files:
+          - '**/${role.source}/**/${role.entry}.ts'
+          - slot: program-files
+        ignores:
+          - '**/${role.colocated-specs}/**'
+          - '**/${role.package-suites}/**'
+          - '**/*.${role.spec-file}.ts'
+          - '**/*.${role.spec-file}.tsx'
+        rule:
+          matches: commander-output-through-the-programs-writers@typescript
   commander-settings-copied-to-every-command:
     typescript:
       sgconfig.yaml:

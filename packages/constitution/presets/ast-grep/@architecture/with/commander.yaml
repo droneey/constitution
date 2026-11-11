@@ -15,3 +15,11 @@ commander:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/commander-subcommand-registered-with-add-command.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/commander-subcommand-registered-with-add-command.yaml
+      # Why: the root that registers the subcommands on the program builds it, so the rules of the
+      # program read the root too.
+      ast-grep.${role.generated-file}/commander-exits-overridden.yaml:
+        files@program-files:
+          - '**/${role.source}/${role.composition-root}/**'
+      ast-grep.${role.generated-file}/commander-output-through-the-programs-writers.yaml:
+        files@program-files:
+          - '**/${role.source}/${role.composition-root}/**'

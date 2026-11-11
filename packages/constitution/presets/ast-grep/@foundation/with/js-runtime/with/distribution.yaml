@@ -7,3 +7,11 @@ js-runtime:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/manifest-exports-with-types-condition.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/json/manifest-exports-with-types-condition.yaml
+  runtime-floor-in-engines:
+    json:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/runtime-floor-in-engines.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/json/runtime-floor-in-engines.yaml

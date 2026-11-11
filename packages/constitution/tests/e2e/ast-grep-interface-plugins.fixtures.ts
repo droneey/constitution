@@ -751,6 +751,7 @@ const interfacePluginRows: readonly PluginRow[] = [
       blocks: [
         'client/mobile',
         'presentation',
+        'react/react-native/expo',
       ],
     },
     reported: [
@@ -1088,6 +1089,13 @@ const interfacePluginRows: readonly PluginRow[] = [
         files: {
           'src/presentation/components/order-title/order-title.hooks.ts':
             "import { i18n } from '@lingui/core';\n\nimport { title } from './order-title.messages';\n\nexport const useTitle = () => i18n._(title);\n",
+        },
+      },
+      {
+        condition: 'a hook in a file of no role renders through the global t',
+        files: {
+          'src/order-title.ts':
+            "import { t } from '@lingui/core/macro';\n\nexport const useTitle = () => t`Orders`;\n",
         },
       },
     ],
@@ -1489,7 +1497,6 @@ const interfacePluginRows: readonly PluginRow[] = [
     language: 'typescript',
     slug: 'primitive-class-merged-by-cn',
     unit: {
-      axes: [],
       blocks: [
         'tailwind',
         'presentation',
@@ -1529,6 +1536,26 @@ const interfacePluginRows: readonly PluginRow[] = [
         files: {
           'src/presentation/components/card/card.tsx':
             'export const Card = ({ className }: { className?: string }) => <div className={className} />;\n',
+        },
+      },
+      {
+        condition:
+          'the architecture axis, which names the folder of the primitives, is not followed',
+        files: {
+          'src/libs/ui/components/button/button.tsx':
+            "import type { ComponentProps } from 'react';\n\nexport const Button = ({ className, ...props }: ComponentProps<'button'>) => (\n  <button className={className} {...props} />\n);\n",
+        },
+        unit: {
+          axes: [],
+          blocks: [
+            'tailwind',
+            'presentation',
+            'client/browser',
+            'css',
+            'react',
+            'react/react-dom',
+            'html',
+          ],
         },
       },
     ],

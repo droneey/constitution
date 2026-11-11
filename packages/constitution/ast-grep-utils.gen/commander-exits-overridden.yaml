@@ -1,0 +1,73 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: commander-exits-overridden@typescript
+language: Tsx
+utils:
+  imports-commander:
+    inside:
+      stopBy: end
+      kind: program
+      has:
+        kind: import_statement
+        has:
+          field: source
+          regex: ^["'](?:commander|@commander-js/extra-typings)["']$
+  scope:
+    any:
+      - kind: program
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: method_definition
+  exits-overridden:
+    kind: call_expression
+    has:
+      field: function
+      kind: member_expression
+      has:
+        field: property
+        regex: ^exitOverride$
+  # Why: a command that copies its parent's settings is a subcommand, which takes the program's
+  # exit override and writers from it.
+  settings-copied-in-its-chain:
+    inside:
+      stopBy:
+        not:
+          any:
+            - kind: call_expression
+            - kind: member_expression
+      kind: call_expression
+      has:
+        field: function
+        kind: member_expression
+        has:
+          field: property
+          regex: ^copyInheritedSettings$
+  program-built:
+    any:
+      - all:
+          - any:
+              - kind: new_expression
+                has:
+                  field: constructor
+                  regex: ^Command$
+              - kind: call_expression
+                has:
+                  field: function
+                  regex: ^createCommand$
+          - not:
+              matches: settings-copied-in-its-chain
+      - kind: import_specifier
+        has:
+          field: name
+          regex: ^program$
+rule:
+  all:
+    - matches: program-built
+    - matches: imports-commander
+    - inside:
+        stopBy: end
+        matches: scope
+        not:
+          has:
+            stopBy: end
+            matches: exits-overridden
