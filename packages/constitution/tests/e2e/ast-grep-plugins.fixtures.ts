@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { compareText } from '#/kernel/utils';
 
 import type { UnitFixture } from './applied-unit.fixtures';
-import { appliedUnit } from './applied-unit.fixtures';
+import { readOnlyAppliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 import { release, toolEnvironment, writeFiles } from './package.fixtures';
 
@@ -41,10 +41,10 @@ interface PluginCase {
 const CONFIG = 'sgconfig.yaml';
 const PYTHON = 'python';
 const TYPESCRIPT = 'typescript';
-const WRITTEN_FOLDERS = [
-  'ast-grep.gen',
-  'ast-grep-utils.gen',
-] as const;
+const RULES_FOLDER = 'ast-grep.gen';
+const UTILITIES_FOLDER = 'ast-grep-utils.gen';
+const LANGUAGE_SUFFIX = /^\.[a-z]+$/;
+const RULE_FILE_EXTENSION = '.yaml';
 const PLUGIN_FILE = /\.yaml$/;
 const LANGUAGE_COPY = /@[a-z]+$/;
 const pluginsFolder = join(release, 'presets', 'ast-grep', 'plugins');
@@ -86,6 +86,14 @@ const unitFixtureOf = (unit: PluginUnit, language: string): UnitFixture => ({
 // the slug alone.
 const slugOf = (ruleId: string): string => ruleId.replace(LANGUAGE_COPY, '');
 
+// Why: a rule's file is named after its slug, with its language before the extension where the
+// slug holds rules of several languages.
+const isRuleFileOf = (name: string, slug: string): boolean =>
+  name.startsWith(slug) &&
+  name.endsWith(RULE_FILE_EXTENSION) &&
+  (name.length === slug.length + RULE_FILE_EXTENSION.length ||
+    LANGUAGE_SUFFIX.test(name.slice(slug.length, -RULE_FILE_EXTENSION.length)));
+
 // Why: a scan that hangs fails its own case, before the runner's limit of the case, instead of the
 // whole run.
 const SCAN_TIMEOUT_MS = 20_000;
@@ -118,18 +126,24 @@ const scan = async (folder: string): Promise<readonly string[]> => {
 // Why: each case is a project of its own, so a rule's `files`, which match from the folder of
 // `sgconfig.yaml`, read the case's paths as the case writes them.
 const pluginsOf = async (pluginCase: PluginCase): Promise<readonly string[]> => {
-  const applied = appliedUnit(unitFixtureOf(pluginCase.unit, pluginCase.language));
+  const applied = await readOnlyAppliedUnit(unitFixtureOf(pluginCase.unit, pluginCase.language));
   const folder = mkdtempSync(join(tmpdir(), 'constitution-ast-grep-plugins-'));
 
   try {
     cpSync(join(applied, CONFIG), join(folder, CONFIG));
 
-    for (const written of WRITTEN_FOLDERS) {
-      if (existsSync(join(applied, written))) {
-        cpSync(join(applied, written), join(folder, written), {
-          recursive: true,
-        });
-      }
+    if (existsSync(join(applied, UTILITIES_FOLDER))) {
+      cpSync(join(applied, UTILITIES_FOLDER), join(folder, UTILITIES_FOLDER), {
+        recursive: true,
+      });
+    }
+
+    // Why: a case asks only whether its own rule reports, and ast-grep loads every rule it is given
+    // before it scans, so the case takes the files of its rule alone, one per language.
+    for (const ruleFile of readdirSync(join(applied, RULES_FOLDER)).filter((name) =>
+      isRuleFileOf(name, pluginCase.slug),
+    )) {
+      cpSync(join(applied, RULES_FOLDER, ruleFile), join(folder, RULES_FOLDER, ruleFile));
     }
 
     writeFiles({

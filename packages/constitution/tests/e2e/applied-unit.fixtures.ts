@@ -21,6 +21,7 @@ interface UnitFixture {
 
 const created: string[] = [];
 const applied = new Map<string, string>();
+const readOnly = new Map<string, Promise<string>>();
 
 enum Layer {
   Domains = 'domains',
@@ -142,6 +143,52 @@ const appliedUnit = (unit: UnitFixture): string => {
   return copyOf(folder);
 };
 
+const appliedOnce = async (unit: UnitFixture): Promise<string> => {
+  const folder = unitFolderOf(unit);
+  const applying = Bun.spawn(
+    [
+      cliPath,
+      ...APPLY,
+    ],
+    {
+      cwd: folder,
+      env: toolEnvironment(),
+      stderr: 'pipe',
+      stdout: 'pipe',
+    },
+  );
+  const [stdout, stderr, status] = await Promise.all([
+    new Response(applying.stdout).text(),
+    new Response(applying.stderr).text(),
+    applying.exited,
+  ]);
+
+  if (status !== 0) {
+    throw new Error(`presets apply failed in ${folder}: ${stdout}${stderr}`);
+  }
+
+  return folder;
+};
+
+/**
+ * The folder of a unit the presets were applied to, applied once for every caller that takes the
+ * same unit and runs at once with the others; a caller only reads it, never writes it.
+ */
+const readOnlyAppliedUnit = async (unit: UnitFixture): Promise<string> => {
+  const key = JSON.stringify(unit);
+  const known = readOnly.get(key);
+
+  if (known !== undefined) {
+    return await known;
+  }
+
+  const applying = appliedOnce(unit);
+
+  readOnly.set(key, applying);
+
+  return await applying;
+};
+
 process.once('exit', () => {
   for (const folder of created.splice(0)) {
     rmSync(folder, {
@@ -152,4 +199,4 @@ process.once('exit', () => {
 });
 
 export type { UnitFixture };
-export { appliedUnit, constitutionOf };
+export { appliedUnit, constitutionOf, readOnlyAppliedUnit };
