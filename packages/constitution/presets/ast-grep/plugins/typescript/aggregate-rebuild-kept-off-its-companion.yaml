@@ -1,0 +1,38 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: aggregate-rebuild-kept-off-its-companion@typescript
+language: Tsx
+severity: error
+message: >-
+  An aggregate's rebuild from storage held by its companion: export it as a free function beside
+  the type, off the surface the companion goes on
+files:
+  - '**/*.${role.aggregate-file}.ts'
+utils:
+  # Why: the rebuild's word is a term no fact fills in a plugin, which takes only a role or a list
+  # of words, so it is spelled as core's names chapter spells it.
+  rebuild-name:
+    regex: ^restore(?:[A-Z]|$)
+  # Why: a companion is a const object the file declares, wrapped or not by as const or satisfies.
+  companion-object:
+    kind: object
+    inside:
+      stopBy:
+        kind: variable_declarator
+      kind: variable_declarator
+      inside:
+        kind: lexical_declaration
+        regex: ^const\s
+rule:
+  any:
+    - kind: pair
+      has:
+        field: key
+        matches: rebuild-name
+    - kind: method_definition
+      has:
+        field: name
+        matches: rebuild-name
+    - kind: shorthand_property_identifier
+      matches: rebuild-name
+  inside:
+    matches: companion-object

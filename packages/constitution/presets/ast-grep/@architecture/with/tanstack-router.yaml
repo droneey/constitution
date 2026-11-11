@@ -4,3 +4,13 @@ core:
       ast-grep.${role.generated-file}/surface-only-re-exports.yaml:
         ignores@left-out:
           - '**/${role.source}/${role.composition-root}/${role.file-routes}/**/${role.surface}.ts'
+typescript:
+  surface-imported-by-its-folders-path:
+    typescript:
+      ast-grep.${role.generated-file}/surface-imported-by-its-folders-path.yaml:
+        rule:
+          not:
+            any@framework-files:
+              # Why: the router reads a route file by its name, `index` among them, so a route is
+              # no surface.
+              - regex: /${role.file-routes}/

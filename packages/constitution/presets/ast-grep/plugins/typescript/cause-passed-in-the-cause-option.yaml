@@ -1,0 +1,68 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cause-passed-in-the-cause-option@typescript
+language: Tsx
+severity: error
+message: >-
+  An error raised where another was caught: pass the caught one in the cause option of its
+  constructor, or the chain ends here
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  function-boundary:
+    any:
+      - kind: arrow_function
+      - kind: function_expression
+      - kind: function_declaration
+      - kind: generator_function
+      - kind: generator_function_declaration
+      - kind: method_definition
+      - kind: class_body
+  # Why: a key of an argument named cause, written as a pair or a shorthand, is the option, while
+  # an argument read from a name may hold it where no pattern sees.
+  cause-handed:
+    any:
+      - kind: property_identifier
+        regex: ^cause$
+        inside:
+          kind: pair
+          field: key
+      - kind: shorthand_property_identifier
+        regex: ^cause$
+      - kind: string
+        regex: ^["']cause["']$
+        inside:
+          kind: pair
+          field: key
+      - kind: spread_element
+rule:
+  kind: new_expression
+  all:
+    - any:
+        - inside:
+            kind: throw_statement
+        - inside:
+            kind: return_statement
+    - inside:
+        stopBy:
+          matches: function-boundary
+        kind: catch_clause
+    - has:
+        field: constructor
+        regex: Error$
+    - not:
+        has:
+          field: arguments
+          has:
+            stopBy: end
+            matches: cause-handed
+    - not:
+        has:
+          field: arguments
+          has:
+            nthChild:
+              position: 1
+              reverse: true
+            kind: identifier
+            not:
+              nthChild: 1

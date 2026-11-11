@@ -1,0 +1,29 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: string-holding-a-backslash-written-literally@python
+language: Python
+severity: error
+message: 'A backslash written as an escape: write the string raw, as r"…"'
+utils:
+  escaped-backslash:
+    kind: escape_sequence
+    regex: ^\\\\$
+rule:
+  kind: string
+  all:
+    - has:
+        kind: string_start
+        not:
+          regex: '[rR]'
+    - has:
+        stopBy: end
+        matches: escaped-backslash
+    # Why: a string with another escape, or one that ends in a backslash, has no raw form that
+    # keeps it whole.
+    - not:
+        has:
+          stopBy: end
+          kind: escape_sequence
+          not:
+            matches: escaped-backslash
+    - not:
+        regex: \\\\["']+$

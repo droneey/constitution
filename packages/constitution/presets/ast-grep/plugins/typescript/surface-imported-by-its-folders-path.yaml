@@ -1,0 +1,25 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: surface-imported-by-its-folders-path@typescript
+language: Tsx
+utils:
+  # Why: a runtime that maps no folder to its surface loads the surface's file by its extension,
+  # so only a specifier that names the surface without one is never the exempt form.
+  surface-specifier:
+    kind: string
+    regex: ^["'](?:\.|#)[^"']*/${role.surface}["']$
+rule:
+  matches: surface-specifier
+  any:
+    - inside:
+        kind: import_statement
+        field: source
+    - inside:
+        kind: export_statement
+        field: source
+    - inside:
+        kind: arguments
+        inside:
+          kind: call_expression
+          has:
+            field: function
+            kind: import

@@ -1,0 +1,42 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: hash-alias-for-the-source-root@json
+language: Json
+severity: error
+message: 'The source root is aliased "#/*": "./${role.source}/*" in imports, under no other name'
+files:
+  - '**/package.json'
+utils:
+  imports-entry:
+    kind: pair
+    inside:
+      kind: object
+      inside:
+        kind: pair
+        field: value
+        has:
+          field: key
+          regex: ^"imports"$
+        inside:
+          kind: object
+          inside:
+            kind: document
+rule:
+  matches: imports-entry
+  any:
+    # Why: the source root under another name is a second spelling of the alias.
+    - all:
+        - has:
+            field: value
+            regex: ^"\./${role.source}/\*"$
+        - not:
+            has:
+              field: key
+              regex: ^"#/\*"$
+    - all:
+        - has:
+            field: key
+            regex: ^"#/\*"$
+        - not:
+            has:
+              field: value
+              regex: ^"\./${role.source}/\*"$

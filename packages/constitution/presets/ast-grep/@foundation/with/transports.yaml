@@ -1,0 +1,16 @@
+transports:
+  opened-connection-verifies-its-peer:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/opened-connection-verifies-its-peer.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/opened-connection-verifies-its-peer.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/opened-connection-verifies-its-peer.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/opened-connection-verifies-its-peer.yaml

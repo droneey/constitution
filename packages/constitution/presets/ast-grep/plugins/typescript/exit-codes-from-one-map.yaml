@@ -1,0 +1,53 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: exit-codes-from-one-map@typescript
+language: Tsx
+severity: error
+message: >-
+  An exit code written as a number: take it from the program's one map of exit codes
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  numeric-code:
+    any:
+      - kind: number
+      - kind: unary_expression
+        has:
+          kind: number
+  process-object:
+    kind: identifier
+    regex: ^process$
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            all:
+              - has:
+                  field: object
+                  matches: process-object
+              - has:
+                  field: property
+                  regex: ^exit$
+        - has:
+            field: arguments
+            has:
+              nthChild: 1
+              matches: numeric-code
+    - kind: assignment_expression
+      all:
+        - has:
+            field: left
+            kind: member_expression
+            all:
+              - has:
+                  field: object
+                  matches: process-object
+              - has:
+                  field: property
+                  regex: ^exitCode$
+        - has:
+            field: right
+            matches: numeric-code

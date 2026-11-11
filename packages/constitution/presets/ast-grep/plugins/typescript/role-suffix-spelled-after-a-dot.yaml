@@ -1,0 +1,40 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: role-suffix-spelled-after-a-dot@typescript
+language: Tsx
+severity: error
+message: >-
+  A role joined to the file's name by a hyphen: spell it after a dot, as <name>.<role>.ts, so it
+  reads apart from the name
+# Why: these role words end no other word a file of the source is named by; the words that do, an
+# error's and an event's, are read as a role only in the role folder that holds them.
+files:
+  - '**/${role.source}/**/*-${role.entity-file}.ts'
+  - '**/${role.source}/**/*-${role.aggregate-file}.ts'
+  - '**/${role.source}/**/*-${role.value-object-file}.ts'
+  - '**/${role.source}/**/*-${role.domain-service-file}.ts'
+  - '**/${role.source}/**/*-${role.aggregate-transition-file}.ts'
+  - '**/${role.source}/**/*-${role.port-file}.ts'
+  - '**/${role.source}/**/*-${role.adapter-file}.ts'
+  - '**/${role.source}/**/*-${role.use-case-file}.ts'
+  - '**/${role.source}/**/*-${role.wire-model-file}.ts'
+  - '**/${role.source}/**/*-${role.helper-file}.ts'
+  - '**/${role.source}/**/*-${role.type-file}.ts'
+  - '**/${role.source}/**/*-${role.constant-file}.ts'
+  - '**/${role.source}/**/${role.expected-failure}/*-${role.error-file}.ts'
+  - '**/${role.source}/**/${role.domain-event}/*-${role.domain-event-file}.ts'
+  - '**/${role.source}/**/*-${role.entity-file}.tsx'
+  - '**/${role.source}/**/*-${role.aggregate-file}.tsx'
+  - '**/${role.source}/**/*-${role.value-object-file}.tsx'
+  - '**/${role.source}/**/*-${role.domain-service-file}.tsx'
+  - '**/${role.source}/**/*-${role.aggregate-transition-file}.tsx'
+  - '**/${role.source}/**/*-${role.port-file}.tsx'
+  - '**/${role.source}/**/*-${role.adapter-file}.tsx'
+  - '**/${role.source}/**/*-${role.use-case-file}.tsx'
+  - '**/${role.source}/**/*-${role.wire-model-file}.tsx'
+  - '**/${role.source}/**/*-${role.helper-file}.tsx'
+  - '**/${role.source}/**/*-${role.type-file}.tsx'
+  - '**/${role.source}/**/*-${role.constant-file}.tsx'
+  - '**/${role.source}/**/${role.expected-failure}/*-${role.error-file}.tsx'
+  - '**/${role.source}/**/${role.domain-event}/*-${role.domain-event-file}.tsx'
+rule:
+  kind: program

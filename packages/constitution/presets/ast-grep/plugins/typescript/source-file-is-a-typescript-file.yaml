@@ -1,0 +1,13 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: source-file-is-a-typescript-file@typescript
+language: JavaScript
+severity: error
+message: >-
+  A JavaScript file among the sources: write it in TypeScript, so the checks of types reach it
+files:
+  - '**/${role.source}/**/*.js'
+  - '**/${role.source}/**/*.jsx'
+  - '**/${role.source}/**/*.mjs'
+  - '**/${role.source}/**/*.cjs'
+rule:
+  kind: program

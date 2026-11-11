@@ -1,0 +1,59 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: manifest-exports-with-types-condition@json
+language: Json
+severity: error
+message: >-
+  An entry of exports a consumer imports code from with no types condition first: put types first
+  in its object, beside default
+# Why: the unit's own manifest is the one its registry publishes.
+files:
+  - package.json
+utils:
+  code-file:
+    kind: string
+    regex: \.(?:js|mjs|cjs|jsx)"$
+  exports-value:
+    inside:
+      stopBy: end
+      kind: pair
+      has:
+        field: key
+        regex: ^"exports"$
+      inside:
+        kind: object
+        inside:
+          kind: document
+  code-condition:
+    kind: pair
+    all:
+      - has:
+          field: key
+          regex: ^"(?:default|import|require)"$
+      - has:
+          field: value
+          matches: code-file
+rule:
+  any:
+    # Why: an entry written as a bare string of code, the whole of exports or a subpath's,
+    # carries no condition at all.
+    - matches: code-file
+      all:
+        - matches: exports-value
+        - inside:
+            kind: pair
+            field: value
+            has:
+              field: key
+              regex: ^"(?:exports|\..*)"$
+    - kind: object
+      all:
+        - matches: exports-value
+        - has:
+            matches: code-condition
+        - not:
+            has:
+              kind: pair
+              nthChild: 1
+              has:
+                field: key
+                regex: ^"types"$

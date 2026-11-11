@@ -1,0 +1,13 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: entity-never-lifts-to-the-kernel@python
+language: Python
+severity: error
+message: >-
+  An entity in the kernel: keep it in the feature that owns its life, and give the others a narrow
+  view of it or its identifier
+files:
+  - '**/${role.shared-kernel}/**/*${role.entity-file}.py'
+  - '**/${role.shared-kernel}/**/*${role.aggregate-file}.py'
+  - '**/${role.shared-kernel}/**/${role.entity}/**/*.py'
+rule:
+  kind: module

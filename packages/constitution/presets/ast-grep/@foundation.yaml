@@ -17,6 +17,50 @@ ast-grep:
             - '*.ts'
             - '*.mts'
             - '*.cts'
+  ast-grep-reason-on-the-line-above:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-reason-on-the-line-above.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ast-grep-reason-on-the-line-above.yaml
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-reason-on-the-line-above.css.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/ast-grep-reason-on-the-line-above.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-reason-on-the-line-above.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/ast-grep-reason-on-the-line-above.yaml
+  ast-grep-suppression-names-one-rule:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-suppression-names-one-rule.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/ast-grep-suppression-names-one-rule.yaml
+    css:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-suppression-names-one-rule.css.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/css/ast-grep-suppression-names-one-rule.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/ast-grep-suppression-names-one-rule.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/ast-grep-suppression-names-one-rule.yaml
 core:
   case-holds-no-logic:
     typescript:
@@ -74,3 +118,26 @@ core:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/file-within-500-lines.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/file-within-500-lines.yaml
+  string-holding-a-backslash-written-literally:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/string-holding-a-backslash-written-literally.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/string-holding-a-backslash-written-literally.yaml
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/string-holding-a-backslash-written-literally.python.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/string-holding-a-backslash-written-literally.yaml
+  collection-suffix-ends-only-its-files-name:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/collection-suffix-ends-only-its-files-name.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/collection-suffix-ends-only-its-files-name.yaml

@@ -1,0 +1,27 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: entity-rules-held-by-its-companion@typescript
+language: Tsx
+severity: error
+message: >-
+  A rule of an aggregate, entity or value object written as a method: make it a function of the
+  type's companion, which survives a crossing that carries plain data
+files:
+  - '**/*.${role.aggregate-file}.ts'
+  - '**/*.${role.entity-file}.ts'
+  - '**/*.${role.value-object-file}.ts'
+rule:
+  any:
+    - kind: method_definition
+      not:
+        has:
+          field: name
+          regex: ^constructor$
+    # Why: a field that holds a function is a method by another spelling.
+    - kind: public_field_definition
+      has:
+        field: value
+        any:
+          - kind: arrow_function
+          - kind: function_expression
+  inside:
+    kind: class_body

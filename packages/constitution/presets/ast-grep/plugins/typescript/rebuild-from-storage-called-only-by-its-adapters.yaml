@@ -1,0 +1,34 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: rebuild-from-storage-called-only-by-its-adapters@typescript
+language: Tsx
+severity: error
+message: >-
+  A rebuild from storage called by a use case: only the adapters that read the aggregate from its
+  store call it, and a use case builds through the starting transition
+# Why: an application layer holds no adapter, so a rebuild called there is called by no adapter;
+# its specs and fixtures, which call what they prove or build, are left out.
+files:
+  - '**/${role.source}/${role.bounded-context}/*/${role.application}/**'
+  - '**/${role.source}/${role.composition-module}/*/${role.application}/**'
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/*.${role.spec-file}.ts'
+  - '**/*.${role.spec-file}.tsx'
+  - '**/*.${role.fixtures-file}.ts'
+  - '**/*.${role.fixtures-file}.tsx'
+utils:
+  # Why: the rebuild's word is a term no fact fills in a plugin, which takes only a role or a list
+  # of words, so it is spelled as core's names chapter spells it.
+  rebuild-name:
+    regex: ^restore(?:[A-Z]|$)
+rule:
+  kind: call_expression
+  has:
+    field: function
+    any:
+      - kind: identifier
+        matches: rebuild-name
+      - kind: member_expression
+        has:
+          field: property
+          matches: rebuild-name
