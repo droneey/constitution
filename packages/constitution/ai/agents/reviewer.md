@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Reviews one change against the rules of the Constitution that govern its files, in a context that never saw the change being written, and returns each finding with its rule, level and confidence. Dispatched once by /check with the diff, the rules and the overrides; never edits.
+description: Reviews one change against the rules of the Constitution that govern its files, in a context that never saw the change being written, and returns each finding with its rule, level and confidence. Dispatched once by /constitution:review with the diff, the rules and the overrides; never edits.
 tools: Read, Grep, Glob
 ---
 
