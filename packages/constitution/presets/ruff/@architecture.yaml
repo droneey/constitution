@@ -1,0 +1,9 @@
+python:
+  surface-is-init-with-sorted-all:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - RUF022

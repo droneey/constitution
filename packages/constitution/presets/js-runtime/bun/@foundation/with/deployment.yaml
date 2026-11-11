@@ -1,0 +1,5 @@
+js-runtime/bun:
+  env-file-never-loaded-automatically:
+    typescript:
+      bunfig.toml:
+        env: false

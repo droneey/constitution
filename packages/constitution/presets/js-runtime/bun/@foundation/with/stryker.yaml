@@ -26,6 +26,10 @@ js-runtime/bun:
             - slot: checks
             - slot: tests
             - slot: mutations
+  check-script-names-the-whole-gate-in-one-call:
+    typescript:
+      package.json:
+        scripts:
           check@mutations:
             - mutate:branch
 task-runner:

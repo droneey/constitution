@@ -13,6 +13,8 @@ const astGrep = miseBinary('ast-grep');
 // Why: a scan that hangs fails its own case, before the runner's limit of the case, instead of the
 // whole run.
 const SCAN_TIMEOUT_MS = 20_000;
+// Why: the presets leave a manifest's own fields to the unit, which the rules of a manifest ask for.
+const MANIFEST = '{ "type": "module", "engines": { "bun": ">=1.3" } }\n';
 
 const scanOfWidestUnit = (): Scan => {
   const scanning = spawnSync(
@@ -21,7 +23,11 @@ const scanOfWidestUnit = (): Scan => {
       'scan',
     ],
     {
-      cwd: widestAppliedUnit('ast-grep'),
+      cwd: widestAppliedUnit('ast-grep', {
+        files: {
+          'package.json': MANIFEST,
+        },
+      }),
       encoding: 'utf8',
       env: toolEnvironment(),
       timeout: SCAN_TIMEOUT_MS,

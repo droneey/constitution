@@ -1,0 +1,23 @@
+bun-test:
+  dom-preload-listed-by-every-bunfig:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts
+      bunfig.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts
+      # Why: the insert lands only in the fixtures slot Stryker's pairing places, so this file is
+      # written only beside Stryker.
+      bunfig.mutation.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts
+  dom-registered-before-the-sandbox:
+    typescript:
+      bunfig.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.${role.fixtures-file}.ts

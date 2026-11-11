@@ -206,7 +206,6 @@ biome:
               useRegexpTest: error
             correctness:
               noGlobalDirnameFilename: error
-              noUndeclaredDependencies: error
               useJsonImportAttributes: error
               noUnusedInstantiation: error
             performance:
@@ -339,18 +338,13 @@ core:
               noUnusedLabels: error
               noUnusedPrivateClassMembers: error
               noUnusedVariables: error
-  file-name-in-its-owners-case:
+  package-declares-every-dependency-it-imports:
     typescript:
       biome.jsonc:
         linter:
           rules:
-            style:
-              useFilenamingConvention:
-                level: error
-                options:
-                  strictCase: true
-                  filenameCases:
-                    - kebab-case
+            correctness:
+              noUndeclaredDependencies: error
   file-within-500-lines:
     typescript:
       biome.jsonc:
@@ -418,7 +412,7 @@ core:
               rules:
                 style:
                   noMagicNumbers: 'off'
-  function-within-its-limits:
+  function-complexity-within-15:
     typescript:
       biome.jsonc:
         linter:
@@ -428,6 +422,12 @@ core:
                 level: error
                 options:
                   maxAllowedComplexity: 15
+  function-within-its-limits:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            complexity:
               noExcessiveLinesPerFunction:
                 level: error
                 options:

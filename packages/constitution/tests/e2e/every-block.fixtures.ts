@@ -474,6 +474,8 @@ const writeProject = (input: { deployed: DeployedUnit; folder: string }): void =
       `${JSON.stringify(
         {
           name: deployed.name,
+          // Why: every TypeScript unit is an ES module, which a runtime's resolution reads here.
+          type: 'module',
           ...JSON.parse(readFileSync(manifestPath, 'utf8')),
           devDependencies: Object.fromEntries(
             packages.map((name) => [

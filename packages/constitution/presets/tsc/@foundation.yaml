@@ -7,6 +7,12 @@ core:
           allowUnusedLabels: false
           noUnusedLocals: true
           noUnusedParameters: true
+  absence-shown-by-the-type:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          strictNullChecks: true
+          noUncheckedIndexedAccess: true
 tsc:
   '*':
     typescript:
@@ -31,7 +37,7 @@ tsc:
           - ${role.build-code}/**/*.ts
           - ${role.package-suites}/**/*.ts
           - ${role.package-suites}/**/*.tsx
-  compiler-is-the-type-gate:
+  compiler-strict-options-set:
     typescript:
       tsconfig.json !jsonc:
         compilerOptions:

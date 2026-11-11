@@ -1,5 +1,5 @@
 core:
-  function-within-its-limits:
+  function-complexity-within-15:
     python:
       pyproject.toml:
         tool:

@@ -26,6 +26,10 @@ core:
           new *Error: 0
           super: 0
 stryker:
+  incremental-mode-left-off:
+    typescript:
+      stryker.${role.config-file}.json:
+        incremental: false
   diagnostic-mutants-left-out-by-the-ignorer:
     typescript:
       stryker.${role.config-file}.json:

@@ -47,7 +47,7 @@ bun-test:
             for (const loader of SOURCE_LOADERS) {
               build.onLoad(
                 {
-                  filter: new RegExp(`/src/.*\\.${loader}$`),
+                  filter: new RegExp(String.raw`/src/.*\.${loader}$`),
                 },
                 async ({ path }) => {
                   const source = await Bun.file(path).text();

@@ -343,6 +343,18 @@ python:
                 banned-api:
                   sys.path:
                     msg: a module is imported as a member of an installed package
+  typing-cast-never-written:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - TID251
+              flake8-tidy-imports:
+                banned-api:
+                  typing.cast:
+                    msg: a type is proven by a check, never claimed by a cast
   annotation-written-unquoted:
     python:
       pyproject.toml:
@@ -362,6 +374,13 @@ python:
                 - UP046
                 - UP047
 ruff:
+  preview-rules-only-by-code:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              explicit-preview-rules: true
   ruff-format-is-the-formatter:
     python:
       pyproject.toml:

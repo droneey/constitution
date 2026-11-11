@@ -5,10 +5,14 @@ tombi:
         scripts:
           check:lint: !commands
             - tombi lint
-          check:format: !commands
-            - tombi format --check
           fix:format: !commands
             - tombi format
+  tombi-is-the-formatter:
+    toml:
+      package.json:
+        scripts:
+          check:format: !commands
+            - tombi format --check
 js-runtime/bun:
   '*':
     toml:
