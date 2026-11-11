@@ -49,7 +49,7 @@ const partnerSegmentsOf = (segments: readonly string[]): readonly string[][] | u
     const partner = partners.at(-1);
 
     if (partner === undefined) {
-      return undefined;
+      return;
     }
 
     partner.push(segment);
@@ -62,7 +62,7 @@ const withsOf = (segments: readonly string[]): readonly BlockId[] | undefined =>
   const partners = partnerSegmentsOf(segments);
 
   if (partners === undefined || partners.length > MAX_WITHS) {
-    return undefined;
+    return;
   }
 
   const withs = partners.map((partner) => partner.join(PATH_SEPARATOR));

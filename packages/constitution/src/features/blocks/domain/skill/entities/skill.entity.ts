@@ -32,7 +32,7 @@ interface Agent {
 
 // Why: Claude Code reads a skill at <directory>/<skill>/SKILL.md, where no folder is hidden.
 const skillPath = new RegExp(
-  `^((?:[^./][^/]*\\/)+)[^./][^/]*\\/${RegExp.escape(SKILL_FILE_NAME)}$`,
+  String.raw`^((?:[^./][^/]*\/)+)[^./][^/]*\/${RegExp.escape(SKILL_FILE_NAME)}$`,
 );
 const AGENT_FILE = /^ai\/agents\/([^./][^/]*)\.md$/;
 

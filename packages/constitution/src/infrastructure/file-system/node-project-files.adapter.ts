@@ -90,7 +90,7 @@ const LINK_HOPS = 40;
 // a separator.
 const realFolderLinkByLink = (folderPath: AbsolutePath): AbsolutePath | undefined => {
   if (!isFolder(folderPath)) {
-    return undefined;
+    return;
   }
 
   const pending = folderPath.split(PATH_SEPARATOR);

@@ -187,7 +187,7 @@ const markBlocks = (input: MarkBlocksInput): BlockMarks | undefined => {
   const { merged } = input;
 
   if (merged === undefined) {
-    return undefined;
+    return;
   }
 
   const nodes = nodesOf({

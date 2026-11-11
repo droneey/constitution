@@ -156,13 +156,15 @@ const settingOf = (setting: Setting, facts: FileFacts): Outcome<Setting> => {
 
   if (Setting.isMap(setting)) {
     const pairs = pairsOf(
-      Object.entries(setting).map(
-        ([key, held]) =>
-          [
-            textOf(key, facts),
-            settingOf(held, facts),
-          ] as const,
-      ),
+      Object.entries(setting).map(([key, held]) => {
+        const keyText = textOf(key, facts);
+        const heldSetting = settingOf(held, facts);
+
+        return [
+          keyText,
+          heldSetting,
+        ] as const;
+      }),
     );
 
     return pairs.kind === OutcomeKind.Resolved ? resolved(Object.fromEntries(pairs.value)) : pairs;
@@ -207,13 +209,15 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
   }
 
   const pairs = pairsOf(
-    given.pairs.map(
-      (pair) =>
-        [
-          textOf(pair.key, facts),
-          presetOf(pair.value, facts),
-        ] as const,
-    ),
+    given.pairs.map((pair) => {
+      const keyText = textOf(pair.key, facts);
+      const heldValue = presetOf(pair.value, facts);
+
+      return [
+        keyText,
+        heldValue,
+      ] as const;
+    }),
   );
 
   return pairs.kind === OutcomeKind.Resolved

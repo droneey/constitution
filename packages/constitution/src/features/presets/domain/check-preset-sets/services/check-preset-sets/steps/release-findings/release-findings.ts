@@ -22,7 +22,9 @@ interface ReleaseFiles {
   readonly pluginTexts: ReadonlyMap<string, string>;
 }
 
-const pluginPath = new RegExp(`^(?:[^/]+/)+?${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\\.[^./]+$`);
+const pluginPath = new RegExp(
+  String.raw`^(?:[^/]+/)+?${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\.[^./]+$`,
+);
 const BRACKETED = /\[([^\]\s]+)\]/g;
 
 interface ReleaseFindingsInput {

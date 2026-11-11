@@ -83,7 +83,7 @@ const fingerprintOf = (root: string): string | undefined => {
   ].toSorted();
 
   if (files.length > MAX_FILES) {
-    return undefined;
+    return;
   }
 
   const hash = createHash('sha256');
@@ -107,7 +107,7 @@ const pluginFingerprintOf = (root: string): string | undefined => {
     return fingerprintOf(root);
   } catch (error) {
     if (isUnreadable(error)) {
-      return undefined;
+      return;
     }
 
     throw error;

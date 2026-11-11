@@ -18,7 +18,7 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   const state = sessionQueries.state(session);
 
   if (state?.status !== ConfigReadStatus.Parsed) {
-    return undefined;
+    return;
   }
 
   const markOf = (mark: FingerprintMark): TreeFingerprint | undefined =>

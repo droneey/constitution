@@ -155,7 +155,7 @@ const partOfIn = (input: { path: string; session: SessionId }): RulesPart | unde
       session: input.session,
     })
   ) {
-    return undefined;
+    return;
   }
 
   const text = readUnfollowed(realPath);
@@ -307,7 +307,7 @@ const gatePartsOf = (
     const folder = lines.folderOf(asked.session);
 
     if (folder === undefined) {
-      return undefined;
+      return;
     }
 
     const path = shellFilePathOf({

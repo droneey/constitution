@@ -12,7 +12,7 @@ const readTextWithin = async (input: TextWithinInput): Promise<string | undefine
     bytes += chunk.byteLength;
 
     if (bytes > input.maxBytes) {
-      return undefined;
+      return;
     }
 
     text += decoder.decode(chunk, {

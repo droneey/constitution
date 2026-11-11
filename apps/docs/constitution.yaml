@@ -59,5 +59,6 @@ overrides:
     reason: "Fumadocs exposes the parts of its layout only by their ids, so the site's styles reach them there"
   - rule: utilities-only-from-tokens
     level: SHOULD
+    # Why: the program reads an override's reason from its one line.
     # yamllint disable-line rule:line-length
     reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"

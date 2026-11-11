@@ -2,6 +2,8 @@
   /* Why: the list is a stop of its own, so the keyboard can scroll it; its fading edges would
      clip its ring, which its unmasked frame draws instead. */
   #nd-sidebar [data-id$='-viewport']:focus-visible {
+    /* Why: the ring is the frame's outline below, on :focus-visible of the list it holds. */
+    /* ast-grep-ignore: focus-ring-drawn-as-an-outline@css */
     outline: none;
   }
 

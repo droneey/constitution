@@ -15,7 +15,7 @@ const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
   const startFolderPath = files.realFolder(input.startFolderPath);
 
   if (startFolderPath === undefined) {
-    return undefined;
+    return;
   }
 
   return ProjectPlace.find(

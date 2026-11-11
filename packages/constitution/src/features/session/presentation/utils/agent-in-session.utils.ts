@@ -12,7 +12,7 @@ const agentInSessionOf = (input: NamedAgent): AgentInSession | undefined => {
   const { agentId, session } = input;
 
   if (session === undefined) {
-    return undefined;
+    return;
   }
 
   if (agentId === undefined) {

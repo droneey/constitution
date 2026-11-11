@@ -40,11 +40,11 @@ const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): 
   return {
     // Why: another mode's roles refer to steps the default mode declares and it does not write, so
     // its warnings are noise.
-    // Stryker disable ObjectLiteral,ConditionalExpression,StringLiteral: the log only quiets the build
+    // Stryker disable next-line ObjectLiteral: the log only quiets the build
     log: {
+      // Stryker disable next-line ConditionalExpression,StringLiteral: the log only quiets the build
       warnings: isDefault ? 'warn' : 'disabled',
     },
-    // Stryker restore ObjectLiteral,ConditionalExpression,StringLiteral
     platforms: {
       css: {
         transforms: [

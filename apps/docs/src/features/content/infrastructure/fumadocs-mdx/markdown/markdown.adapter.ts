@@ -33,7 +33,7 @@ const summaryOf = (markdown: string): string | undefined => {
   );
 
   if (summary === undefined) {
-    return undefined;
+    return;
   }
 
   takeTermIds(summary);

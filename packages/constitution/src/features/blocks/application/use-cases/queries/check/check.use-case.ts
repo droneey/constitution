@@ -31,7 +31,7 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
   const { folderPath, trees } = input;
 
   if (!input.files.isFolder(AbsolutePath.join(folderPath, BLOCKS_FOLDER_NAME))) {
-    return undefined;
+    return;
   }
 
   const { constitution, findings } = loadConstitution({

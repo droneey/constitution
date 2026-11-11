@@ -63,7 +63,7 @@ const placeOf = (input: {
   const [top, ...below] = input.unitPath.split(PATH_SEPARATOR);
 
   if (below.length === 0) {
-    return undefined;
+    return;
   }
 
   return input.factName === FactName.UnitParent ? top : String(below.length);

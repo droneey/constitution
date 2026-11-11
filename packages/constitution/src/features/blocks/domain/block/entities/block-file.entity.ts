@@ -76,7 +76,7 @@ const seamOf = (file: BlockFile): BlockId | undefined => {
     case BlockFileRole.Passport:
     // Stryker disable next-line ConditionalExpression: the last case left without its return falls off the switch into the same absent value
     case BlockFileRole.Chapter:
-      return undefined;
+      return;
   }
 };
 

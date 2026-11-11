@@ -21,7 +21,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
   const state = input.sessionQueries.state(input.session);
 
   if (state?.status !== ConfigReadStatus.Parsed) {
-    return undefined;
+    return;
   }
 
   const path = AbsolutePath.is(input.path)
@@ -29,7 +29,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
     : normalizePath(input.path);
 
   if (!RepositoryRelativePath.is(path)) {
-    return undefined;
+    return;
   }
 
   const filePath = AbsolutePath.join(state.repositoryFolderPath, path);
@@ -41,7 +41,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
   });
 
   if (told.status === IgnoreStatus.Told && told.paths.has(filePath)) {
-    return undefined;
+    return;
   }
 
   return Reminder.of({

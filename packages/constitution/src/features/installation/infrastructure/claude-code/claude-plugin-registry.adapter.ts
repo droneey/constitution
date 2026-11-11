@@ -38,7 +38,7 @@ const createClaudePluginRegistry = (input: ClaudePluginRegistryInput): PluginReg
 
     // Stryker disable next-line ConditionalExpression: with no root no manifest is read either, which reads as no plugin
     if (root === undefined || version === undefined) {
-      return undefined;
+      return;
     }
 
     const fingerprint = pluginFingerprintOf(root);

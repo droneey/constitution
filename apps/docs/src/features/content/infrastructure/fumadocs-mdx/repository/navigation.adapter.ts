@@ -49,19 +49,19 @@ const entryOf = (baseUrl: string, listItem: ListItem): Entry | undefined => {
   const [paragraph] = listItem.children;
 
   if (paragraph?.type !== 'paragraph') {
-    return undefined;
+    return;
   }
 
   const link = paragraph.children.find((child) => child.type === 'link');
 
   if (link === undefined) {
-    return undefined;
+    return;
   }
 
   const target = linkTargetOf(inRepository(readmeFilePath), link.url);
 
   if (target === undefined) {
-    return undefined;
+    return;
   }
 
   return {
@@ -193,7 +193,7 @@ const sectionSummaryOf = (title: string): string | undefined => {
   const quote = start === -1 ? undefined : nodes[start + 1];
 
   if (quote?.type !== 'blockquote') {
-    return undefined;
+    return;
   }
 
   const [summary] = quote.children;

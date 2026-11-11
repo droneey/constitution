@@ -49,7 +49,7 @@ const buildInto = (folder: string): void => {
 
 const sharedFolder = (): string | undefined => {
   if (process.env['BUN_TEST_WORKER_ID'] === undefined) {
-    return undefined;
+    return;
   }
 
   const started = spawnSync(

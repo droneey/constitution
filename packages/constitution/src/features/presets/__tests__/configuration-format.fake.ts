@@ -60,7 +60,7 @@ const createFakeConfigurationFormat = (): ConfigurationFormat => ({
     }
 
     if (file.filePath.endsWith(TEXT_FILE)) {
-      return undefined;
+      return;
     }
 
     return isOfNoFormat(file.filePath) && isPairs(file) ? pairsOf(file.text) : linesOf(file.text);

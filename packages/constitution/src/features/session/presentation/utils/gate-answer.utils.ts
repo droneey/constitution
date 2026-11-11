@@ -122,7 +122,7 @@ const denialOf = (reason: string): HookOutput => ({
 const actionAnswerOf = (verdict: GateVerdict): HookOutput | undefined => {
   switch (verdict.kind) {
     case GateVerdictKind.Allowed:
-      return undefined;
+      return;
     case GateVerdictKind.Closed:
       return denialOf(closedMessage(causeLinesOf(verdict.causes)));
     case GateVerdictKind.PassedClosed:

@@ -80,8 +80,8 @@ beforeEach(() => {
   symlinkSync('gone', at('dangling'));
   symlinkSync('loop-b', at('loop-a'));
   symlinkSync('loop-a', at('loop-b'));
-  mkdirSync(at('back\\slash'));
-  symlinkSync('back\\slash', at('back-link'));
+  mkdirSync(at(String.raw`back\slash`));
+  symlinkSync(String.raw`back\slash`, at('back-link'));
   mkdirSync(at('sealed/shut'), {
     recursive: true,
   });
@@ -358,7 +358,7 @@ describe('createNodeProjectFiles', () => {
     },
     {
       condition: 'a name holds a backslash',
-      expected: 'back\\slash',
+      expected: String.raw`back\slash`,
       path: 'back-link',
     },
   ])('should resolve the folder link by link when $condition', ({ expected, path }) => {

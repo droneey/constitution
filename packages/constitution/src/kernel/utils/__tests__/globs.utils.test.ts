@@ -84,9 +84,9 @@ describe('globMatches', () => {
     },
     {
       condition: 'the characters special to a pattern stand for themselves',
-      glob: 'a.b+c^d$e|f(g)h[i]j\\k',
+      glob: String.raw`a.b+c^d$e|f(g)h[i]j\k`,
       isMatch: true,
-      path: 'a.b+c^d$e|f(g)h[i]j\\k',
+      path: String.raw`a.b+c^d$e|f(g)h[i]j\k`,
     },
     {
       condition: 'its braces do not pair',

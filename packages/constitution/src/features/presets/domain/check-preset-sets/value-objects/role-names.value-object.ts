@@ -68,13 +68,13 @@ const longestFirstAlternation = (names: ReadonlyMap<string, NamedRole>): string 
     .join('|');
 
 const folderPlace: NamePlace = {
-  after: '(?=/|(?:\\|[^()]*)?\\)/|(?:,[^{}]*)?\\}/)',
-  before: `(?<=^|[/^!(|{,'"\\s*:])`,
+  after: String.raw`(?=/|(?:\|[^()]*)?\)/|(?:,[^{}]*)?\}/)`,
+  before: String.raw`(?<=^|[/^!(|{,'"\s*:])`,
 };
 
 const suffixPlace: NamePlace = {
-  after: `(?=\\\\?\\.|[{)|*$'"\\]]|$)`,
-  before: '(?<=[A-Za-z0-9_*\\]})-]\\\\?\\.)',
+  after: String.raw`(?=\\?\.|[{)|*$'"\]]|$)`,
+  before: String.raw`(?<=[A-Za-z0-9_*\]})-]\\?\.)`,
 };
 
 const kindNamesOf = (byName: ReadonlyMap<string, NamedRole>, place: NamePlace): KindNames => ({

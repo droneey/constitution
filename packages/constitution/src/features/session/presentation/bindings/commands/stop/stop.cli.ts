@@ -131,7 +131,7 @@ const answerOf = (input: {
   switch (judgement.verdict) {
     case StopVerdict.Reviewed:
     case StopVerdict.Covered:
-      return undefined;
+      return;
     case StopVerdict.Blocked:
       return input.isHeld(judgement)
         ? {
@@ -175,7 +175,7 @@ const judgedOf = (input: {
   const judgement = input.context.judgeStop(input.event);
 
   if (judgement === undefined) {
-    return undefined;
+    return;
   }
 
   input.context.recordJudgement({

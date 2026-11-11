@@ -150,7 +150,7 @@ const idFinding = (input: {
     isReached(ownedOf(owner.placed.block)) || owner.placed.isReached(ownedOf(block));
 
   if (owner === placedTerm || (owner.placed.block.id !== block.id && isBuiltOn)) {
-    return undefined;
+    return;
   }
 
   return {
@@ -335,7 +335,7 @@ const unusedFindings = (input: {
       return (
         countIn({
           bodies,
-          pattern: new RegExp(`\\b${stem}`, 'gi'),
+          pattern: new RegExp(String.raw`\b${stem}`, 'gi'),
         }) <=
         countIn({
           bodies,

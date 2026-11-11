@@ -104,7 +104,7 @@ const createFakeWorkingTree = (tree: FakeWorkingTree = {}): WorkingTree => {
     },
     mainCheckoutOf: (folderPath: AbsolutePath): AbsolutePath | undefined => {
       if (!isOwn(folderPath)) {
-        return undefined;
+        return;
       }
 
       return tree.mainCheckout === undefined ? folderPath : AbsolutePath.create(tree.mainCheckout);

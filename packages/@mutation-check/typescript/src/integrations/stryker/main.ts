@@ -24,9 +24,11 @@ const specsRunner = (): TestRunner => {
 
 specsRunner.inject = [] as const;
 
+const bunSpecsPlugin = declareFactoryPlugin(PluginKind.TestRunner, 'bun-specs', specsRunner);
+
 /** the `bun-specs` runner, which runs the unit's specs with `bun test` */
 const STRYKER_PLUGINS = [
-  declareFactoryPlugin(PluginKind.TestRunner, 'bun-specs', specsRunner),
+  bunSpecsPlugin,
 ] as const;
 
 export { STRYKER_PLUGINS as strykerPlugins };

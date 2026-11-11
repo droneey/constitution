@@ -191,7 +191,7 @@ describe('createJsonManifestParser', () => {
         },
         {
           field: 'skills',
-          message: expect.stringContaining('/^\\.\\/.*\\/$/'),
+          message: expect.stringContaining(String.raw`/^\.\/.*\/$/`),
         },
       ],
       json: '{"name":"Not A Slug","skills":"skills"}',

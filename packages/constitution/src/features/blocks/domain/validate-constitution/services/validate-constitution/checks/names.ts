@@ -44,8 +44,8 @@ interface Named {
 
 const TITLE_MARK = '# ';
 const KIND_TITLE = / [a-z]\S*$/;
-const NAME_BEFORE = '(?<![\\w.@/-])';
-const NAME_AFTER = '(?![\\w])';
+const nameBefore: string = /(?<![\w.@/-])/.source;
+const nameAfter: string = /(?![\w])/.source;
 // Why: a name followed by another capitalised word is part of a longer proper name, as a standard
 // named after its vendor is.
 const LONGER_NAME = /^ [A-Z]/;
@@ -124,7 +124,7 @@ const matcherOf = (registry: readonly Named[]): ((text: string) => readonly Name
     .map(({ name }) => name)
     .toSorted((left, right) => right.length - left.length);
   const pattern = new RegExp(
-    `${NAME_BEFORE}(?:${names.map((name) => RegExp.escape(name)).join('|')})${NAME_AFTER}`,
+    `${nameBefore}(?:${names.map((name) => RegExp.escape(name)).join('|')})${nameAfter}`,
     'g',
   );
 
@@ -170,7 +170,7 @@ const problemOf = (input: {
   }
 
   if (input.reached.has(owner)) {
-    return undefined;
+    return;
   }
 
   return isUnder(owner, input.block.id)

@@ -131,12 +131,12 @@ describe('isNestedWithin', () => {
     {
       condition: 'an escaped quote stands inside a string',
       isWithin: true,
-      text: '["\\"[[[["]',
+      text: String.raw`["\"[[[["]`,
     },
     {
       condition: 'an escaped backslash ends a string before its brackets',
       isWithin: false,
-      text: '["\\\\",[[[[1]]]]]',
+      text: String.raw`["\\",[[[[1]]]]]`,
     },
   ])('should say $isWithin when $condition', ({ isWithin, text }) => {
     // Act
