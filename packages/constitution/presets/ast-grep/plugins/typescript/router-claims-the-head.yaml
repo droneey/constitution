@@ -1,0 +1,26 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: router-claims-the-head@typescript
+language: Tsx
+severity: error
+message: >-
+  Give the head's elements through the route's head, which <HeadContent/> renders: a <title>,
+  <meta> or <link> a component renders fights the router on every navigation
+files:
+  - '**/*.tsx'
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: '^(?:title|meta|link)$'
+  # Why: an SVG's <title> is its accessible name, not the document's.
+  not:
+    inside:
+      stopBy: end
+      kind: jsx_element
+      has:
+        field: open_tag
+        has:
+          field: name
+          regex: '^svg$'

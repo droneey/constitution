@@ -1,0 +1,46 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cross-origin-script-loaded-with-integrity@html
+language: Html
+severity: error
+message: >-
+  Load a script of another origin with integrity and crossorigin, so the browser runs only the file
+  whose digest is pinned
+files:
+  - '**/*.html'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+utils:
+  cross-origin-source:
+    kind: attribute
+    has:
+      kind: attribute_name
+      regex: '(?i)^src$'
+    regex: '(?i)=\s*["'']?\s*(?:https?:)?//'
+rule:
+  kind: start_tag
+  inside:
+    kind: script_element
+  has:
+    matches: cross-origin-source
+  not:
+    any:
+      - all:
+          - has:
+              kind: attribute
+              has:
+                kind: attribute_name
+                regex: '(?i)^integrity$'
+          - has:
+              kind: attribute
+              has:
+                kind: attribute_name
+                regex: '(?i)^crossorigin$'
+      # Why: the one loader of code its maker changes by design, a tag manager's or a payment
+      # provider's, runs by the nonce its page's CSP allows.
+      - has:
+          kind: attribute
+          has:
+            kind: attribute_name
+            regex: '(?i)^nonce$'

@@ -1,0 +1,19 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: cleartext-refused-by-the-network-security-configuration@typescript
+language: Tsx
+severity: error
+message: >-
+  Permit no cleartext traffic for the app: usesCleartextTraffic lets every domain travel in plain
+  text, which any network the phone joins reads
+# Why: Expo writes the app manifests of both systems from its app config, whose name it fixes.
+files:
+  - '**/app.config.ts'
+rule:
+  kind: pair
+  has:
+    field: key
+    regex: '^[''"]?usesCleartextTraffic[''"]?$'
+  all:
+    - has:
+        field: value
+        regex: '^true$'

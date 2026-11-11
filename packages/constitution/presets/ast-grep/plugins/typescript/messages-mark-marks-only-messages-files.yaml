@@ -1,0 +1,24 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: messages-mark-marks-only-messages-files@typescript
+language: Tsx
+severity: error
+message: >-
+  Declare catalogue messages in this file, or drop its .${role.message-file} mark: the tools that
+  find messages files by their name hand it to a translator
+files:
+  - '**/*.${role.message-file}.ts'
+  - '**/*.${role.message-file}.tsx'
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      any:
+        - kind: call_expression
+          has:
+            field: function
+            regex: '^(?:msg|defineMessage|t)$'
+        - kind: jsx_opening_element
+          has:
+            field: name
+            regex: '^Trans$'

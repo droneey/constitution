@@ -1,0 +1,44 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: table-has-an-accessible-name@html
+language: Html
+severity: error
+message: >-
+  Name the table, by its <caption> or aria-labelledby: a screen reader announces a table by its name
+files:
+  - '**/*.html'
+# Why: test code builds the documents its cases read, which are no pages of the program.
+ignores:
+  - '**/${role.colocated-specs}/**'
+  - '**/${role.package-suites}/**'
+utils:
+  table-tag:
+    kind: start_tag
+    has:
+      kind: tag_name
+      regex: '(?i)^table$'
+  # Why: aria-labelledby, aria-label and title each give a table its name, when they hold a value.
+  naming-attribute:
+    kind: attribute
+    has:
+      kind: attribute_name
+      regex: '(?i)^(?:aria-labelledby|aria-label|title)$'
+    regex: '=\s*["'']?\s*[^\s"'']'
+  caption:
+    kind: element
+    has:
+      kind: start_tag
+      has:
+        kind: tag_name
+        regex: '(?i)^caption$'
+rule:
+  kind: element
+  has:
+    matches: table-tag
+  not:
+    any:
+      - has:
+          kind: start_tag
+          has:
+            matches: naming-attribute
+      - has:
+          matches: caption

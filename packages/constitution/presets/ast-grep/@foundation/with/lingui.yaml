@@ -7,3 +7,28 @@ localization:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/module-level-text-holds-the-message.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/module-level-text-holds-the-message.yaml
+  catalogue-apostrophe-never-escapes-a-parameter:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/catalogue-apostrophe-never-escapes-a-parameter.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/catalogue-apostrophe-never-escapes-a-parameter.yaml
+  messages-mark-marks-only-messages-files:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/messages-mark-marks-only-messages-files.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/messages-mark-marks-only-messages-files.yaml
+lingui:
+  lingui-placeholder-named-by-its-variable:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/lingui-placeholder-named-by-its-variable.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/lingui-placeholder-named-by-its-variable.yaml

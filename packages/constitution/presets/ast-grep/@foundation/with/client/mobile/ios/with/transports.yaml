@@ -1,0 +1,9 @@
+client/mobile/ios:
+  app-transport-security-never-weakened-by-an-exception:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/app-transport-security-never-weakened-by-an-exception.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/app-transport-security-never-weakened-by-an-exception.yaml

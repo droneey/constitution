@@ -1,0 +1,9 @@
+client/browser:
+  live-region-mounted-before-message:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/live-region-mounted-before-message.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/live-region-mounted-before-message.yaml

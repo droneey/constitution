@@ -1,0 +1,17 @@
+html:
+  table-has-an-accessible-name:
+    html:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/table-has-an-accessible-name.html.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/html/table-has-an-accessible-name.yaml
+  viewport-declared-responsive:
+    html:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/viewport-declared-responsive.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/html/viewport-declared-responsive.yaml

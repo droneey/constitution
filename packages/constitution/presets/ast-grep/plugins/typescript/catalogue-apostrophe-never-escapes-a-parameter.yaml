@@ -1,0 +1,45 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: catalogue-apostrophe-never-escapes-a-parameter@typescript
+language: Tsx
+severity: error
+message: >-
+  Write the typographic apostrophe, ’, before a parameter: a straight one before its brace starts an
+  escape and shows the parameter as text
+files:
+  - '**/*.ts'
+  - '**/*.tsx'
+utils:
+  macro-template:
+    kind: template_string
+    inside:
+      kind: call_expression
+      field: arguments
+      has:
+        field: function
+        regex: '^(?:t|msg|defineMessage)$'
+  trans-element:
+    kind: jsx_element
+    has:
+      field: open_tag
+      has:
+        field: name
+        regex: '^Trans$'
+rule:
+  any:
+    - kind: template_substitution
+      inside:
+        matches: macro-template
+      follows:
+        kind: string_fragment
+        regex: "'$"
+    - kind: jsx_expression
+      inside:
+        kind: jsx_element
+        any:
+          - matches: trans-element
+          - inside:
+              stopBy: end
+              matches: trans-element
+      follows:
+        kind: jsx_text
+        regex: "'$"

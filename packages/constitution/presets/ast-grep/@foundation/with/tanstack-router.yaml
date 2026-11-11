@@ -7,3 +7,20 @@ tanstack-router:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/links-name-typed-targets.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/links-name-typed-targets.yaml
+  router-claims-the-head:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/router-claims-the-head.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/router-claims-the-head.yaml
+presentation:
+  address-write-keeps-the-other-parameters:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/address-write-keeps-the-other-parameters.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/address-write-keeps-the-other-parameters.yaml

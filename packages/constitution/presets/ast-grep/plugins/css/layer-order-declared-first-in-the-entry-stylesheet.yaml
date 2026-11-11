@@ -1,0 +1,35 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: layer-order-declared-first-in-the-entry-stylesheet@css
+language: Css
+severity: error
+message: >-
+  Declare the layer order before any cascade layer is filled: a layer filled first takes its place
+  in the order by accident
+files:
+  - '**/*.css'
+utils:
+  layer-statement:
+    kind: at_rule
+    has:
+      kind: at_keyword
+      regex: '(?i)^@layer$'
+    not:
+      has:
+        kind: block
+  filled-layer:
+    any:
+      - kind: at_rule
+        has:
+          kind: at_keyword
+          regex: '(?i)^@layer$'
+        all:
+          - has:
+              kind: block
+      # Why: the grammar reads no `layer()` of an import, so the import's text names it.
+      - kind: import_statement
+        regex: '(?i)\blayer\b'
+rule:
+  matches: layer-statement
+  follows:
+    stopBy: end
+    matches: filled-layer

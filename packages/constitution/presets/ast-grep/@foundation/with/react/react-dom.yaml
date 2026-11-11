@@ -7,6 +7,22 @@ html:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/field-declares-its-autocomplete.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/field-declares-its-autocomplete.yaml
+  boolean-attribute-written-by-presence:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/boolean-attribute-written-by-presence.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/boolean-attribute-written-by-presence.yaml
+  table-has-an-accessible-name:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/table-has-an-accessible-name.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/table-has-an-accessible-name.yaml
 react/react-dom:
   ids-from-use-id:
     typescript:
@@ -24,6 +40,22 @@ react/react-dom:
       # Why: a key and a path, which YAML cannot break.
       # yamllint disable-line rule:line-length
       ast-grep.${role.generated-file}/inline-style-holds-only-custom-properties.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/inline-style-holds-only-custom-properties.yaml
+  head-written-by-hoisted-elements:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/head-written-by-hoisted-elements.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/head-written-by-hoisted-elements.yaml
+  labels-bound-by-html-for:
+    typescript:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/labels-bound-by-html-for.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/typescript/labels-bound-by-html-for.yaml
 react:
   component-module-exports-only-components:
     typescript:

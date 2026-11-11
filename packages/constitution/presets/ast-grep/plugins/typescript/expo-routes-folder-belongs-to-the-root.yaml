@@ -1,0 +1,14 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: expo-routes-folder-belongs-to-the-root@typescript
+language: Tsx
+severity: error
+message: >-
+  Move the routes and layouts into ${role.source}/${role.expo-routes}, Expo Router's default: a
+  routes folder beside the source is one no layer claims
+# Why: each pattern reads from the package's top folder, so it takes the routes folder beside the
+# source and leaves out the one inside it.
+files:
+  - '${role.expo-routes}/**/*.ts'
+  - '${role.expo-routes}/**/*.tsx'
+rule:
+  kind: program

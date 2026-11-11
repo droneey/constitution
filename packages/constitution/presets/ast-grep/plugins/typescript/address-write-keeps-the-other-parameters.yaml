@@ -1,0 +1,73 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: address-write-keeps-the-other-parameters@typescript
+language: Tsx
+severity: error
+message: >-
+  Write the screen's search as a function of the previous one, or spread it: an object alone drops
+  every other parameter of the address
+files:
+  - '**/*.tsx'
+  - '**/*.ts'
+utils:
+  # Why: an object with no spread names every parameter the address keeps.
+  search-replaced:
+    kind: object
+    not:
+      has:
+        kind: spread_element
+# Why: a write that names no other screen, or names `.` or `..`, writes the address of the screen it
+# is on; one that names another screen opens it with the parameters it names.
+rule:
+  any:
+    - kind: pair
+      has:
+        field: key
+        regex: '^[''"]?search[''"]?$'
+      all:
+        - has:
+            field: value
+            matches: search-replaced
+        - inside:
+            kind: object
+            not:
+              has:
+                kind: pair
+                all:
+                  - has:
+                      field: key
+                      regex: '^[''"]?to[''"]?$'
+                  - has:
+                      field: value
+                      not:
+                        regex: '^[''"`]\.{1,2}[''"`]$'
+            inside:
+              kind: arguments
+              inside:
+                kind: call_expression
+                has:
+                  field: function
+                  regex: '(?:^|\.)(?:navigate|redirect)$'
+    - kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: '^search$'
+      all:
+        - has:
+            kind: jsx_expression
+            has:
+              matches: search-replaced
+        - inside:
+            any:
+              - kind: jsx_opening_element
+              - kind: jsx_self_closing_element
+            has:
+              field: name
+              regex: '^(?:Link|Navigate)$'
+            not:
+              has:
+                kind: jsx_attribute
+                has:
+                  kind: property_identifier
+                  regex: '^to$'
+                not:
+                  regex: '^to\s*=\s*\{?\s*[''"`]\.{1,2}[''"`]\s*\}?$'

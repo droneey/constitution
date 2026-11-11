@@ -1,0 +1,36 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: app-transport-security-never-weakened-by-an-exception@typescript
+language: Tsx
+severity: error
+message: >-
+  Keep App Transport Security's defaults: an exception that allows plain traffic or an outdated
+  protocol lets any network the phone joins read and change it
+# Why: Expo writes the app manifests of both systems from its app config, whose name it fixes.
+files:
+  - '**/app.config.ts'
+utils:
+  key-named:
+    has:
+      field: key
+      regex: '^[''"]?(?:NSAllowsArbitraryLoads|NSAllowsArbitraryLoadsInWebContent|NSAllowsArbitraryLoadsForMedia|NSExceptionAllowsInsecureHTTPLoads|NSThirdPartyExceptionAllowsInsecureHTTPLoads)[''"]?$'
+rule:
+  kind: pair
+  any:
+    - matches: key-named
+      has:
+        field: value
+        regex: '^true$'
+    - has:
+        field: key
+        regex: '^[''"]?(?:NSExceptionRequiresForwardSecrecy|NSThirdPartyExceptionRequiresForwardSecrecy)[''"]?$'
+      all:
+        - has:
+            field: value
+            regex: '^false$'
+    - has:
+        field: key
+        regex: '^[''"]?(?:NSExceptionMinimumTLSVersion|NSThirdPartyExceptionMinimumTLSVersion)[''"]?$'
+      all:
+        - has:
+            field: value
+            regex: '(?i)^[''"`]TLSv1\.[01][''"`]$'

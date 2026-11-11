@@ -1,0 +1,41 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: shadcn-text-passed-by-props@typescript
+language: Tsx
+severity: error
+message: >-
+  Take the text by a prop: the strings shadcn ships are English and fixed, so the primitive speaks
+  one language whatever the locale
+files:
+  - '**/${role.generic-library}/${role.ui-kit}/${role.component}/**/*.tsx'
+utils:
+  # Why: a glyph that holds no letter, such as an ellipsis or a slash, is language-neutral.
+  words:
+    regex: '\p{L}'
+rule:
+  any:
+    - kind: jsx_text
+      matches: words
+    - kind: jsx_expression
+      has:
+        nthChild: 1
+        any:
+          - kind: string
+          - kind: template_string
+        matches: words
+      not:
+        inside:
+          kind: jsx_attribute
+    - kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: '^(?:aria-label|aria-description|aria-roledescription|aria-valuetext|title|alt|placeholder)$'
+      all:
+        - has:
+            any:
+              - kind: string
+              - kind: jsx_expression
+                has:
+                  any:
+                    - kind: string
+                    - kind: template_string
+            matches: words
