@@ -29,7 +29,7 @@ interface Session {
 }
 
 const CHECK = 'constitution run check';
-const REVIEW_COMMAND = '/check';
+const REVIEW_COMMAND = '/constitution:review';
 const NOTHING: readonly string[] = [] as const;
 const BLOCKED: readonly string[] = [
   'block',

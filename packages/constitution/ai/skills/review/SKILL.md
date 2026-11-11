@@ -1,10 +1,10 @@
 ---
-name: check
-description: Run the project's check, then have one fresh reviewer judge the change against the rules that govern its files, route its findings, and report to the person. Use before handing work back, when the hand-back gate asks for the check or the review, or when the person asks for a review.
+name: review
+description: Run the project's check, then have one fresh reviewer judge the change against the rules that govern its files, beside the rule reviewer where it touches blocks or presets, route their findings, and report to the person. Use before handing work back, when the hand-back gate asks for the check or the review, or when the person asks for a review.
 argument-hint: "[edits|all]"
 ---
 
-# Check the work against the rules
+# Review the work against the rules
 
 Arguments: $ARGUMENTS — a scope, `edits` (the default) or `all`.
 
@@ -51,12 +51,14 @@ Dispatch the `constitution:reviewer` agent once, through the Agent tool, with ex
 
 Give it nothing of this conversation: no summary of the work, no intent and no reading of a rule. It judges the change as a stranger would. It returns one finding per line, `<path>:<line> — <slug> · <LEVEL> — <confidence> — <what is wrong> — <the fix>`, or `no findings`; when it finishes, a hook records the review on this tree.
 
+Where a file of the change sits in a `blocks/` or `presets/` folder, of the Constitution's own sources or of a pack `constitution.yaml` lists, dispatch the `constitution:rule-reviewer` agent in the same message, with the project root, the diff and the overrides, and nothing of this conversation either. It judges where each rule, term and preset setting the change adds or moves belongs, by meaning, which the reviewer and `constitution check` do not, and returns its findings in the reviewer's form.
+
 ## 5. Route the findings
 
-Take each finding by what it says:
+Take each finding, the reviewer's and the rule reviewer's alike, by what it says:
 
 - **A clear breach**, of confidence `high`, whose fix fits the task, MUST or SHOULD: fix it.
-- **An uncertain finding**, of confidence `low`: answer it `fixed`, with the fix made, or `disagree, because …`, with the reason the code gives. A finding you disagree with goes, with your answer, to a second review: the reviewer dispatched again with the diff, the rules, the overrides and the disputed findings with their answers, and its verdict settles it.
+- **An uncertain finding**, of confidence `low`: answer it `fixed`, with the fix made, or `disagree, because …`, with the reason the code gives. A finding you disagree with goes, with your answer, to a second review: the agent that found it dispatched again with the inputs it was first given and the disputed findings with their answers, and its verdict settles it.
 - **A SHOULD you keep:** leave it only with its reason, and give that reason in your report.
 - **A question for the person:** ask only where the rules give no answer, because they are silent, two of them clash, or the fix needs a decision outside the task, such as a new dependency, a project-wide logger, a change to a stored format or who may perform an action. A finding with `none` as its rule is such a question.
 

@@ -73,7 +73,7 @@
 
 **Date:** 2026-10-07 · **Status:** Accepted
 
-- **Decision.** Three questions place a rule: its rank, by what must disappear for it to lose its meaning; its axis, by whether a team with another architecture or process would still want it; its chapter, the one named for what its statement governs. Core's chapters are named for what their rules govern, with no chapter of laws the others carry out. The meaning is judged by this repository's `rule-placement` agent on every change to the blocks and presets, its answers in the pull request; the check catches only what the words show, such as a term used out of its place.
+- **Decision.** Three questions place a rule: its rank, by what must disappear for it to lose its meaning; its axis, by whether a team with another architecture or process would still want it; its chapter, the one named for what its statement governs. Core's chapters are named for what their rules govern, with no chapter of laws the others carry out. The meaning is judged by the plugin's `rule-reviewer` agent, which `/constitution:review` dispatches beside the reviewer on every change to blocks or presets, its findings routed as the reviewer's are; the check catches only what the words show, such as a term used out of its place.
 - **Rejected.** Chapters by broad topic (`code`, `principles`, `anatomy`), whose rules fit two of them; a list of words per axis as the judge of placement; the agent inside the check, which must give the same answer on the same code.
 - **Why.** When a rule's first words name its chapter, where it goes is answered by reading it and two rules about one thing meet in one file; a check of words catches a plain leak cheaply, while placement needs a reading of meaning.
 

@@ -54,7 +54,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 3. In a Claude Code session in the project, run [`/constitution:ratify`](docs/reference/skills.md#constitutionratify). It proposes the blocks from what the repository holds, asks you about the product, and writes `constitution.yaml`, `PROJECT.md` and `DECISIONS.md` once you agree.
 
-4. Start a new session. The agent now works by the rules, and `/constitution:check` reviews a change against them.
+4. Start a new session. The agent now works by the rules, and `/constitution:review` reviews a change against them.
 
 ## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Documentation
 
@@ -76,7 +76,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 - [`constitution.yaml`](docs/reference/constitution-yaml.md) — every key
 - [Presets](docs/reference/presets.md) — what each tool's presets configure
 - [Templates](docs/reference/templates.md) — the files ratify starts a project from
-- [Skills](docs/reference/skills.md) — what `/constitution:ratify`, `amend` and `check` do and write
+- [Skills](docs/reference/skills.md) — what `/constitution:ratify`, `amend` and `review` do and write
 - [The plugin](docs/reference/plugin.md) — skills, the reviewer and the hooks
 - [Block format](docs/reference/block-format.md) — how a block and its rules are written
 - [Terms](docs/reference/terms.md) — every term the blocks define, its owner, its axis and its definition

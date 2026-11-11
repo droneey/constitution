@@ -1,6 +1,6 @@
 # The plugin
 
-> The engine of the Constitution in Claude Code: three skills, a reviewer and the hooks. The rules themselves come from the project's release, and the hooks' work from the `constitution` executable the project installs with it.
+> The engine of the Constitution in Claude Code: three skills, two agents that review and the hooks. The rules themselves come from the project's release, and the hooks' work from the `constitution` executable the project installs with it.
 
 ## Skills
 
@@ -8,7 +8,7 @@ Each skill is called by its slash command:
 
 - `/constitution:ratify`, by you only, puts a repository under the Constitution;
 - `/constitution:amend`, by you only, adds, changes or removes an override;
-- `/constitution:check`, by you or the agent, runs the check, has one fresh reviewer judge the change, and routes its findings.
+- `/constitution:review`, by you or the agent, runs the check, has one fresh reviewer judge the change, beside the rule reviewer where it touches blocks or presets, and routes their findings.
 
 [Skills](skills.md) describes each, with its arguments and what it writes.
 
@@ -19,6 +19,10 @@ The `reviewer` agent judges one change in a context that never saw it written: i
 ```text
 src/features/orders/domain/order/entities/order.aggregate.ts:42 — fact-has-one-source · MUST — high — the total is stored beside the lines it sums — compute it from the lines
 ```
+
+## The rule reviewer
+
+The `rule-reviewer` agent judges, by meaning, where each rule, term and preset setting a change adds or moves belongs: its rank, its axis, its chapter and its seam, whether its Why and examples do their job, and whether another block already states the same obligation. `/constitution:review` dispatches it beside the reviewer whenever a file of the change sits in a `blocks/` or `presets/` folder, of the Constitution's sources or of a pack, with the diff and the overrides; it never edits, and returns its findings in the reviewer's form.
 
 ## Hooks
 

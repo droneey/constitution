@@ -8,7 +8,8 @@
   },
   "repository": "https://github.com/droneey/constitution",
   "agents": [
-    "./ai/agents/reviewer.md"
+    "./ai/agents/reviewer.md",
+    "./ai/agents/rule-reviewer.md"
   ],
   "hooks": "./ai/hooks/hooks.json",
   "skills": [
