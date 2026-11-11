@@ -7,10 +7,7 @@ message: >-
   that shows none of the program's internals
 files:
   - '**/*.py'
-# Why: the server a presentation builds is mounted on the root's, as the block's own example builds
-# it, so the server that answers is the one the root builds.
 ignores:
-  - '**/${role.presentation-layer}/**'
   - '**/${role.package-suites}/**'
 rule:
   kind: call

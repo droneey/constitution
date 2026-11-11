@@ -16,7 +16,7 @@ A tool decorated onto a server as its module loads registers itself, so no one p
 
 ```py title="Avoid"
 # src/shop/features/orders/presentation/tools.py
-orders_server = FastMCP(name="orders")
+orders_server = FastMCP(name="orders", mask_error_details=True)
 
 
 @orders_server.tool
@@ -28,7 +28,7 @@ async def find_orders(customer_id: CustomerId) -> tuple[OrderSummary, ...]:
 ```py title="Prefer"
 # src/shop/features/orders/presentation/tools.py
 def build_orders_server(context: OrdersContext) -> FastMCP:
-    orders_server = FastMCP(name="orders")
+    orders_server = FastMCP(name="orders", mask_error_details=True)
 
     @orders_server.tool
     async def find_orders(customer_id: CustomerId) -> tuple[OrderSummary, ...]:

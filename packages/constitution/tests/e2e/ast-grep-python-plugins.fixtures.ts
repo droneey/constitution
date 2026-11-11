@@ -1125,6 +1125,13 @@ const pythonPluginRows: readonly PluginRow[] = [
           ],
         },
       },
+      {
+        condition: 'a presentation builds the server the root mounts without masking',
+        files: {
+          'src/shop/features/orders/presentation/tools.py':
+            'def build_orders_server(context: OrdersContext) -> FastMCP:\n    return FastMCP(name="orders")\n',
+        },
+      },
     ],
     allowed: [
       {
@@ -1132,13 +1139,6 @@ const pythonPluginRows: readonly PluginRow[] = [
         files: {
           'src/shop/root/server.py':
             'def build_server(context: ShopContext) -> FastMCP:\n    server = FastMCP(name="shop", mask_error_details=True)\n    server.mount(build_orders_server(context.orders))\n    return server\n',
-        },
-      },
-      {
-        condition: 'a presentation builds the server the root mounts',
-        files: {
-          'src/shop/features/orders/presentation/tools.py':
-            'def build_orders_server(context: OrdersContext) -> FastMCP:\n    return FastMCP(name="orders")\n',
         },
       },
     ],
