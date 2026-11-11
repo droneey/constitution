@@ -108,7 +108,7 @@ function rename(user, name, isNameTaken)
 
 ### use-case-hands-its-deadline-to-every-port-call · MUST
 
-Every use case hands its cancellation and the time it has left to every port call it makes. It hands them in its language's form — passed with each call, or a scope that encloses every call it awaits —, whether or not the port crosses a process boundary, which the port hides from it, so that a call that crosses one meets `call-takes-the-remaining-deadline` and `outside-call-can-be-cancelled`.
+Every use case hands every port call the cancellation and deadline its own call has. It hands them, the deadline as the time it has left, in its language's form — passed with each call, or a scope that encloses every call it awaits —, whether or not the port crosses a process boundary, which the port hides from it, so that a call that crosses one meets `call-takes-the-remaining-deadline` and `outside-call-can-be-cancelled`.
 
 #### Why
 
