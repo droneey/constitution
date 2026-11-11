@@ -4,6 +4,9 @@ if ((BASH_VERSINFO[0] * 100 + BASH_VERSINFO[1] >= 404)); then
   shopt -s inherit_errexit
 fi
 
+# Why: the presets refuse a shared file named for no rule (plugin-names-no-rule), so the trailer
+# pattern, the scissors and comment filters and the footer's awk are twinned in
+# commit-body-left-empty.sh, which changes with this script.
 # Why: git commit -v leaves the diff below its scissors line for the hook to read.
 # shellcheck disable=SC2016 # Why: $d is sed's, which deletes up to the last line.
 readonly BELOW_THE_SCISSORS='/^# -\{24\} >8 -\{24\}$/,$d'

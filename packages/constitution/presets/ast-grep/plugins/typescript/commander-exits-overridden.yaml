@@ -26,6 +26,9 @@ utils:
       has:
         field: property
         regex: ^exitOverride$
+  # Why: the presets refuse a shared file named for no rule (plugin-names-no-rule), so
+  # settings-copied-in-its-chain and program-built are twinned in
+  # commander-output-through-the-programs-writers.yaml, which changes with this plugin.
   # Why: a command that copies its parent's settings is a subcommand, which takes the program's
   # exit override and writers from it.
   settings-copied-in-its-chain:
