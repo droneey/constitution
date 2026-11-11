@@ -1,0 +1,61 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: tools-built-by-a-function-the-root-calls@python
+language: Python
+severity: error
+message: >-
+  A tool decorated as its module loads registers itself: build it in the function that builds its
+  server from the context the root hands it
+files:
+  - '**/${role.source}/**'
+rule:
+  kind: decorator
+  any:
+    - has:
+        kind: attribute
+        all:
+          - has:
+              field: attribute
+              regex: ^tool$
+          - has:
+              field: object
+              pattern: $SERVER
+    - has:
+        kind: call
+        has:
+          field: function
+          kind: attribute
+          all:
+            - has:
+                field: attribute
+                regex: ^tool$
+            - has:
+                field: object
+                pattern: $SERVER
+  inside:
+    kind: decorated_definition
+    inside:
+      kind: module
+      # Why: a module-level `.tool` decorator belongs to FastMCP only where the module reaches
+      # fastmcp or builds the server it decorates.
+      any:
+        - has:
+            stopBy: end
+            kind: import_from_statement
+            has:
+              field: module_name
+              regex: ^fastmcp(?:\.|$)
+        - has:
+            stopBy: end
+            kind: import_statement
+            regex: ^import\s+fastmcp\b
+        - has:
+            stopBy: end
+            kind: assignment
+            all:
+              - has:
+                  field: left
+                  pattern: $SERVER
+              - has:
+                  field: right
+                  kind: call
+                  regex: ^(?:fastmcp\.)?FastMCP\(

@@ -1,0 +1,45 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: uvicorn-records-join-the-pipeline@python
+language: Python
+severity: error
+message: >-
+  Run Uvicorn with log_config=None: its own config gives its loggers handlers that skip the one
+  pipeline
+rule:
+  kind: call
+  has:
+    field: function
+    any:
+      - regex: ^uvicorn\.(?:Config|run)$
+      - kind: identifier
+        regex: ^(?:Config|run)$
+        pattern: $START
+        inside:
+          kind: module
+          stopBy: end
+          has:
+            kind: import_from_statement
+            stopBy: end
+            all:
+              - has:
+                  field: module_name
+                  regex: ^uvicorn$
+              - has:
+                  field: name
+                  pattern: $START
+  not:
+    has:
+      field: arguments
+      any:
+        - has:
+            kind: keyword_argument
+            all:
+              - has:
+                  field: name
+                  regex: ^log_config$
+              - has:
+                  field: value
+                  kind: none
+        # Why: options handed on whole may carry the setting, which this call cannot see.
+        - has:
+            kind: dictionary_splat

@@ -1,0 +1,94 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: parameter-described-by-its-field@python
+language: Python
+severity: error
+message: >-
+  Describe the tool's parameter for the model: `Annotated[<type>, Field(description=...)]`
+utils:
+  described-type:
+    regex: ^(?:typing\.)?Annotated\[[\s\S]*\bField\([\s\S]*\bdescription\s*=
+  # Why: FastMCP fills a parameter of its context, or one a dependency gives, itself, and leaves it
+  # out of the tool's input schema.
+  injected-parameter:
+    any:
+      - has:
+          field: type
+          regex: ^(?:[\w.]+\.)?Context\b
+      - has:
+          field: value
+          kind: call
+          regex: ^(?:[\w.]+\.)?(?:Depends|Current[A-Z]\w*)\(
+  tool-decorator:
+    kind: decorator
+    any:
+      - has:
+          kind: attribute
+          all:
+            - has:
+                field: attribute
+                regex: ^tool$
+            - has:
+                field: object
+                pattern: $SERVER
+      - has:
+          kind: call
+          has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: attribute
+                  regex: ^tool$
+              - has:
+                  field: object
+                  pattern: $SERVER
+  # Why: other libraries offer a `.tool` decorator too, so the server is one FastMCP builds or one a
+  # parameter typed as FastMCP hands in.
+  fastmcp-server-in-scope:
+    inside:
+      stopBy: end
+      any:
+        - kind: function_definition
+        - kind: module
+      has:
+        stopBy: end
+        any:
+          - kind: assignment
+            all:
+              - has:
+                  field: left
+                  pattern: $SERVER
+              - has:
+                  field: right
+                  kind: call
+                  regex: ^(?:fastmcp\.)?FastMCP\(
+          - kind: typed_parameter
+            all:
+              - has:
+                  kind: identifier
+                  pattern: $SERVER
+              - has:
+                  field: type
+                  regex: ^(?:fastmcp\.)?FastMCP$
+rule:
+  any:
+    - kind: identifier
+    - kind: typed_parameter
+    - kind: default_parameter
+    - kind: typed_default_parameter
+  inside:
+    kind: parameters
+    inside:
+      kind: function_definition
+      field: parameters
+      inside:
+        kind: decorated_definition
+        has:
+          matches: tool-decorator
+        matches: fastmcp-server-in-scope
+  not:
+    any:
+      - has:
+          field: type
+          matches: described-type
+      - matches: injected-parameter

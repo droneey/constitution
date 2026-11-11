@@ -1,0 +1,9 @@
+structlog:
+  structlog-configured-by-the-root:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/structlog-configured-by-the-root.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/structlog-configured-by-the-root.yaml

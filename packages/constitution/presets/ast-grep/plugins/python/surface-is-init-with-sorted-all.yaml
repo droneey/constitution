@@ -1,0 +1,57 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: surface-is-init-with-sorted-all@python
+language: Python
+severity: error
+message: >-
+  A surface holds only `from .<module> import <Name>` lines and the `__all__` that lists them
+files:
+  - '**/${role.source}/**/${role.surface}.py'
+ignores:
+  - '**/*_${role.generated-file}/**'
+utils:
+  re-export:
+    kind: import_from_statement
+    has:
+      field: module_name
+      kind: relative_import
+      all:
+        - has:
+            kind: import_prefix
+            regex: ^\.$
+        - has:
+            kind: dotted_name
+    not:
+      has:
+        kind: wildcard_import
+  all-list:
+    kind: expression_statement
+    has:
+      kind: assignment
+      all:
+        - has:
+            field: left
+            regex: ^__all__$
+        - has:
+            field: right
+            any:
+              - kind: list
+              - kind: tuple
+# Why: an `__init__.py` that holds only comments, or nothing, belongs to a folder with no surface,
+# which init-of-a-folder-without-a-surface-empty governs.
+rule:
+  kind: module
+  any:
+    - has:
+        all:
+          - pattern: $STATEMENT
+          - not:
+              any:
+                - kind: comment
+                - matches: re-export
+                - matches: all-list
+    - all:
+        - has:
+            kind: import_from_statement
+        - not:
+            has:
+              matches: all-list

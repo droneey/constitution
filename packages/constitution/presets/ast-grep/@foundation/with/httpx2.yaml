@@ -1,0 +1,25 @@
+httpx2:
+  client-built-with-its-own-timeout:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/client-built-with-its-own-timeout.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/client-built-with-its-own-timeout.yaml
+  client-open-for-the-program-life:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/client-open-for-the-program-life.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/client-open-for-the-program-life.yaml
+  response-body-parsed-from-its-bytes:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/response-body-parsed-from-its-bytes.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/response-body-parsed-from-its-bytes.yaml

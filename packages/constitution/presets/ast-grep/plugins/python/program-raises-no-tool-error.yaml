@@ -1,0 +1,18 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: program-raises-no-tool-error@python
+language: Python
+severity: error
+message: >-
+  Raise the error library's error, which carries a code: a ToolError carries only its wording
+files:
+  - '**/${role.source}/**'
+rule:
+  kind: raise_statement
+  has:
+    nthChild: 1
+    any:
+      - regex: ^(?:[\w.]+\.)?ToolError$
+      - kind: call
+        has:
+          field: function
+          regex: ^(?:[\w.]+\.)?ToolError$

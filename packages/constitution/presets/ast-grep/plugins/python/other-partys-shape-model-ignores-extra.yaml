@@ -1,0 +1,37 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: other-partys-shape-model-ignores-extra@python
+language: Python
+severity: error
+message: >-
+  A model of another party's shape keeps extra='ignore': forbidding an unknown key breaks on that
+  party's next field
+# Why: the wire models are the shapes outside systems own, so their files are where the program
+# reads another party's shape.
+files:
+  - '**/${role.wire-model}/**/*.py'
+  - '**/*${role.wire-model-file}.py'
+utils:
+  forbid:
+    any:
+      - kind: string
+        regex: ^["']forbid["']$
+      - kind: attribute
+        regex: (?:^|\.)Extra\.forbid$
+rule:
+  any:
+    - kind: keyword_argument
+      all:
+        - has:
+            field: name
+            regex: ^extra$
+        - has:
+            field: value
+            matches: forbid
+    - kind: pair
+      all:
+        - has:
+            field: key
+            regex: ^["']extra["']$
+        - has:
+            field: value
+            matches: forbid

@@ -1,0 +1,80 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: duration-measured-by-a-python-monotonic-clock@python
+language: Python
+severity: error
+message: 'Measure a duration with time.monotonic() or time.perf_counter(): the wall clock jumps'
+utils:
+  wall-clock-reading:
+    kind: call
+    any:
+      - regex: ^time\.time(?:_ns)?\(\)$
+      - has:
+          field: function
+          kind: attribute
+          all:
+            - has:
+                field: attribute
+                regex: ^(?:now|utcnow)$
+            - has:
+                field: object
+                regex: (?:^|\.)datetime$
+  wall-clock-assignment:
+    kind: assignment
+    all:
+      - has:
+          field: left
+          pattern: $START
+      - has:
+          field: right
+          matches: wall-clock-reading
+  started-in-an-enclosing-body:
+    inside:
+      stopBy: end
+      any:
+        - kind: function_definition
+        - kind: module
+      has:
+        stopBy: end
+        matches: wall-clock-assignment
+  started-in-its-class:
+    inside:
+      stopBy: end
+      kind: class_definition
+      has:
+        stopBy: end
+        matches: wall-clock-assignment
+rule:
+  kind: binary_operator
+  all:
+    - has:
+        field: operator
+        regex: ^-$
+    - has:
+        field: left
+        any:
+          - matches: wall-clock-reading
+          - all:
+              - pattern: $END
+              - inside:
+                  stopBy: end
+                  any:
+                    - kind: function_definition
+                    - kind: module
+                  has:
+                    stopBy: end
+                    kind: assignment
+                    all:
+                      - has:
+                          field: left
+                          pattern: $END
+                      - has:
+                          field: right
+                          matches: wall-clock-reading
+    - has:
+        field: right
+        pattern: $START
+        not:
+          matches: wall-clock-reading
+    - any:
+        - matches: started-in-an-enclosing-body
+        - matches: started-in-its-class

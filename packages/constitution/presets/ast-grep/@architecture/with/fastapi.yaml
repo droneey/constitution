@@ -1,0 +1,17 @@
+fastapi:
+  app-assembled-by-the-root:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/app-assembled-by-the-root.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/app-assembled-by-the-root.yaml
+  routers-built-by-a-function-the-root-calls:
+    python:
+      sgconfig.yaml:
+        ruleDirs:
+          - ast-grep.${role.generated-file}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      ast-grep.${role.generated-file}/routers-built-by-a-function-the-root-calls.yaml !text: !copy ${constitution.path}/presets/ast-grep/plugins/python/routers-built-by-a-function-the-root-calls.yaml

@@ -1,0 +1,54 @@
+# yaml-language-server:$schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+id: routers-built-by-a-function-the-root-calls@python
+language: Python
+severity: error
+message: >-
+  A route decorated as its module loads registers itself: declare it in the function that builds
+  its router from the context the root hands it
+files:
+  - '**/${role.source}/**'
+rule:
+  kind: decorator
+  has:
+    kind: call
+    has:
+      field: function
+      kind: attribute
+      all:
+        - has:
+            field: attribute
+            regex: ^(?:get|post|put|patch|delete|head|options|trace|api_route|route|websocket|websocket_route)$
+        - has:
+            field: object
+            pattern: $ROUTER
+  inside:
+    kind: decorated_definition
+    has:
+      field: definition
+      kind: function_definition
+    inside:
+      kind: module
+      # Why: a module-level decorator named like a route's belongs to FastAPI only where the module
+      # reaches FastAPI or builds the router it decorates.
+      any:
+        - has:
+            stopBy: end
+            kind: import_from_statement
+            has:
+              field: module_name
+              regex: ^fastapi(?:\.|$)
+        - has:
+            stopBy: end
+            kind: import_statement
+            regex: ^import\s+fastapi\b
+        - has:
+            stopBy: end
+            kind: assignment
+            all:
+              - has:
+                  field: left
+                  pattern: $ROUTER
+              - has:
+                  field: right
+                  kind: call
+                  regex: ^(?:fastapi\.)?(?:APIRouter|FastAPI)\(
